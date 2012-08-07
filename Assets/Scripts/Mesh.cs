@@ -4,8 +4,8 @@ using System.Collections;
 public class Mesh : MonoBehaviour 
 {
 	
-	public float normalisation;		//Float for Normalisation resistant
-	
+	public float normalisation;		//Float for Normalisation resistant (1 = instant 0 = no normalisation)
+
 	public UnityEngine.Mesh mesh;	//Mesh from GameObject
 	
 	public Vector3[] newVertices;	//Vertices for Mesh manipulation
@@ -18,6 +18,10 @@ public class Mesh : MonoBehaviour
 		
 		Vertices = mesh.vertices;	//Original Mesh vertices
 		newVertices = mesh.vertices;	//Mesh vertices for manipulation
+		
+		//Check normalisation area
+		if(normalisation < 0.0f) normalisation = 0.0f;
+		if(normalisation > 1.0f) normalisation = 1.0f;
 
 	}
 	
