@@ -4,24 +4,54 @@ using System.Collections;
 public class Mesh : MonoBehaviour 
 {
 	
-	public Vector3[] newVertices;
+	public float normalisation;		//Float for Normalisation resistant
 	
-	public UnityEngine.Mesh mesh;
+	public UnityEngine.Mesh mesh;	//Mesh from GameObject
+	
+	public Vector3[] newVertices;	//Vertices for Mesh manipulation
+	private Vector3[] Vertices;		//Vertices of the Mesh
 		
 	// Use this for initialization
 	void Start () 
 	{
-		//UnityEngine.Mesh mesh = new UnityEngine.Mesh();
-		//GetComponent<MeshFilter>().mesh = mesh;
 		mesh = GetComponent<MeshFilter>().mesh;
 		
-		newVertices = mesh.vertices;
+		Vertices = mesh.vertices;	//Original Mesh vertices
+		newVertices = mesh.vertices;	//Mesh vertices for manipulation
 
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		mesh.vertices = newVertices;
+		Normalisation();
+		
+		mesh.vertices = newVertices;	
+	}
+	
+	void Normalisation()
+	{
+		for(int i=0; i < newVertices.Length; i++)
+		{
+			if(newVertices[i].x != Vertices[i].x)
+			{
+				newVertices[i].x -= ((newVertices[i].x - Vertices[i].x)* normalisation);
+			}
+			if(newVertices[i].y != Vertices[i].y)
+			{
+				newVertices[i].y -= ((newVertices[i].y - Vertices[i].y)* normalisation);
+			}
+			if(newVertices[i].z != Vertices[i].z)
+			{
+				newVertices[i].z -= ((newVertices[i].z - Vertices[i].z)* normalisation);
+			}
+			
+		}
+		
+	}
+	
+	void OnCollisionEnter(Collision collision)
+	{
+		
 	}
 }
