@@ -49,10 +49,9 @@ public class Mesh : MonoBehaviour
 	}
 	
 	// Update is called once per frame
-	void Update () 
+	void Update () 	
 	{
 		Normalisation();
-		//Manipulation();	//Only on Collison (Test Mode)
 		mesh.vertices = newVertices;	
 	}
 	
@@ -60,38 +59,27 @@ public class Mesh : MonoBehaviour
 	void Normalisation()
 	{
 		for(int i=0; i < newVertices.Length; i++)
-		{
+		{			
 			if(newVertices[i].x != Vertices[i].x)
-			{
+			{  
 				newVertices[i].x -= ((newVertices[i].x - Vertices[i].x)* normalisation);
+				//Debug.Log("X Correction");
 			}
 			if(newVertices[i].y != Vertices[i].y)
 			{
 				newVertices[i].y -= ((newVertices[i].y - Vertices[i].y)* normalisation);
+				//Debug.Log("Y Correction");
 			}
 			if(newVertices[i].z != Vertices[i].z)
 			{
 				newVertices[i].z -= ((newVertices[i].z - Vertices[i].z)* normalisation);
-			}
-			
-			/* 
-			//Collision area
-			Debug.DrawRay(firstContact, new Vector3(radiusLow,0,0), Color.green);
-			Debug.DrawRay(firstContact, new Vector3(-radiusLow,0,0), Color.yellow);
-			Debug.DrawRay(firstContact, new Vector3(0,radiusLow,0), Color.green);
-			Debug.DrawRay(firstContact, new Vector3(0,-radiusLow,0), Color.yellow);
-			Debug.DrawRay(firstContact, new Vector3(0, 0,radiusLow), Color.green);
-			Debug.DrawRay(firstContact, new Vector3(0, 0,-radiusLow), Color.yellow);
-			*/
-			
-			
-			
-		}
-		
+				//Debug.Log("Z Correction");
+			}					
+		}		
 	}
 	
 	
-	//do not work
+
 	void OnCollisionEnter(Collision collision)
 	{		
 		firstContact = collision.contacts[0].point;		
@@ -101,36 +89,27 @@ public class Mesh : MonoBehaviour
 	
 	void Manipulation()
 	{
+		float distance;
 		
+		//sphere area
 		for(int i=0; i < newVertices.Length; i++)
 		{
-		//	newVertices[i].y -= radiusMedium * meshResistance;
 			
-			//sphere area needed
-			//Cube area are used
-			if(
-			((newVertices[i].x >= firstContact.x - radiusStrong - transform.position.x) && (newVertices[i].x <= firstContact.x + radiusStrong - transform.position.x)) &&
-			((newVertices[i].y >= firstContact.y - radiusStrong - transform.position.y) && (newVertices[i].y <= firstContact.y + radiusStrong - transform.position.y)) &&
-			((newVertices[i].z >= firstContact.z - radiusStrong - transform.position.z) && (newVertices[i].z <= firstContact.z + radiusStrong - transform.position.z)))
+			distance = Vector3.Distance(new Vector3(newVertices[i].x + transform.position.x, newVertices[i].y + transform.position.y, newVertices[i].z + transform.position.z), firstContact);
+			Debug.Log ("Distance: " +distance +" ID: "+ i);
+			
+			if(distance <= radiusStrong)
 			{
 				newVertices[i].y -= factorStrong * meshResistance;
 			}
-			else if(
-			((newVertices[i].x >= firstContact.x - radiusMedium - transform.position.x) && (newVertices[i].x <= firstContact.x + radiusMedium - transform.position.x)) &&
-			((newVertices[i].y >= firstContact.y - radiusMedium - transform.position.y) && (newVertices[i].y <= firstContact.y + radiusMedium - transform.position.y)) &&
-			((newVertices[i].z >= firstContact.z - radiusMedium - transform.position.z) && (newVertices[i].z <= firstContact.z + radiusMedium - transform.position.z)))
+			else if(distance <= radiusMedium)
 			{
 				newVertices[i].y -= factorMedium * meshResistance;
 			}
-			else if(
-			((newVertices[i].x >= firstContact.x - radiusLow - transform.position.x) && (newVertices[i].x <= firstContact.x + radiusLow - transform.position.x)) &&
-			((newVertices[i].y >= firstContact.y - radiusLow - transform.position.y) && (newVertices[i].y <= firstContact.y + radiusLow - transform.position.y)) &&
-			((newVertices[i].z >= firstContact.z - radiusLow - transform.position.z) && (newVertices[i].z <= firstContact.z + radiusLow - transform.position.z))
-				)
+			else if(distance <= radiusLow)
 			{
-				newVertices[i].y -= factorSLow * meshResistance;		
-			}		
-			
+				newVertices[i].y -= factorSLow * meshResistance;
+			}
 		}
 		
 	}
