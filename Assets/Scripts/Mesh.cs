@@ -25,12 +25,6 @@ public class Mesh : MonoBehaviour
 	
 	public Vector3 firstContact;			//Position of first collision poin
 	
-/*	
-	public int[] manipulatedVerticesStrong;	//Index of strong manipulatet Vertices
-	public int[] manipulatedVerticesMedium;	//Index of medium manipulatet Vertices
-	public int[] manipulatedVerticesLow;	//Index of low manipulatet Vertices
-*/		
-	
 	
 	// Use this for initialization
 	void Start () 
@@ -80,6 +74,18 @@ public class Mesh : MonoBehaviour
 				newVertices[i].z -= ((newVertices[i].z - Vertices[i].z)* normalisation);
 			}
 			
+			/* 
+			//Collision area
+			Debug.DrawRay(firstContact, new Vector3(radiusLow,0,0), Color.green);
+			Debug.DrawRay(firstContact, new Vector3(-radiusLow,0,0), Color.yellow);
+			Debug.DrawRay(firstContact, new Vector3(0,radiusLow,0), Color.green);
+			Debug.DrawRay(firstContact, new Vector3(0,-radiusLow,0), Color.yellow);
+			Debug.DrawRay(firstContact, new Vector3(0, 0,radiusLow), Color.green);
+			Debug.DrawRay(firstContact, new Vector3(0, 0,-radiusLow), Color.yellow);
+			*/
+			
+			
+			
 		}
 		
 	}
@@ -95,32 +101,38 @@ public class Mesh : MonoBehaviour
 	
 	void Manipulation()
 	{
+		
 		for(int i=0; i < newVertices.Length; i++)
 		{
+		//	newVertices[i].y -= radiusMedium * meshResistance;
+			
 			//sphere area needed
 			//Cube area are used
 			if(
-			((newVertices[i].x >= firstContact.x - radiusStrong) && (newVertices[i].x <= firstContact.x + radiusStrong)) &&
-			((newVertices[i].y >= firstContact.y - radiusStrong) && (newVertices[i].y <= firstContact.y + radiusStrong)) &&
-			((newVertices[i].z >= firstContact.z - radiusStrong) && (newVertices[i].z <= firstContact.z + radiusStrong)))
+			((newVertices[i].x >= firstContact.x - radiusStrong - transform.position.x) && (newVertices[i].x <= firstContact.x + radiusStrong - transform.position.x)) &&
+			((newVertices[i].y >= firstContact.y - radiusStrong - transform.position.y) && (newVertices[i].y <= firstContact.y + radiusStrong - transform.position.y)) &&
+			((newVertices[i].z >= firstContact.z - radiusStrong - transform.position.z) && (newVertices[i].z <= firstContact.z + radiusStrong - transform.position.z)))
 			{
 				newVertices[i].y -= factorStrong * meshResistance;
 			}
 			else if(
-			((newVertices[i].x >= firstContact.x - radiusMedium) && (newVertices[i].x <= firstContact.x + radiusMedium)) &&
-			((newVertices[i].y >= firstContact.y - radiusMedium) && (newVertices[i].y <= firstContact.y + radiusMedium)) &&
-			((newVertices[i].z >= firstContact.z - radiusMedium) && (newVertices[i].z <= firstContact.z + radiusMedium)))
+			((newVertices[i].x >= firstContact.x - radiusMedium - transform.position.x) && (newVertices[i].x <= firstContact.x + radiusMedium - transform.position.x)) &&
+			((newVertices[i].y >= firstContact.y - radiusMedium - transform.position.y) && (newVertices[i].y <= firstContact.y + radiusMedium - transform.position.y)) &&
+			((newVertices[i].z >= firstContact.z - radiusMedium - transform.position.z) && (newVertices[i].z <= firstContact.z + radiusMedium - transform.position.z)))
 			{
-				newVertices[i].y -= radiusMedium * meshResistance;
+				newVertices[i].y -= factorMedium * meshResistance;
 			}
 			else if(
-			((newVertices[i].x >= firstContact.x - radiusLow) && (newVertices[i].x <= firstContact.x + radiusLow)) &&
-			((newVertices[i].y >= firstContact.y - radiusLow) && (newVertices[i].y <= firstContact.y + radiusLow)) &&
-			((newVertices[i].z >= firstContact.z - radiusLow) && (newVertices[i].z <= firstContact.z + radiusLow)))
+			((newVertices[i].x >= firstContact.x - radiusLow - transform.position.x) && (newVertices[i].x <= firstContact.x + radiusLow - transform.position.x)) &&
+			((newVertices[i].y >= firstContact.y - radiusLow - transform.position.y) && (newVertices[i].y <= firstContact.y + radiusLow - transform.position.y)) &&
+			((newVertices[i].z >= firstContact.z - radiusLow - transform.position.z) && (newVertices[i].z <= firstContact.z + radiusLow - transform.position.z))
+				)
 			{
-				newVertices[i].y -= radiusLow * meshResistance;				
-			}			
+				newVertices[i].y -= factorSLow * meshResistance;		
+			}		
+			
 		}
+		
 	}
 
 }
