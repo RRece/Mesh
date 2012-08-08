@@ -18,7 +18,8 @@ public class Mesh : MonoBehaviour
 	public float factorMedium = 10.0f;	//Factor of Medium Manipulation
 	public float factorSLow = 5.0f;		//Factor of Low Manipulation
 		
-	private UnityEngine.Mesh mesh;		//Mesh from GameObject
+	private UnityEngine.Mesh mesh;			//Mesh from GameObject
+	private MeshCollider newMeshCollider;  //Mesh Collider
 	
 	public Vector3[] newVertices;	//Vertices for Mesh manipulation
 	private Vector3[] Vertices;		//Vertices of the original Meshposition
@@ -29,7 +30,9 @@ public class Mesh : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
+		
 		mesh = GetComponent<MeshFilter>().mesh;
+		newMeshCollider =GetComponent(typeof(MeshCollider)) as MeshCollider; 
 		
 		Vertices = mesh.vertices;	//Original Mesh vertices
 		newVertices = Vertices;	//Mesh vertices for manipulation
@@ -52,7 +55,8 @@ public class Mesh : MonoBehaviour
 	void Update () 	
 	{
 		Normalisation();
-		mesh.vertices = newVertices;	
+		mesh.vertices = newVertices;
+		mesh.RecalculateBounds();
 	}
 	
 	//transform the Vertices back to the origenal Position
@@ -84,6 +88,10 @@ public class Mesh : MonoBehaviour
 	{		
 		firstContact = collision.contacts[0].point;		
 		Manipulation();
+		//Debug.Log (firstContact);
+		
+		//GetComponent<MeshCollider>().sharedMesh = mesh;
+		
 	}
 	
 	
@@ -96,7 +104,8 @@ public class Mesh : MonoBehaviour
 		{
 			
 			distance = Vector3.Distance(new Vector3(newVertices[i].x + transform.position.x, newVertices[i].y + transform.position.y, newVertices[i].z + transform.position.z), firstContact);
-			Debug.Log ("Distance: " +distance +" ID: "+ i);
+			
+			//Debug.Log ("Distance: " +distance +" ID: "+ i);
 			
 			if(distance <= radiusStrong)
 			{
@@ -111,6 +120,10 @@ public class Mesh : MonoBehaviour
 				newVertices[i].y -= factorSLow * meshResistance;
 			}
 		}
+		//NullReferenceExeption
+		mesh.vertices = newVertices;
+		mesh.RecalculateBounds();
+		newMeshCollider.sharedMesh = mesh;
 		
 	}
 
