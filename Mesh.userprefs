@@ -2,8 +2,8 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Mesh.cs">
     <Files>
-      <File FileName="Assets\Scripts\Mesh.cs" Line="61" Column="2" />
-      <File FileName="Assets\Scripts\MoveCamera.cs" Line="14" Column="3" />
+      <File FileName="Assets\Scripts\Mesh.cs" Line="97" Column="37" />
+      <File FileName="Assets\Scripts\MoveCamera.cs" Line="3" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

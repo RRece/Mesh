@@ -14,9 +14,9 @@ public class Mesh : MonoBehaviour
 	public float radiusStrongToMedium = 2.0f;	//Strong * radiusfactor = Medium
 	public float radiusMediumToLow = 1.5f; 		//Medium * radiusfactor = Low
 	
-	public float factorStrong = 20.0f;	//Factor of Strong Manipulation
-	public float factorMedium = 10.0f;	//Factor of Medium Manipulation
-	public float factorSLow = 5.0f;		//Factor of Low Manipulation
+	public float factorStrong = 7.5f;	//Factor of Strong Manipulation
+	public float factorMedium = 5.0f;	//Factor of Medium Manipulation
+	public float factorLow = 2.5f;		//Factor of Low Manipulation
 		
 	private UnityEngine.Mesh mesh;			//Mesh from GameObject
 	private MeshCollider newMeshCollider;  //Mesh Collider
@@ -59,6 +59,8 @@ public class Mesh : MonoBehaviour
 		mesh.RecalculateBounds();
 	}
 	
+	
+	//do not work
 	//transform the Vertices back to the origenal Position
 	void Normalisation()
 	{
@@ -89,42 +91,45 @@ public class Mesh : MonoBehaviour
 		firstContact = collision.contacts[0].point;		
 		Manipulation();
 		//Debug.Log (firstContact);
-		
-		//GetComponent<MeshCollider>().sharedMesh = mesh;
-		
+	
+		mesh.vertices = newVertices;			
+		mesh.RecalculateBounds();
+		newMeshCollider.sharedMesh = mesh;		
 	}
 	
 	
 	void Manipulation()
 	{
 		float distance;
-		
+
 		//sphere area
 		for(int i=0; i < newVertices.Length; i++)
 		{
+			//Debug.Log ((transform.TransformDirection(newVertices[i]) + transform.position));
+			distance = Vector3.Distance(firstContact, (transform.TransformDirection(newVertices[i]) + transform.position));
+
+			//Debug.Log ("Distance: " + distance +" Position: "+ newVertices[i] +" ID: "+ i);
+			//Debug.Log("Global Position: " + transform.TransformDirection(newVertices[i]));
 			
-			distance = Vector3.Distance(new Vector3(newVertices[i].x + transform.position.x, newVertices[i].y + transform.position.y, newVertices[i].z + transform.position.z), firstContact);
-			
-			//Debug.Log ("Distance: " +distance +" ID: "+ i);
 			
 			if(distance <= radiusStrong)
 			{
 				newVertices[i].y -= factorStrong * meshResistance;
+				//Debug.Log ("ID: "+ i +" Strong");
 			}
 			else if(distance <= radiusMedium)
 			{
 				newVertices[i].y -= factorMedium * meshResistance;
+				//Debug.Log ("ID: "+ i +" Medium");
 			}
 			else if(distance <= radiusLow)
 			{
-				newVertices[i].y -= factorSLow * meshResistance;
+				newVertices[i].y -= factorLow * meshResistance;
+				//Debug.Log ("ID: "+ i +" Low");
 			}
+			
 		}
-		//NullReferenceExeption
-		mesh.vertices = newVertices;
-		mesh.RecalculateBounds();
-		newMeshCollider.sharedMesh = mesh;
-		
+
 	}
 
 }
