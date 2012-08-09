@@ -32,7 +32,7 @@ public class Mesh : MonoBehaviour
 	{
 		
 		mesh = GetComponent<MeshFilter>().mesh;
-		newMeshCollider =GetComponent(typeof(MeshCollider)) as MeshCollider; 
+		newMeshCollider = GetComponent(typeof(MeshCollider)) as MeshCollider; 
 		
 		Vertices = mesh.vertices;	//Original Mesh vertices
 		newVertices = Vertices;	//Mesh vertices for manipulation
@@ -90,18 +90,15 @@ public class Mesh : MonoBehaviour
 	{		
 		firstContact = collision.contacts[0].point;		
 		Manipulation();
-		//Debug.Log (firstContact);
-	
-		mesh.vertices = newVertices;			
-		mesh.RecalculateBounds();
-		newMeshCollider.sharedMesh = mesh;		
+		//Debug.Log (firstContact);	
+			
 	}
 	
 	
 	void Manipulation()
 	{
 		float distance;
-
+		
 		//sphere area
 		for(int i=0; i < newVertices.Length; i++)
 		{
@@ -129,7 +126,14 @@ public class Mesh : MonoBehaviour
 			}
 			
 		}
-
+		
+		mesh.vertices = newVertices;			
+		mesh.RecalculateBounds();
+		newMeshCollider.sharedMesh = mesh;	
+		
+		//Not good, but the mesh typ must change to work correct 
+		newMeshCollider.smoothSphereCollisions = true;
+		newMeshCollider.smoothSphereCollisions = false;
 	}
 
 }
