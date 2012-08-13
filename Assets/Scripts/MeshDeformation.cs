@@ -147,16 +147,18 @@ public class MeshDeformation : MonoBehaviour {
 				{
 					//testing
 					deformationVector[i].y -= factorStrong * meshResistance;
+					
 					deformation = true;
 					//Debug.Log ("ID: "+ i +" Strong");
-					Debug.Log ("ID: "+ i +" Strong: "+ (factorStrong * meshResistance));
-					Debug.Log (deformationVector[i]);
+					//Debug.Log ("ID: "+ i +" Strong: "+ (factorStrong * meshResistance));
+					//Debug.Log (deformationVector[i]);
 					
 				}
 				else if(distance <= radiusMedium)
 				{
 					//testing
 					deformationVector[i].y  -= factorMedium * meshResistance;
+					
 					deformation = true;
 					//Debug.Log ("ID: "+ i +" Medium");
 				}
@@ -164,6 +166,7 @@ public class MeshDeformation : MonoBehaviour {
 				{
 					//testing
 					deformationVector[i].y  -= factorLow * meshResistance;
+					
 					deformation = true;
 					//Debug.Log ("ID: "+ i +" Low");
 				}
@@ -184,6 +187,7 @@ public class MeshDeformation : MonoBehaviour {
 	void OnCollisionEnter(Collision collision)
 	{		
 		firstContact = collision.contacts[0].point;
+		
 		//collision.contacts[0].normal;
 		Manipulation();
 		//Debug.Log (firstContact);			
