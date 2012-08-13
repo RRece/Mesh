@@ -7,6 +7,8 @@ public class Mesh : MonoBehaviour
 	public float normalisation = 0.0025f;	//Normalisation resistant (1 = instant 0 = no normalisation)
 	public float meshResistance = 1.0f;		//resistance to manipulation
 	
+	public float maxDeformation = 20.0f;		//maximum deformation
+	
 	public float radiusStrong = 0.2f;	//Radius of strong manipulatet Vertices
 	private float radiusMedium;			//Radius of medium manipulatet Vertices		//Set Private if it work
 	private float radiusLow;			//Radius of low manipulatet Vertices
@@ -38,6 +40,9 @@ public class Mesh : MonoBehaviour
 		newVertices = Vertices;	//Mesh vertices for manipulation
 		
 		//Check normalisation area
+		if(meshResistance < 1.0f) meshResistance = 0.0f;
+		
+		//Check normalisation area
 		if(normalisation < 0.0f) normalisation = 0.0f;
 		if(normalisation > 1.0f) normalisation = 1.0f;
 		
@@ -54,13 +59,13 @@ public class Mesh : MonoBehaviour
 	// Update is called once per frame
 	void Update () 	
 	{
-		Normalisation();
+		//Normalisation();
 		mesh.vertices = newVertices;
 		mesh.RecalculateBounds();
 	}
 	
+	/* //do not work
 	
-	//do not work
 	//transform the Vertices back to the origenal Position
 	void Normalisation()
 	{
@@ -83,15 +88,15 @@ public class Mesh : MonoBehaviour
 			}					
 		}		
 	}
-	
+	*/
 	
 
 	void OnCollisionEnter(Collision collision)
 	{		
-		firstContact = collision.contacts[0].point;		
+		firstContact = collision.contacts[0].point;
+		//collision.contacts[0].normal;
 		Manipulation();
-		//Debug.Log (firstContact);	
-			
+		//Debug.Log (firstContact);			
 	}
 	
 	
