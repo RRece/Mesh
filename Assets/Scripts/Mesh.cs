@@ -93,6 +93,7 @@ public class Mesh : MonoBehaviour
 
 	void OnCollisionEnter(Collision collision)
 	{		
+		
 		firstContact = collision.contacts[0].point;
 		//collision.contacts[0].normal;
 		Manipulation();
