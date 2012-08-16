@@ -59,7 +59,7 @@ public class Mesh : MonoBehaviour
 	// Update is called once per frame
 	void Update () 	
 	{
-		//Normalisation();
+		//Normalisation();	//do not work...
 		mesh.vertices = newVertices;
 		mesh.RecalculateBounds();
 	}
@@ -95,9 +95,10 @@ public class Mesh : MonoBehaviour
 	{		
 		
 		firstContact = collision.contacts[0].point;
-		//collision.contacts[0].normal;
 		Manipulation();
-		//Debug.Log (firstContact);			
+		#region Region Debug
+		//Debug.Log (firstContact);	
+		#endregion
 	}
 	
 	
@@ -108,27 +109,34 @@ public class Mesh : MonoBehaviour
 		//sphere area
 		for(int i=0; i < newVertices.Length; i++)
 		{
-			//Debug.Log ((transform.TransformDirection(newVertices[i]) + transform.position));
+			
 			distance = Vector3.Distance(firstContact, (transform.TransformDirection(newVertices[i]) + transform.position));
-
+			#region Region Debug
+			//Debug.Log ((transform.TransformDirection(newVertices[i]) + transform.position));
 			//Debug.Log ("Distance: " + distance +" Position: "+ newVertices[i] +" ID: "+ i);
 			//Debug.Log("Global Position: " + transform.TransformDirection(newVertices[i]));
-			
+			#endregion
 			
 			if(distance <= radiusStrong)
 			{
 				newVertices[i].y -= factorStrong * meshResistance;
+				#region Region Debug
 				//Debug.Log ("ID: "+ i +" Strong");
+				#endregion
 			}
 			else if(distance <= radiusMedium)
 			{
 				newVertices[i].y -= factorMedium * meshResistance;
+				#region Region Debug
 				//Debug.Log ("ID: "+ i +" Medium");
+				#endregion
 			}
 			else if(distance <= radiusLow)
 			{
 				newVertices[i].y -= factorLow * meshResistance;
+				#region Region Debug
 				//Debug.Log ("ID: "+ i +" Low");
+				#endregion
 			}
 			
 		}

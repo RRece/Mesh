@@ -1,10 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\CollidingObject.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\MeshDeformation.cs">
     <Files>
-      <File FileName="Assets\Scripts\MeshDeformation.cs" Line="243" Column="1" />
-      <File FileName="Assets\Scripts\Mesh.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\CollidingObject.cs" Line="15" Column="2" />
+      <File FileName="Assets\Scripts\MeshDeformation.cs" Line="11" Column="33" />
+      <File FileName="Assets\Scripts\Mesh.cs" Line="137" Column="5" />
+      <File FileName="Assets\Scripts\CollidingObject.cs" Line="7" Column="40" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

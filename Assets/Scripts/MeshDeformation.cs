@@ -8,22 +8,9 @@ public class MeshDeformation : MonoBehaviour {
 
 	public float maxDeformation = 10.0f;		//maximum deformation
 	
-	#region changed when using Gauss
-	/*
-	public float radiusStrong = 0.2f;	//Radius of strong manipulatet Vertices
-	private float radiusMedium;			//Radius of medium manipulatet Vertices	
-	private float radiusLow;			//Radius of low manipulatet Vertices
-	
-	public float radiusStrongToMedium = 2.0f;	//Strong * radiusfactor = Medium
-	public float radiusMediumToLow = 1.5f; 		//Medium * radiusfactor = Low
-	
-	public float factorStrong = 7.5f;	//Factor of Strong Manipulation
-	public float factorMedium = 5.0f;	//Factor of Medium Manipulation
-	public float factorLow = 2.5f;		//Factor of Low Manipulation
-	*/
-	#endregion
-	
-	public float InvSquareRoot2PI;	//1/square root of 2*PI
+	public float Deepfactor = 2.0f;					//Factor for collision deforation deepness
+	public float SigmaManipulationFactor = 3.0f;	// Factor for collision radius (not 0.0f)
+	private float InvSquareRoot2PI;					// 1/square root of 2*PI
 	
 	private UnityEngine.Mesh mesh;			//Mesh from GameObject
 	private MeshCollider newMeshCollider;  //Mesh Collider
@@ -48,7 +35,9 @@ public class MeshDeformation : MonoBehaviour {
 		for(int i=0; i < startVertices.Length; i++)
 		{	
 			deformationVector[i] = Vector3.zero;
+			#region Region Debug
 			//Debug.Log(deformationVector[i]);
+			#endregion
 		}
 		
 		//Check meshResistance area
@@ -62,21 +51,15 @@ public class MeshDeformation : MonoBehaviour {
 		//Check maxDeformation
 		if(maxDeformation < 0.0f) maxDeformation = 0.0f;		
 		
-		#region changed when using Gauss
-		/*
-		//Check factors are positiv
-		if(radiusStrongToMedium < 0.0f) radiusStrongToMedium = 0.0f;
-		if(radiusMediumToLow < 0.0f) radiusMediumToLow = 0.0f;
-		
-		if(radiusStrong < 0.0f) radiusStrong = 0.0f;
-		radiusMedium = radiusStrongToMedium * radiusStrong;
-		radiusLow = radiusMediumToLow * radiusMedium;
-		*/
-		#endregion
+		//Check SigmaManipulationFactor
+		if(SigmaManipulationFactor < 0.001f) SigmaManipulationFactor = 0.010f;	
 		
 		InvSquareRoot2PI = (1/(Mathf.Sqrt((2*Mathf.PI))));
 		
-		Debug.Log("Rotation: "+ transform.rotation);
+		#region Region Debug
+		//Debug.Log("Rotation: "+ transform.rotation);
+		#endregion
+	
 	}
 	
 	
@@ -146,7 +129,7 @@ public class MeshDeformation : MonoBehaviour {
 		bool deformation = false;
 		
 		float distance;
-		float SigmaFactor = firstMagnitude;
+		float SigmaFactor = firstMagnitude/SigmaManipulationFactor;
 		//float SigmaFactor = 3.0f;
 		float reducesDistance;
 		
@@ -157,80 +140,31 @@ public class MeshDeformation : MonoBehaviour {
 			{
 				distance = Vector3.Distance(firstContact, (transform.TransformDirection(newVertices[i]) + transform.position));
 				
-				#region Gauss
-				//force of collision is not integrated
-				reducesDistance= distance/SigmaFactor;
+				#region Region Gauss
+				reducesDistance= distance/SigmaFactor*SigmaManipulationFactor;
 			
-				
+				#region Region Debug
 				//	Debug.Log("ID: "+ i + " Reduced Distance: " + reducesDistance + " Deformation: "+ (InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) );
+				#endregion
 				
 				if(reducesDistance <= 2.0f)	
-				{
+				{		
 					
-					
-				//	Debug.Log("Reduced!");
-					
-					deformationVector[i].y -=  ((InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) * meshResistance);
-					//deformationVector[i].y -=  (factorStrong * meshResistance);
+					deformationVector[i].y -=  ((InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) * meshResistance * Deepfactor);
 					
 					deformation = true;
-					//Debug.Log ("ID: "+ i +" Strong");
-					//Debug.Log ("ID: "+ i +" Strong: "+ (factorStrong * meshResistance));
-					//Debug.Log (deformationVector[i]);
 					
+					#region Region Debug
+					//Debug.Log("Deformation!");
+					//Debug.Log ("ID: "+ i);
+					//Debug.Log ("ID: "+ i +" Deformation: "+ ((InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) * meshResistance));
+					//Debug.Log ("Deformation Vector: "deformationVector[i]);
+					#endregion
 				}
-				
-				
 				
 				
 				#endregion
-				
-				
-				
-				
-				
-				
-				#region changed when using Gauss (comment)
-				/*
-				//check collisionarea
-				if(distance <= radiusStrong)
-				{
-					//testing
-					//deformationVector[i].y -= factorStrong * meshResistance;
-					
-					deformationVector[i].y -=  (factorStrong * meshResistance);
-					
-					deformation = true;
-					//Debug.Log ("ID: "+ i +" Strong");
-					//Debug.Log ("ID: "+ i +" Strong: "+ (factorStrong * meshResistance));
-					//Debug.Log (deformationVector[i]);
-					
-				}
-				else if(distance <= radiusMedium)
-				{
-					//testing
-					deformationVector[i].y  -=  (factorMedium * meshResistance);
-					
-					deformation = true;
-					//Debug.Log ("ID: "+ i +" Medium");
-				}
-				else if(distance <= radiusLow)
-				{
-					//testing
-					deformationVector[i].y  -=  (factorLow * meshResistance);
-					
-					deformation = true;
-					//Debug.Log ("ID: "+ i +" Low");
-				}
-				*/
-				#endregion
-				
-				
-				
-				//ToDo:
-				
-				//check collison direction
-				//check collisionforce (mass / speed(force)/ ...)
+
 			}
 			
 			if(deformation) Deformation();			
@@ -239,19 +173,20 @@ public class MeshDeformation : MonoBehaviour {
 	
 	void OnCollisionEnter(Collision collision)
 	{		
-		
-		Debug.Log("normalized: "+ collision.relativeVelocity.normalized);
-		Debug.Log("magnitude: "+ collision.relativeVelocity.magnitude);
-		
-			
 		Manipulation(collision.contacts[0].point, collision.contacts[0].normal, collision.relativeVelocity.magnitude);
-		Debug.DrawRay(collision.contacts[0].point, collision.contacts[0].normal, Color.green,2);
-		Debug.DrawRay(collision.contacts[0].point, collision.relativeVelocity.normalized, Color.red,2);
 		
-		Debug.Log("First Contact Point: " + collision.contacts[0].point);
-		Debug.Log("First Contact normal: "+ collision.contacts[0].normal);
+		#region Region Debug
+	
+		//Debug.Log("normalized: "+ collision.relativeVelocity.normalized);
+		//Debug.Log("magnitude: "+ collision.relativeVelocity.magnitude);
+				
+		//Debug.DrawRay(collision.contacts[0].point, collision.contacts[0].normal, Color.green,2);
+		//Debug.DrawRay(collision.contacts[0].point, collision.relativeVelocity.normalized, Color.red,2);
+		
+		//Debug.Log("First Contact Point: " + collision.contacts[0].point);
+		//Debug.Log("First Contact normal: "+ collision.contacts[0].normal);
 		//Debug.Log("rotate normal: "+ collision.contacts[0].normal);
-		
+		#endregion
 		
 		
 	}
