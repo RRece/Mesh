@@ -240,13 +240,13 @@ public class MeshDeformation : MonoBehaviour {
 	void OnCollisionEnter(Collision collision)
 	{		
 		
-		//Debug.Log("normalized: "+ collision.relativeVelocity.normalized);
+		Debug.Log("normalized: "+ collision.relativeVelocity.normalized);
 		Debug.Log("magnitude: "+ collision.relativeVelocity.magnitude);
 		
 			
 		Manipulation(collision.contacts[0].point, collision.contacts[0].normal, collision.relativeVelocity.magnitude);
-		//Debug.DrawRay(collision.contacts[0].point, collision.contacts[0].normal, Color.green,2);
-		//Debug.DrawRay(collision.contacts[0].point, collision.relativeVelocity.normalized, Color.red,2);
+		Debug.DrawRay(collision.contacts[0].point, collision.contacts[0].normal, Color.green,2);
+		Debug.DrawRay(collision.contacts[0].point, collision.relativeVelocity.normalized, Color.red,2);
 		
 		Debug.Log("First Contact Point: " + collision.contacts[0].point);
 		Debug.Log("First Contact normal: "+ collision.contacts[0].normal);
