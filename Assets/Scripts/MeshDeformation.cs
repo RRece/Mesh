@@ -9,6 +9,7 @@ public class MeshDeformation : MonoBehaviour {
 	public float maxDeformation = 10.0f;		//maximum deformation
 	
 	#region changed when using Gauss
+	/*
 	public float radiusStrong = 0.2f;	//Radius of strong manipulatet Vertices
 	private float radiusMedium;			//Radius of medium manipulatet Vertices	
 	private float radiusLow;			//Radius of low manipulatet Vertices
@@ -19,6 +20,7 @@ public class MeshDeformation : MonoBehaviour {
 	public float factorStrong = 7.5f;	//Factor of Strong Manipulation
 	public float factorMedium = 5.0f;	//Factor of Medium Manipulation
 	public float factorLow = 2.5f;		//Factor of Low Manipulation
+	*/
 	#endregion
 	
 	public float InvSquareRoot2PI;	//1/square root of 2*PI
@@ -61,6 +63,7 @@ public class MeshDeformation : MonoBehaviour {
 		if(maxDeformation < 0.0f) maxDeformation = 0.0f;		
 		
 		#region changed when using Gauss
+		/*
 		//Check factors are positiv
 		if(radiusStrongToMedium < 0.0f) radiusStrongToMedium = 0.0f;
 		if(radiusMediumToLow < 0.0f) radiusMediumToLow = 0.0f;
@@ -68,6 +71,7 @@ public class MeshDeformation : MonoBehaviour {
 		if(radiusStrong < 0.0f) radiusStrong = 0.0f;
 		radiusMedium = radiusStrongToMedium * radiusStrong;
 		radiusLow = radiusMediumToLow * radiusMedium;
+		*/
 		#endregion
 		
 		InvSquareRoot2PI = (1/(Mathf.Sqrt((2*Mathf.PI))));
@@ -137,12 +141,13 @@ public class MeshDeformation : MonoBehaviour {
 		}
 	}
 	
-	void Manipulation(Vector3 firstContact, Vector3 firstContactDirection)
+	void Manipulation(Vector3 firstContact, Vector3 firstContactDirection, float firstMagnitude)
 	{
 		bool deformation = false;
 		
 		float distance;
-		float SigmaFactor = 3.0f;
+		float SigmaFactor = firstMagnitude;
+		//float SigmaFactor = 3.0f;
 		float reducesDistance;
 		
 				
@@ -155,13 +160,15 @@ public class MeshDeformation : MonoBehaviour {
 				#region Gauss
 				//force of collision is not integrated
 				reducesDistance= distance/SigmaFactor;
-				Debug.Log("ID: "+ i + " Reduced Distance: " + reducesDistance + " Deformation: "+ (InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) );
+			
+				
+				//	Debug.Log("ID: "+ i + " Reduced Distance: " + reducesDistance + " Deformation: "+ (InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) );
 				
 				if(reducesDistance <= 2.0f)	
 				{
 					
 					
-					Debug.Log("Reduced!");
+				//	Debug.Log("Reduced!");
 					
 					deformationVector[i].y -=  ((InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) * meshResistance);
 					//deformationVector[i].y -=  (factorStrong * meshResistance);
@@ -234,10 +241,10 @@ public class MeshDeformation : MonoBehaviour {
 	{		
 		
 		//Debug.Log("normalized: "+ collision.relativeVelocity.normalized);
-		//Debug.Log("magnitude: "+ collision.relativeVelocity.magnitude);
+		Debug.Log("magnitude: "+ collision.relativeVelocity.magnitude);
 		
 			
-		Manipulation(collision.contacts[0].point, collision.contacts[0].normal);
+		Manipulation(collision.contacts[0].point, collision.contacts[0].normal, collision.relativeVelocity.magnitude);
 		//Debug.DrawRay(collision.contacts[0].point, collision.contacts[0].normal, Color.green,2);
 		//Debug.DrawRay(collision.contacts[0].point, collision.relativeVelocity.normalized, Color.red,2);
 		
