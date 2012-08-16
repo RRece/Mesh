@@ -21,6 +21,8 @@ public class MeshDeformation : MonoBehaviour {
 	public float factorLow = 2.5f;		//Factor of Low Manipulation
 	#endregion
 	
+	public float InvSquareRoot2PI;	//1/square root of 2*PI
+	
 	private UnityEngine.Mesh mesh;			//Mesh from GameObject
 	private MeshCollider newMeshCollider;  //Mesh Collider
 	
@@ -67,6 +69,8 @@ public class MeshDeformation : MonoBehaviour {
 		radiusMedium = radiusStrongToMedium * radiusStrong;
 		radiusLow = radiusMediumToLow * radiusMedium;
 		#endregion
+		
+		InvSquareRoot2PI = (1/(Mathf.Sqrt((2*Mathf.PI))));
 		
 		Debug.Log("Rotation: "+ transform.rotation);
 	}
@@ -138,6 +142,8 @@ public class MeshDeformation : MonoBehaviour {
 		bool deformation = false;
 		
 		float distance;
+		float SigmaFactor = 3.0f;
+		float reducesDistance;
 		
 				
 		if(meshResistance > 0)
@@ -146,7 +152,39 @@ public class MeshDeformation : MonoBehaviour {
 			{
 				distance = Vector3.Distance(firstContact, (transform.TransformDirection(newVertices[i]) + transform.position));
 				
-				#region changed when using Gauss
+				#region Gauss
+				//force of collision is not integrated
+				reducesDistance= distance/SigmaFactor;
+				Debug.Log("ID: "+ i + " Reduced Distance: " + reducesDistance + " Deformation: "+ (InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) );
+				
+				if(reducesDistance <= 2.0f)	
+				{
+					
+					
+					Debug.Log("Reduced!");
+					
+					deformationVector[i].y -=  ((InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) * meshResistance);
+					//deformationVector[i].y -=  (factorStrong * meshResistance);
+					
+					deformation = true;
+					//Debug.Log ("ID: "+ i +" Strong");
+					//Debug.Log ("ID: "+ i +" Strong: "+ (factorStrong * meshResistance));
+					//Debug.Log (deformationVector[i]);
+					
+				}
+				
+				
+				
+				
+				#endregion
+				
+				
+				
+				
+				
+				
+				#region changed when using Gauss (comment)
+				/*
 				//check collisionarea
 				if(distance <= radiusStrong)
 				{
@@ -177,6 +215,7 @@ public class MeshDeformation : MonoBehaviour {
 					deformation = true;
 					//Debug.Log ("ID: "+ i +" Low");
 				}
+				*/
 				#endregion
 				
 				
