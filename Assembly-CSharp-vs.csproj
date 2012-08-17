@@ -44,8 +44,6 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\CollidingObject.cs" />
-     <Compile Include="Assets\Scripts\Mesh.cs" />
      <Compile Include="Assets\Scripts\MeshDeformation.cs" />
      <Compile Include="Assets\Scripts\SpawnBall.cs" />
   </ItemGroup>
