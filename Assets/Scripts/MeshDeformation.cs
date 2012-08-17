@@ -188,7 +188,6 @@ public class MeshDeformation : MonoBehaviour {
 		//Debug.Log("rotate normal: "+ collision.contacts[0].normal);
 		#endregion
 		
-		
 	}
 	
 }
