@@ -18,6 +18,10 @@ public class MeshDeformation : MonoBehaviour {
 	public Vector3[] newVertices;			//Vertices for Mesh manipulation
 	private Vector3[] startVertices;		//Vertices of the original Meshposition
 	private Vector3[] deformationVector;	//Vector of Vertice deformation
+	
+	Transform curTransform;
+	private Quaternion Rotation;		//Rotation of the object as Quaternion
+	private Vector3 ObjectRotation;		//Rotation of the Object as Vector 3 (Euler)
 
 		
 	
@@ -26,6 +30,11 @@ public class MeshDeformation : MonoBehaviour {
 	{
 		mesh = GetComponent<MeshFilter>().mesh;
 		newMeshCollider = GetComponent(typeof(MeshCollider)) as MeshCollider; 
+		
+		curTransform = GetComponent<Transform>();
+		
+		Rotation = curTransform.rotation;
+		
 		
 		startVertices = mesh.vertices;	//Original Mesh vertices
 		newVertices = mesh.vertices;	//Mesh vertices for manipulation
@@ -163,8 +172,7 @@ public class MeshDeformation : MonoBehaviour {
 				}
 				
 				
-				#endregion
-
+				#endregion //Gauss
 			}
 			
 			if(deformation) Deformation();			
@@ -173,13 +181,34 @@ public class MeshDeformation : MonoBehaviour {
 	
 	void OnCollisionEnter(Collision collision)
 	{		
+		Rotation = curTransform.rotation;
+		ObjectRotation = Rotation.eulerAngles;
+		
 		Manipulation(collision.contacts[0].point, collision.contacts[0].normal, collision.relativeVelocity.magnitude);
 		
 		#region Region Debug
-	
+		Debug.Log("Rotation: " + Rotation);
+		//Debug.Log("Object Rotation: " + ObjectRotation);
 		//Debug.Log("normalized: "+ collision.relativeVelocity.normalized);
-		//Debug.Log("magnitude: "+ collision.relativeVelocity.magnitude);
-				
+		Debug.Log("Contact normal: "+ collision.contacts[0].normal);
+		
+		//Quaternion quat = Quaternion.Euler(collision.contacts[0].normal);	
+		Quaternion quat = Quaternion.LookRotation(collision.contacts[0].normal);
+		//quat.SetFromToRotation(ObjectRotation, Vector3.one);
+		//quat.SetFromToRotation(collision.contacts[0].normal, ObjectRotation);
+		
+		Vector3 TV3 = quat.eulerAngles;
+		
+		Debug.Log("Quaternion: "+ quat);
+		
+		
+		Debug.Log("V3: "+ TV3);
+		
+		//Debug.Log("GtoL: "+ curTransform.worldToLocalMatrix);
+		//Debug.Log("LtoG: "+ curTransform.localToWorldMatrix);
+					
+
+		//Debug.Log("magnitude: "+ collision.relativeVelocity.magnitude);	
 		//Debug.DrawRay(collision.contacts[0].point, collision.contacts[0].normal, Color.green,2);
 		//Debug.DrawRay(collision.contacts[0].point, collision.relativeVelocity.normalized, Color.red,2);
 		
