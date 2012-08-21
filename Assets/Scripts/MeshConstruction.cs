@@ -54,7 +54,13 @@ public class MeshConstruction : MonoBehaviour
 		//Debug.Log ("Sections: "+ (ObjectWidth / MaxObjectMeshWidth));
 		//Debug.Log ("Sections(int): "+ (int)(ObjectWidth / MaxObjectMeshWidth));
 		//Debug.Log ("Sections(int+1): "+ (int)((ObjectWidth / MaxObjectMeshWidth) +1));
+			
+		//Debug.Log("Number of Vertices: "+ ((SectionHeight+1) * (SectionWidth+1)));
+			
+		//Debug.Log("Section Height: " + SectionHeight + " Section Width: " + SectionWidth);
+		//Debug.Log("Mesh Height: " + MeshHeight + " Mesh Width: " + MeshWidth);
 		#endregion
+			
 			if(DestroyAfterConstruction)
 			{
 				Destroy(this.gameObject);
@@ -144,55 +150,77 @@ public class MeshConstruction : MonoBehaviour
 		}
 		
 		CalculateTriangles();	//Funktion
-
-				
-		#region Region Debug
-		//Debug.Log("Number of Vertices: "+ ((SectionHeight+1) * (SectionWidth+1)));
-		#endregion
 		
 	}
 	
-	void CalculateTriangles()	//ToDo
+	void CalculateTriangles()	//ToDo   Error
 	{
 
 		int length = ((SectionHeight) * (SectionWidth)) * 6;
 		newTriangles = new int[length];	
 		
 		#region Region Debug
-		//Debug.Log("Length: " + length);
+		//Debug.Log("Triangle length: " + length);
+		Debug.Log("Section Height: " + SectionHeight + " Section Width: " + SectionWidth);
 		#endregion
 		
 		int j=0;
 		int line = 0;
 		//for(int i = 0; i < length-1; i++)
-		for(int i = 0; i < ((SectionHeight+1) * (SectionWidth+1))-2; i++)
+		for(int i = 0; i < ((SectionHeight+1) * (SectionWidth+1))-1; i++)
 		{
-			if(i % (SectionWidth + 1) != 0 || i < SectionWidth + 1)
+			#region Region Debug
+			Debug.Log("I: " + i);
+			Debug.Log("Mod: " +((i+1) % (SectionWidth+1)));
+			#endregion
+			if(((i+1) % (SectionWidth+1)) != 0)
 			{
 				if(line > 0 )
 				{
 					if(line < SectionHeight )
 					{
-						newTriangles[j] = i;				
-						newTriangles[j+1] = i+1;					
-						newTriangles[j+2] = line * (SectionWidth + 1) + i;	
+						newTriangles[j] = i;
+						newTriangles[j+1] = line * (SectionWidth + 1) + i;
+						newTriangles[j+2] = i+1;
+						
+						#region Region Debug						
+						Debug.Log("J: " + j + " Triangle j: " + newTriangles[j]);
+						Debug.Log("J: " + (j + 1) + " Triangle j: " + newTriangles[(j + 1)]);
+						Debug.Log("J: " + (j + 2) + " Triangle j: " + newTriangles[(j + 2)]);
+						#endregion
+						
 						j+=3;
 					}
 
 					
-					newTriangles[j] = i;					
-					newTriangles[j+1] = i+1;					
-					newTriangles[j+2] = (line-1) * (SectionWidth + 1) + i;
+					newTriangles[j] = i;								
+					newTriangles[j+1] = i+1 - (SectionWidth + 1);		//hier 
+					newTriangles[j+2] = i+1;
+					
+					#region Region Debug
+					Debug.Log("J: " + j + " Triangle j: " + newTriangles[j]);
+					Debug.Log("J: " + (j + 1) + " Triangle j: " + newTriangles[(j + 1)]);
+					Debug.Log("J: " + (j + 2) + " Triangle j: " + newTriangles[(j + 2)]);
+					#endregion
 					
 					j+=3;				
 					
 				}
 				else
 				{
-					newTriangles[j] = i;				
-					newTriangles[j+1] = i+1;					
-					newTriangles[j+2] = line * (SectionWidth + 1) + i;
+					newTriangles[j] = i;
+					newTriangles[j+1] = (SectionWidth + 1) + i;
+					newTriangles[j+2] = i+1;					
+					
+					#region Region Debug
+					Debug.Log("J: " + j + " Triangle j: " + newTriangles[j]);
+					Debug.Log("J: " + (j + 1) + " Triangle j: " + newTriangles[(j + 1)]);
+					Debug.Log("J: " + (j + 2) + " Triangle j: " + newTriangles[(j + 2)]);
+					#endregion
+					
 					j+=3;
+					
+					
 				}
 				
 				
@@ -205,7 +233,8 @@ public class MeshConstruction : MonoBehaviour
 			}
 		
 			#region Region Debug
-			//Debug.Log("I: " + i + " J: " + j + " Line: " + line);
+			Debug.Log("I: " + i + " J: " + j + " Line: " + line);
+			
 			#endregion
 			
 		}
@@ -234,28 +263,8 @@ public class MeshConstruction : MonoBehaviour
 		{
 			SectionWidth = (int)(ObjectWidth / MaxObjectMeshWidth) + 1;
 		}
-		MeshWidth = ObjectWidth / SectionWidth;
-		
-		#region Region Debug
-		//Debug.Log("Section Height: " + SectionHeight + " Section Width: " + SectionWidth);
-		//Debug.Log("Mesh Height: " + MeshHeight + " Mesh Width: " + MeshWidth);
-		#endregion
-		
+		MeshWidth = ObjectWidth / SectionWidth;		
 	}
 	
-	
-
-	
-	
-	
-	
-	
-	
-	// Update is called once per frame
-	void Update () 
-	{
-	
-	}
-
 
 }
