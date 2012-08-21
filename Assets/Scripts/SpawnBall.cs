@@ -3,9 +3,6 @@ using System.Collections;
 
 public class SpawnBall : MonoBehaviour {
 	
-	#region Region Debug
-	//public GameObject particle;
-	#endregion
 	
 	public GameObject Ball;
 	
@@ -48,7 +45,6 @@ public class SpawnBall : MonoBehaviour {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			
 			#region Region Debug
-			//GameObject Clone;
 			
 			//Debug.DrawRay(ObjectPosition,ray.direction, Color.green, 4.0f);
 			//Debug.Log(ray.direction +", "+ Quaternion.Euler(ray.direction));
@@ -57,19 +53,14 @@ public class SpawnBall : MonoBehaviour {
 			#endregion
 			
             if (Physics.Raycast(ray))
-			{
-				#region Region Debug
-               	//Clone = Instantiate(particle, ObjectPosition, Quaternion.LookRotation(ray.direction)) as GameObject;
-				//Destroy(Clone, 10.0f);
-               	#endregion
-				
+			{				
                 BallClone = Instantiate(Ball, ObjectPosition, Quaternion.LookRotation(ray.direction)) as GameObject;		
 				BallClone.rigidbody.AddRelativeForce(0.0f,0.0f,StartImpulse,ForceMode.Impulse);			
 				Destroy(BallClone, 10.0f);
 				
-				StartImpulse = MinStartImpulse;
-				
+				StartImpulse = MinStartImpulse;				
 			}
+			
 		}
 	}
 }

@@ -139,7 +139,6 @@ public class MeshDeformation : MonoBehaviour {
 		
 		float distance;
 		float SigmaFactor = firstMagnitude/SigmaManipulationFactor;
-		//float SigmaFactor = 3.0f;
 		float reducesDistance;
 		
 				
@@ -159,7 +158,9 @@ public class MeshDeformation : MonoBehaviour {
 				if(reducesDistance <= 2.0f)	
 				{		
 					
-					deformationVector[i].y -=  ((InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) * meshResistance * Deepfactor);
+					//deformationVector[i].y -=  ((InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) * meshResistance * Deepfactor);
+					
+					deformationVector[i] -= Vector3.Cross(firstContactDirection, ObjectRotation.normalized)* ((InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) * meshResistance * Deepfactor);
 					
 					deformation = true;
 					
@@ -167,7 +168,7 @@ public class MeshDeformation : MonoBehaviour {
 					//Debug.Log("Deformation!");
 					//Debug.Log ("ID: "+ i);
 					//Debug.Log ("ID: "+ i +" Deformation: "+ ((InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) * meshResistance));
-					//Debug.Log ("Deformation Vector: "deformationVector[i]);
+					//Debug.Log ("Deformation Vector: " + deformationVector[i]);
 					#endregion
 				}
 				
@@ -187,29 +188,48 @@ public class MeshDeformation : MonoBehaviour {
 		Manipulation(collision.contacts[0].point, collision.contacts[0].normal, collision.relativeVelocity.magnitude);
 		
 		#region Region Debug
-		Debug.Log("Rotation: " + Rotation);
-		//Debug.Log("Object Rotation: " + ObjectRotation);
-		//Debug.Log("normalized: "+ collision.relativeVelocity.normalized);
+		Debug.Log("Vector normal: "+ ObjectRotation.normalized);
 		Debug.Log("Contact normal: "+ collision.contacts[0].normal);
 		
+		//Debug.Log("Rotation: " + Rotation);
+		//Debug.Log("Object Rotation: " + ObjectRotation);
+		//Debug.Log("normalized: "+ collision.relativeVelocity.normalized);
+		
 		//Quaternion quat = Quaternion.Euler(collision.contacts[0].normal);	
-		Quaternion quat = Quaternion.LookRotation(collision.contacts[0].normal);
+		//Quaternion quat = Quaternion.LookRotation(collision.contacts[0].normal);
 		//quat.SetFromToRotation(ObjectRotation, Vector3.one);
-		//quat.SetFromToRotation(collision.contacts[0].normal, ObjectRotation);
+		//quat.SetFromToRotation(collision.contacts[0].normal, ObjectRotation);	
+		//Vector3 TV3 = quat.eulerAngles;
+		//Vector3 TV3 = new Vector3(168.4f,36.7f,78.5f);
 		
-		Vector3 TV3 = quat.eulerAngles;
+		//Debug.Log("Vector3 v: "+ TV3.normalized);
+		Debug.Log("Vector3 Kreuz: "+ Vector3.Cross(collision.contacts[0].normal, ObjectRotation.normalized));
+		//Debug.DrawRay(collision.contacts[0].point, ObjectRotation.normalized, Color.red,2);
+		//Debug.DrawRay(collision.contacts[0].point, collision.contacts[0].normal, Color.yellow,2);
+		//Debug.DrawRay(collision.contacts[0].point, Vector3.Cross(collision.contacts[0].normal, ObjectRotation.normalized), Color.green,2);
 		
-		Debug.Log("Quaternion: "+ quat);
+		//Debug.DrawRay(collision.contacts[0].point, new Vector3(1.0f,0.0f,0.0f), Color.red,2);
+		//Debug.DrawRay(collision.contacts[0].point, new Vector3(0.0f,1.0f,0.0f), Color.green,2);
+		//Debug.DrawRay(collision.contacts[0].point, new Vector3(0.0f,0.0f,1.0f), Color.blue,2);
+		
+		//Debug.DrawRay(collision.contacts[0].point, Vector3.Cross(new Vector3(1.0f,0.0f,0.0f), ObjectRotation.normalized), Color.magenta,2);
+		//Debug.DrawRay(collision.contacts[0].point, Vector3.Cross(new Vector3(0.0f,0.0f,1.0f), ObjectRotation.normalized), Color.cyan,2);
+		//Debug.DrawRay(collision.contacts[0].point, Vector3.Cross(new Vector3(0.0f,1.0f,0.0f), ObjectRotation.normalized), Color.yellow,2);
+		
+		Debug.DrawRay(collision.contacts[0].point, Vector3.Cross(new Vector3(collision.contacts[0].normal.x,0.0f,0.0f), ObjectRotation.normalized), Color.red,2);
+		Debug.DrawRay(collision.contacts[0].point, Vector3.Cross(new Vector3(0.0f,collision.contacts[0].normal.y,0.0f), ObjectRotation.normalized), Color.green,2);
+		Debug.DrawRay(collision.contacts[0].point, Vector3.Cross(new Vector3(0.0f,0.0f,collision.contacts[0].normal.z), ObjectRotation.normalized), Color.blue,2);
+		Debug.DrawRay(collision.contacts[0].point, Vector3.Cross(collision.contacts[0].normal, ObjectRotation.normalized), Color.white,2);
 		
 		
-		Debug.Log("V3: "+ TV3);
-		
+		//Debug.Log("Quaternion: "+ quat);
+		//Debug.Log("V3: "+ TV3);
 		//Debug.Log("GtoL: "+ curTransform.worldToLocalMatrix);
 		//Debug.Log("LtoG: "+ curTransform.localToWorldMatrix);
 					
 
 		//Debug.Log("magnitude: "+ collision.relativeVelocity.magnitude);	
-		//Debug.DrawRay(collision.contacts[0].point, collision.contacts[0].normal, Color.green,2);
+		//Debug.DrawRay(collision.contacts[0].point, collision.contacts[0].normal, Color.white,2);
 		//Debug.DrawRay(collision.contacts[0].point, collision.relativeVelocity.normalized, Color.red,2);
 		
 		//Debug.Log("First Contact Point: " + collision.contacts[0].point);
