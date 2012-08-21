@@ -95,9 +95,9 @@ public class MeshConstruction : MonoBehaviour
 		CreateMeshSections();	//Funktion
 		
 		
-		newMesh.vertices = newVertices;	
+		newMesh.vertices = newVertices;
 		newMesh.uv = newUVs;
-		newMesh.triangles = newTriangles;	//ToDo
+		newMesh.triangles = newTriangles;
 		
 		newMesh.RecalculateBounds();
 		newMesh.RecalculateNormals();
@@ -120,24 +120,24 @@ public class MeshConstruction : MonoBehaviour
 		float HalfMeshHeight = ObjectHeight / 2;
 		float HalfMeshWidth = ObjectWidth / 2;
 		
-		newVertices = new Vector3[(SectionHeight * SectionWidth)];
-		newUVs = new Vector2[(SectionHeight * SectionWidth)];
+		newVertices = new Vector3[((SectionHeight+1) * (SectionWidth+1))];
+		newUVs = new Vector2[((SectionHeight+1) * (SectionWidth+1))];
 		
-		for(int i = 0; i < SectionHeight; i++)
+		for(int i = 0; i <= SectionHeight; i++)
 		{
-			for(int j = 0; j < SectionWidth; j++)
+			for(int j = 0; j <= SectionWidth; j++)
 			{
-				newVertices[(i * SectionWidth + j)] = new Vector3(((i * MeshHeight) - HalfMeshHeight),((j * MeshWidth) - HalfMeshWidth), ObjectCenter.z);
-				newVertices[(i * SectionWidth + j)].x = ((i * MeshHeight) - HalfMeshHeight);
-				newVertices[(i * SectionWidth + j)].y = ((j * MeshWidth) - HalfMeshWidth);
-				newVertices[(i * SectionWidth + j)].z = ObjectCenter.z;
+				newVertices[(i * (SectionWidth+1) + j)] = new Vector3(((i * MeshHeight) - HalfMeshHeight),((j * MeshWidth) - HalfMeshWidth), ObjectCenter.z);
+				newVertices[(i * (SectionWidth+1) + j)].x = ((i * MeshHeight) - HalfMeshHeight);
+				newVertices[(i * (SectionWidth+1) + j)].y = ((j * MeshWidth) - HalfMeshWidth);
+				newVertices[(i * (SectionWidth+1) + j)].z = ObjectCenter.z;
 				
-				newUVs[(i * SectionWidth + j)] = new Vector2(newVertices[(i * SectionWidth + j)].x,newVertices[(i * SectionWidth + j)].z);
+				newUVs[(i * (SectionWidth+1) + j)] = new Vector2(newVertices[(i * (SectionWidth+1) + j)].x,newVertices[(i * (SectionWidth+1) + j)].z);
 		
 				#region Region Debug
 				//Debug.Log("Section Height: " + i + " Section Width: " + j);
-				//Debug.Log("Number of Current Vertice: "+ (i * SectionWidth + j));
-				//Debug.Log("Current Vertice: " + newVertices[(i * SectionWidth + j)]);
+				//Debug.Log("Number of Current Vertice: "+ (i * (SectionWidth+1) + j));
+				//Debug.Log("Current Vertice: " + newVertices[(i * (SectionWidth+1) + j)]);
 				//Debug.Log("Vertice[" + i + "][" + j + "]: " + newVertices[i][j]);
 				#endregion
 			}
@@ -145,40 +145,70 @@ public class MeshConstruction : MonoBehaviour
 		
 		CalculateTriangles();	//Funktion
 
-		
+				
 		#region Region Debug
-		//Debug.Log("Number of Vertices: "+ (SectionHeight * SectionWidth));
+		//Debug.Log("Number of Vertices: "+ ((SectionHeight+1) * (SectionWidth+1)));
 		#endregion
 		
 	}
 	
-	void CalculateTriangles()	
+	void CalculateTriangles()	//ToDo
 	{
-		//do not work
-		
-		int length = ((SectionHeight * SectionWidth) / 4) * 6;
+
+		int length = ((SectionHeight) * (SectionWidth)) * 6;
 		newTriangles = new int[length];	
 		
-		//wrong idea test an other
-		for(int i = 0; i < length-5; i++)
-		{
-			if(i + 5 <= (SectionHeight * SectionWidth))
-			{
-				if(i < SectionHeight)
-				{
-					if(i %SectionWidth != 0)
-					{
-						newTriangles[i] = i;
-						newTriangles[i+1] = i + 1;			
-						newTriangles[i+2] = (i + 1 + (i + 1) * SectionWidth);
-						newTriangles[i+3] = (i + 1 + (i + 1) * SectionWidth);
-						newTriangles[i+4] = (i + (i + 1) * SectionWidth);
-						newTriangles[i+5] = i;
-					}
-				}
-			}
-		}
+		#region Region Debug
+		//Debug.Log("Length: " + length);
+		#endregion
 		
+		int j=0;
+		int line = 0;
+		//for(int i = 0; i < length-1; i++)
+		for(int i = 0; i < ((SectionHeight+1) * (SectionWidth+1))-2; i++)
+		{
+			if(i % (SectionWidth + 1) != 0 || i < SectionWidth + 1)
+			{
+				if(line > 0 )
+				{
+					if(line < SectionHeight )
+					{
+						newTriangles[j] = i;				
+						newTriangles[j+1] = i+1;					
+						newTriangles[j+2] = line * (SectionWidth + 1) + i;	
+						j+=3;
+					}
+
+					
+					newTriangles[j] = i;					
+					newTriangles[j+1] = i+1;					
+					newTriangles[j+2] = (line-1) * (SectionWidth + 1) + i;
+					
+					j+=3;				
+					
+				}
+				else
+				{
+					newTriangles[j] = i;				
+					newTriangles[j+1] = i+1;					
+					newTriangles[j+2] = line * (SectionWidth + 1) + i;
+					j+=3;
+				}
+				
+				
+			
+			
+			}
+			else
+			{
+				line++;
+			}
+		
+			#region Region Debug
+			//Debug.Log("I: " + i + " J: " + j + " Line: " + line);
+			#endregion
+			
+		}
 		
 	}
 	
