@@ -1,9 +1,10 @@
 using UnityEngine;
 using System.Collections;
 
-public class MeshConstruction : MonoBehaviour {
-
-	private GameObject NewObject;			//GameObject for the New Object
+public class PlaneMeshConstruction : MonoBehaviour 
+{
+	
+	private GameObject NewObject;					//GameObject for the New Object
 	public string ObjectName = "New Plane";	//Name of the New GameObject
 	
 	public Vector3 ObjectCenter;		//Center of the new Object
@@ -12,7 +13,6 @@ public class MeshConstruction : MonoBehaviour {
 	
 	public float ObjectHeight = 10.0f;		//Height of the new Objec
 	public float ObjectWidth = 10.0f;		//Width of the new Object
-	//public float ObjectDepth = 10.0f;		//Depth of the new Object
 	
 	public float MaxObjectMeshHeight = 1.0f;	//Max Mech section Height
 	private float MeshHeight;
@@ -37,7 +37,6 @@ public class MeshConstruction : MonoBehaviour {
 	public Material ObjectMaterial;	//Material of the Object
 	
 	
-	
 	// Use this for initialization
 	void Start () 
 	{
@@ -60,10 +59,12 @@ public class MeshConstruction : MonoBehaviour {
 			
 		//Debug.Log("Section Height: " + SectionHeight + " Section Width: " + SectionWidth);
 		//Debug.Log("Mesh Height: " + MeshHeight + " Mesh Width: " + MeshWidth);
-		#endregion
+			#endregion
 			if(Deformation)
 			{
+				
 				NewObject.AddComponent("MeshDeformation");
+
 			}
 			
 			
@@ -105,7 +106,6 @@ public class MeshConstruction : MonoBehaviour {
 		newTransform.rotation = RotationQuat;
 		
 		newRenderer.material = ObjectMaterial;
-		
 	}
 	
 	void CreateMesh()
@@ -126,7 +126,7 @@ public class MeshConstruction : MonoBehaviour {
 		newMeshCollider.smoothSphereCollisions = true;
 		newMeshCollider.smoothSphereCollisions = false;
 		
-	Debug.DrawRay(newTransform.position, newMesh.normals[0], Color.green, 10.5f);
+	
 	}
 	
 	

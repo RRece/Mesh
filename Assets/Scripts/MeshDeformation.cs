@@ -23,7 +23,10 @@ public class MeshDeformation : MonoBehaviour {
 	private Quaternion Rotation;		//Rotation of the object as Quaternion
 	private Vector3 ObjectRotation;		//Rotation of the Object as Vector 3 (Euler)
 
-		
+	public void Init()
+	{
+		Start ();
+	}
 	
 	// Use this for initialization
 	void Start () 
