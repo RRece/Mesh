@@ -65,6 +65,7 @@ public class CubeMeshConstruction : MonoBehaviour
 		//Debug.Log("Section Height: " + SectionHeight + " Section Width: " + SectionWidth);
 		//Debug.Log("Mesh Height: " + MeshHeight + " Mesh Width: " + MeshWidth);
 		#endregion
+			
 			if(Deformation)
 			{
 				NewObject.AddComponent("MeshDeformation");
@@ -244,7 +245,8 @@ public class CubeMeshConstruction : MonoBehaviour
 					}
 					
 					
-					newUVs[i] = new Vector2(newVertices[i].x,newVertices[i].z);
+					//newUVs[i] = new Vector2(newVertices[i].x,newVertices[i].z);
+					newUVs[i] = new Vector2(newVertices[i].x,newVertices[i].y);
 					
 					width++;
 					
@@ -322,7 +324,8 @@ public class CubeMeshConstruction : MonoBehaviour
 						}
 					}
 					
-					newUVs[i] = new Vector2(newVertices[i].x,newVertices[i].z);
+					//newUVs[i] = new Vector2(newVertices[i].x,newVertices[i].z);
+					newUVs[i] = new Vector2(newVertices[i].x,newVertices[i].y);
 					
 					width++;
 					
@@ -385,7 +388,8 @@ public class CubeMeshConstruction : MonoBehaviour
 					}
 					
 					
-					newUVs[i] = new Vector2(newVertices[i].x,newVertices[i].z);			
+					//newUVs[i] = new Vector2(newVertices[i].x,newVertices[i].z);			
+					newUVs[i] = new Vector2(newVertices[i].z,newVertices[i].y);			
 					
 					break;
 				case 5:
@@ -446,7 +450,8 @@ public class CubeMeshConstruction : MonoBehaviour
 					}
 					
 					
-					newUVs[i] = new Vector2(newVertices[i].x,newVertices[i].z);
+					//newUVs[i] = new Vector2(newVertices[i].x,newVertices[i].z);
+					newUVs[i] = new Vector2(newVertices[i].z,newVertices[i].y);
 					
 					break;
 			}
@@ -475,7 +480,7 @@ public class CubeMeshConstruction : MonoBehaviour
 	void CalculateTriangles()
 	{
 		
-		int length = ((SectionHeight * SectionWidth) + (SectionWidth * SectionDepth) + (SectionDepth * SectionHeight))*12;
+		int length = ((SectionHeight * SectionWidth) + (SectionWidth * SectionDepth) + (SectionDepth * SectionHeight)) * 12;
 		
 		newTriangles = new int[length];	
 		
@@ -586,23 +591,74 @@ public class CubeMeshConstruction : MonoBehaviour
 		}
 		#endregion for
 		bool left = true;
+		int k = 0, deep = 0;
+		line = 0;
 		
-		for(int i = 0; i < (2 * (SectionHeight + SectionDepth) - 1) - 1; i++)
+		for(int i = 0; i < (4 * (SectionHeight * SectionDepth) - 1) - 1; i++)
 		{
 			if(((i+1) % (SectionDepth + 1)) != 0)
 			{
 				if(left)
-				{
+				{	
+					#region Region //Workin here is important!!!!!!!
+					//Code is not working efficient
+					//New calculation is strongly recommended
+					#endregion
+					
+					if(line == 0)
+					{
+						k = ((SectionHeight + SectionDepth) * 2 - SectionDepth) * (SectionWidth+1);
+						
+						if(deep + 1 == SectionDepth)
+						{
+							newTriangles[j] = 0;
+						}
+						else
+						{
+							newTriangles[j] = k + (SectionWidth + 1);
+						}
+						
+						newTriangles[j+1] = k;
+						
+						if(deep == 0)
+						{
+							newTriangles[j+2] = k - (SectionWidth + 1);	
+						}
+						else
+						{
+							newTriangles[j+2] = ((2 * (SectionHeight + SectionDepth)) * SectionWidth) + (deep - 1);
+						}
+
+						#region Region Debug
+						//Debug.Log("J: " + j + " Triangle j: " + newTriangles[j]);
+						//Debug.Log("J: " + (j + 1) + " Triangle j: " + newTriangles[(j + 1)]);
+						//Debug.Log("J: " + (j + 2) + " Triangle j: " + newTriangles[(j + 2)]);
+						#endregion
+						
+						j+=3;
+						deep++;
+					}
+					else 	//line != 0
+					{
+						
+					}
 					
 				}
-				else
+				else //right
 				{
 					
 				}
 			}
-			else
+			else 	//modulo == 0
 			{
 				line++;
+				deep = 0;
+				
+				if(line < SectionHeight)
+				{
+					line = 0;
+					left = false;
+				}
 			}
 			
 			#region Region Debug
