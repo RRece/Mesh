@@ -3,8 +3,8 @@ using System.Collections;
 
 public class MeshConstruction : MonoBehaviour {
 
-	private GameObject NewObject;			//GameObject for the New Object
-	public string ObjectName = "New Plane";	//Name of the New GameObject
+	private GameObject NewObject;				//GameObject for the New Object
+	public string ObjectName = "New Object";	//Name of the New GameObject
 	
 	public Vector3 ObjectCenter;		//Center of the new Object
 	public Vector3 ObjectRotation;		//Rotation of the new Object
@@ -12,7 +12,7 @@ public class MeshConstruction : MonoBehaviour {
 	
 	public float ObjectHeight = 10.0f;		//Height of the new Objec
 	public float ObjectWidth = 10.0f;		//Width of the new Object
-	//public float ObjectDepth = 10.0f;		//Depth of the new Object
+	public float ObjectDepth = 10.0f;		//Depth of the new Object
 	
 	public float MaxObjectMeshHeight = 1.0f;	//Max Mech section Height
 	private float MeshHeight;
@@ -164,7 +164,7 @@ public class MeshConstruction : MonoBehaviour {
 		
 	}
 	
-	void CalculateTriangles()	//ToDo   Error
+	void CalculateTriangles()
 	{
 
 		int length = ((SectionHeight) * (SectionWidth)) * 6;

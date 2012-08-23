@@ -46,24 +46,25 @@ public class PlaneMeshConstruction : MonoBehaviour
 			CreateObject();	//Funktion
 			CreateMesh();	//Funktion
 			
-		#region Region Debug
-		//Debug.Log ("New Mesh: "+ newMesh);
-		//Debug.Log ("New Mesh Collider: "+ newMeshCollider);
-		
-		//Debug.Log ("Sections %1: "+ ((ObjectWidth / MaxObjectMeshWidth) % 1));
-		//Debug.Log ("Sections: "+ (ObjectWidth / MaxObjectMeshWidth));
-		//Debug.Log ("Sections(int): "+ (int)(ObjectWidth / MaxObjectMeshWidth));
-		//Debug.Log ("Sections(int+1): "+ (int)((ObjectWidth / MaxObjectMeshWidth) +1));
+			#region Region Debug
+			//Debug.Log ("New Mesh: "+ newMesh);
+			//Debug.Log ("New Mesh Collider: "+ newMeshCollider);
 			
-		//Debug.Log("Number of Vertices: "+ ((SectionHeight+1) * (SectionWidth+1)));
-			
-		//Debug.Log("Section Height: " + SectionHeight + " Section Width: " + SectionWidth);
-		//Debug.Log("Mesh Height: " + MeshHeight + " Mesh Width: " + MeshWidth);
+			//Debug.Log ("Sections %1: "+ ((ObjectWidth / MaxObjectMeshWidth) % 1));
+			//Debug.Log ("Sections: "+ (ObjectWidth / MaxObjectMeshWidth));
+			//Debug.Log ("Sections(int): "+ (int)(ObjectWidth / MaxObjectMeshWidth));
+			//Debug.Log ("Sections(int+1): "+ (int)((ObjectWidth / MaxObjectMeshWidth) +1));
+				
+			//Debug.Log("Number of Vertices: "+ ((SectionHeight+1) * (SectionWidth+1)));
+				
+			//Debug.Log("Section Height: " + SectionHeight + " Section Width: " + SectionWidth);
+			//Debug.Log("Mesh Height: " + MeshHeight + " Mesh Width: " + MeshWidth);
 			#endregion
+			
 			if(Deformation)
 			{
 				
-				NewObject.AddComponent("MeshDeformation");
+				NewObject.AddComponent<MeshDeformation>();
 
 			}
 			
@@ -126,7 +127,10 @@ public class PlaneMeshConstruction : MonoBehaviour
 		newMeshCollider.smoothSphereCollisions = true;
 		newMeshCollider.smoothSphereCollisions = false;
 		
-	
+		
+		#region Region Debug
+		//Debug.DrawRay(newTransform.position, newMesh.normals[3],Color.blue,15.5f);
+		#endregion
 	}
 	
 	
@@ -145,9 +149,6 @@ public class PlaneMeshConstruction : MonoBehaviour
 			for(int j = 0; j <= SectionWidth; j++)
 			{
 				newVertices[(i * (SectionWidth+1) + j)] = new Vector3(((i * MeshHeight) - HalfMeshHeight),((j * MeshWidth) - HalfMeshWidth), ObjectCenter.z);
-				newVertices[(i * (SectionWidth+1) + j)].x = ((i * MeshHeight) - HalfMeshHeight);
-				newVertices[(i * (SectionWidth+1) + j)].y = ((j * MeshWidth) - HalfMeshWidth);
-				newVertices[(i * (SectionWidth+1) + j)].z = ObjectCenter.z;
 				
 				newUVs[(i * (SectionWidth+1) + j)] = new Vector2(newVertices[(i * (SectionWidth+1) + j)].x,newVertices[(i * (SectionWidth+1) + j)].z);
 		
@@ -164,7 +165,7 @@ public class PlaneMeshConstruction : MonoBehaviour
 		
 	}
 	
-	void CalculateTriangles()	//ToDo   Error
+	void CalculateTriangles()
 	{
 
 		int length = ((SectionHeight) * (SectionWidth)) * 6;

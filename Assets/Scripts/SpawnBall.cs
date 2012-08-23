@@ -44,12 +44,11 @@ public class SpawnBall : MonoBehaviour {
 			GameObject BallClone;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			
-			#region Region Debug
-			
+			#region Region Debug			
 			//Debug.DrawRay(ObjectPosition,ray.direction, Color.green, 4.0f);
 			//Debug.Log(ray.direction +", "+ Quaternion.Euler(ray.direction));
 			//Debug.Log(ray.direction +", "+ RayQuaternion);
-			Debug.Log(StartImpulse);
+			//Debug.Log(StartImpulse);
 			#endregion
 			
             if (Physics.Raycast(ray))

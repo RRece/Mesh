@@ -70,7 +70,9 @@ public class MeshDeformation : MonoBehaviour {
 		
 		#region Region Debug
 		//Debug.Log("Rotation: "+ Rotation);
+		//Debug.DrawRay(curTransform.position, mesh.normals[3],Color.blue,15.5f);
 		#endregion
+
 	
 	}
 	
@@ -90,7 +92,9 @@ public class MeshDeformation : MonoBehaviour {
 		
 		for(int i=0; i < startVertices.Length; i++)
 		{
+			#region Region Debug
 			//Debug.Log ("ID: "+ i +"Distance: "+ Vector3.Distance(Vector3.zero ,deformationVector[i]));
+			#endregion
 			
 			//Reduce deformation to maximum defoermation
 			if(Vector3.Distance(Vector3.zero ,deformationVector[i]) > maxDeformation)
@@ -100,7 +104,10 @@ public class MeshDeformation : MonoBehaviour {
 				deformationVector[i].y = deformationVector[i].y * factor;
 				deformationVector[i].z = deformationVector[i].z * factor;
 				
+				#region Region Debug
 				//Debug.Log ("ID: "+ i +"Changed Distance: "+ Vector3.Distance(Vector3.zero ,deformationVector[i]));
+				#endregion
+				
 			}
 			
 			newVertices[i] = startVertices[i] + deformationVector[i];
@@ -162,9 +169,14 @@ public class MeshDeformation : MonoBehaviour {
 				{		
 					
 					//deformationVector[i].y -=  ((InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) * meshResistance * Deepfactor);
-					
-					deformationVector[i] -= Vector3.Cross(firstContactDirection, ObjectRotation.normalized)* ((InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) * meshResistance * Deepfactor);
-					
+					if(Rotation != new Quaternion(0.0f,0.0f,0.0f,1.0f))
+					{
+					deformationVector[i] += Vector3.Cross(firstContactDirection, ObjectRotation.normalized)* ((InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) * meshResistance * Deepfactor);
+					}
+					else
+					{
+					deformationVector[i] += firstContactDirection * ((InvSquareRoot2PI * Mathf.Exp(-0.5f * (reducesDistance*reducesDistance))) * meshResistance * Deepfactor);
+					}
 					deformation = true;
 					
 					#region Region Debug
