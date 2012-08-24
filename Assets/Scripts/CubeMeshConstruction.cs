@@ -590,9 +590,12 @@ public class CubeMeshConstruction : MonoBehaviour
 			
 		}
 		#endregion for
+		
+		#region Region wings
 		bool left = true;
 		int k = 0, deep = 0;
 		line = 0;
+		int SectionsAround = (SectionHeight + SectionDepth) * 2;
 		
 		for(int i = 0; i < (4 * (SectionHeight * SectionDepth) - 1) - 1; i++)
 		{
@@ -600,34 +603,114 @@ public class CubeMeshConstruction : MonoBehaviour
 			{
 				if(left)
 				{	
-					#region Region //Workin here is important!!!!!!!
-					//Code is not working efficient
-					//New calculation is strongly recommended
-					#endregion
 					
-					if(line == 0)
+					if(line != 0)
 					{
-						k = ((SectionHeight + SectionDepth) * 2 - SectionDepth) * (SectionWidth+1);
 						
-						if(deep + 1 == SectionDepth)
+						
+						if(line < SectionHeight)
 						{
-							newTriangles[j] = 0;
+							
+							if(deep == 0)
+							{
+								k = (SectionsAround - SectionDepth - deep) * (SectionWidth + 1) - (line * (SectionWidth + 1));								
+								newTriangles[j+2] = k - (SectionWidth + 1);	
+							}
+							else
+							{
+								k = SectionsAround  * (SectionWidth + 1) + deep -1 + ((line - 1) * (SectionWidth +1));
+								
+								newTriangles[j+2] = (SectionsAround * SectionWidth) + (deep - 1);
+							}
+							
+							newTriangles[j+1] = k;
+						
+							if(deep + 1 < SectionDepth)
+							{
+								newTriangles[j] = k + 1;
+							}
+							else
+						 	{
+								newTriangles[j] = ((line) * (SectionWidth + 1));
+							}
+	
+							#region Region Debug
+							//Debug.Log("J: " + j + " Triangle j: " + newTriangles[j]);
+							//Debug.Log("J: " + (j + 1) + " Triangle j: " + newTriangles[(j + 1)]);
+							//Debug.Log("J: " + (j + 2) + " Triangle j: " + newTriangles[(j + 2)]);
+							#endregion
+							
+							j+=3;
+							
+						}
+						
+						if(deep == 0)
+						{
+							k = (SectionsAround - SectionDepth - deep) * (SectionWidth + 1) - (line * (SectionWidth + 1));								
+							newTriangles[j+1] = k + (SectionWidth + 1);	
 						}
 						else
 						{
+							k = SectionsAround  * (SectionWidth + 1) + deep -1 + ((line - 1) * (SectionWidth +1));								
+							newTriangles[j+1] = (SectionsAround * SectionWidth) - (deep - 1);
+						}
+						
+						newTriangles[j] = k;	
+						
+						if(deep + 1 < SectionDepth)
+						{
+							newTriangles[j+2] = k + 1;
+						}
+						else
+					 	{
+							newTriangles[j+2] = ((line) * (SectionWidth + 1));
+						}
+						
+						//newTriangles[j+1] = (SectionsAround * SectionWidth) - (deep - 1);
+						//newTriangles[j+2] = k+1;
+				
+						#region Region Debug
+						//Debug.Log("J: " + j + " Triangle j: " + newTriangles[j]);
+						//Debug.Log("J: " + (j + 1) + " Triangle j: " + newTriangles[(j + 1)]);
+						//Debug.Log("J: " + (j + 2) + " Triangle j: " + newTriangles[(j + 2)]);
+						#endregion
+						
+						j+=3;				
+							
+							
+							
+							
+							
+							
+						deep++;
+
+						
+					}
+					else 	// line == 0					
+					{
+						k = (SectionsAround - SectionDepth - deep) * (SectionWidth + 1);
+
+					
+						if(deep + 1 < SectionDepth)
+						{
 							newTriangles[j] = k + (SectionWidth + 1);
+						}
+						else
+					 	{
+							newTriangles[j] = 0;
 						}
 						
 						newTriangles[j+1] = k;
 						
 						if(deep == 0)
-						{
-							newTriangles[j+2] = k - (SectionWidth + 1);	
+						{							
+							newTriangles[j+2] = k - (SectionWidth + 1);								
 						}
 						else
 						{
-							newTriangles[j+2] = ((2 * (SectionHeight + SectionDepth)) * SectionWidth) + (deep - 1);
+							newTriangles[j+2] = (SectionsAround * SectionWidth) + (deep - 1);
 						}
+						
 
 						#region Region Debug
 						//Debug.Log("J: " + j + " Triangle j: " + newTriangles[j]);
@@ -638,10 +721,12 @@ public class CubeMeshConstruction : MonoBehaviour
 						j+=3;
 						deep++;
 					}
-					else 	//line != 0
-					{
+
 						
-					}
+
+					
+					
+					
 					
 				}
 				else //right
@@ -666,6 +751,8 @@ public class CubeMeshConstruction : MonoBehaviour
 			
 			#endregion
 		}
+		
+		#endregion Region wings
 		
 	}
 	
