@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\CubeMeshConstruction.cs" />
+     <Compile Include="Assets\Scripts\CubeRaster.cs" />
      <Compile Include="Assets\Scripts\MeshConstruction.cs" />
      <Compile Include="Assets\Scripts\MeshDeformation.cs" />
      <Compile Include="Assets\Scripts\PlaneMeshConstruction.cs" />

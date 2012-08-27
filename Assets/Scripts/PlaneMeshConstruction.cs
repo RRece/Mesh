@@ -150,8 +150,8 @@ public class PlaneMeshConstruction : MonoBehaviour
 			{
 				newVertices[(i * (SectionWidth+1) + j)] = new Vector3(((i * MeshHeight) - HalfMeshHeight),((j * MeshWidth) - HalfMeshWidth), ObjectCenter.z);
 				
-				newUVs[(i * (SectionWidth+1) + j)] = new Vector2(newVertices[(i * (SectionWidth+1) + j)].x,newVertices[(i * (SectionWidth+1) + j)].y);
-		
+				newUVs[(i * (SectionWidth+1) + j)] = new Vector2((MeshHeight * i)/SectionHeight, 1 - (MeshWidth * j)/SectionWidth);	
+				
 				#region Region Debug
 				//Debug.Log("Section Height: " + i + " Section Width: " + j);
 				//Debug.Log("Number of Current Vertice: "+ (i * (SectionWidth+1) + j));
