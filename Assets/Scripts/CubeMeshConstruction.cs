@@ -71,6 +71,37 @@ public class CubeMeshConstruction : MonoBehaviour
 				NewObject.AddComponent("MeshDeformation");
 			}
 			
+			#region Region Debug
+//			Debug.DrawRay(newVertices[0],newVertices[0].normalized, Color.blue, 20.5f);
+//			Debug.DrawRay(newVertices[3],newVertices[3].normalized, Color.green, 20.5f);
+//			Debug.DrawRay(newVertices[6],newVertices[6].normalized, Color.green, 20.5f);
+//			Debug.DrawRay(newVertices[9],newVertices[9].normalized, Color.blue, 20.5f);
+//			Debug.DrawRay(newVertices[12],newVertices[12].normalized, Color.green, 20.5f);
+//			Debug.DrawRay(newVertices[15],newVertices[15].normalized, Color.green, 20.5f);
+//			Debug.DrawRay(newVertices[18],newVertices[18].normalized, Color.green, 20.5f);
+//			Debug.DrawRay(newVertices[21],newVertices[21].normalized, Color.green, 20.5f);
+//			Debug.DrawRay(newVertices[24],newVertices[24].normalized, Color.green, 20.5f);
+//			Debug.DrawRay(newVertices[27],newVertices[27].normalized, Color.green, 20.5f);
+//			Debug.DrawRay(newVertices[30],newVertices[30].normalized, Color.green, 20.5f);
+//			Debug.DrawRay(newVertices[33],newVertices[33].normalized, Color.green, 20.5f);
+//			Debug.DrawRay(newVertices[36],newVertices[36].normalized, Color.green, 20.5f);
+//			Debug.DrawRay(newVertices[39],newVertices[39].normalized, Color.green, 20.5f);
+//			
+//			
+//			Debug.DrawRay(newVertices[42],newVertices[42].normalized, Color.yellow, 20.5f);
+//			Debug.DrawRay(newVertices[43],newVertices[43].normalized, Color.green, 20.5f);
+//			Debug.DrawRay(newVertices[44],newVertices[44].normalized, Color.green, 20.5f);
+//			
+//			Debug.DrawRay(newVertices[45],newVertices[45].normalized, Color.green, 20.5f);
+//			Debug.DrawRay(newVertices[46],newVertices[46].normalized, Color.green, 20.5f);
+//			Debug.DrawRay(newVertices[47],newVertices[47].normalized, Color.cyan, 20.5f);
+			
+						
+			//for( int i = 1; i < newVertices.Length; i++)
+			//{
+			//	Debug.DrawRay(newVertices[i],newVertices[i].normalized, Color.red, 20.5f);
+			//}
+			#endregion
 			
 			if(DestroyAfterConstruction)
 			{
@@ -299,7 +330,7 @@ public class CubeMeshConstruction : MonoBehaviour
 							if(depth >= ((SectionDepth + 1) / 2))
 							{
 								face++;
-								depth = ((SectionDepth + 1) / 2)- 1;
+								depth = -((SectionDepth + 1) / 2)+ 1;
 								height++;
 							}
 						}
@@ -317,7 +348,7 @@ public class CubeMeshConstruction : MonoBehaviour
 							if(depth >= ((SectionDepth) / 2))
 							{
 								face++;
-								depth = ((SectionDepth) / 2);
+								depth = -((SectionDepth) / 2)+1;
 								height++;
 								width = -1;
 							}
@@ -331,6 +362,9 @@ public class CubeMeshConstruction : MonoBehaviour
 					
 					break;
 				case 4:
+					#region Region Debug
+					//Debug.Log ("i: " + i + " depth: " + depth + " height: " + height);
+					#endregion Debug
 					
 					if(odd)
 					{
@@ -343,17 +377,17 @@ public class CubeMeshConstruction : MonoBehaviour
 							newVertices[i] = new Vector3(((height * MeshHeight) - HalfMeshHeight),((width * MeshWidth) - HalfMeshWidth), (((float)(depth-0.5)/SectionDepth)*ObjectDepth) );	
 						}
 						
-						depth--;
+						depth++;
 						
 						if(depth == 0)
 						{
-							depth--;
+							depth++;
 						}
 						
 						
-						if(depth <= -((SectionDepth + 1) / 2) + 1)
+						if(depth >= ((SectionDepth + 1) / 2) )//+ 1)
 						{
-								depth = ((SectionDepth + 1) / 2)- 1;
+								depth = -((SectionDepth + 1) / 2)+ 1;
 								height++;
 						
 							if(height == SectionHeight)
@@ -363,18 +397,18 @@ public class CubeMeshConstruction : MonoBehaviour
 								width = SectionWidth;
 							}
 						
-						}
+						}						
 					}
 					else
 					{
 						
 						newVertices[i] = new Vector3(((height * MeshHeight) - HalfMeshHeight),((width * MeshWidth) - HalfMeshWidth), (((float)(depth)/SectionDepth)*ObjectDepth) );	
 						
-						depth--;
+						depth++;
 						
-						if(depth <= -(SectionDepth / 2) + 1)
+						if(depth >= (SectionDepth / 2) )// + 1)
 						{
-							depth = (SectionDepth / 2)- 1;
+							depth = -(SectionDepth / 2) + 1;
 							height++;
 							
 							if(height == SectionHeight)
@@ -388,8 +422,11 @@ public class CubeMeshConstruction : MonoBehaviour
 					}
 					
 					
-					newUVs[i] = new Vector2(newVertices[i].x,newVertices[i].z);			
-		
+					newUVs[i] = new Vector2(newVertices[i].x,newVertices[i].z);		
+					
+					#region Region Debug
+					//Debug.Log ("i: " + i + " depth: " + depth + " height: " + height);
+					#endregion Debug
 					
 					break;
 				case 5:
@@ -413,7 +450,7 @@ public class CubeMeshConstruction : MonoBehaviour
 						}
 						
 						
-						if(depth <= -((SectionDepth + 1) / 2) + 1)
+						if(depth <= -((SectionDepth + 1) / 2)  + 1)
 						{
 								depth = ((SectionDepth + 1) / 2)- 1;
 								height++;
@@ -597,7 +634,6 @@ public class CubeMeshConstruction : MonoBehaviour
 		line = 0;
 		int SectionsAround = (SectionHeight + SectionDepth) * 2;
 		
-		Debug.Log("i bis: " + ((3 * (SectionHeight * SectionDepth) - 1) - 1));
 		
 		for(int i = 0; i < (4 * (SectionHeight * SectionDepth) - 1) - 1; i++)
 		{
@@ -658,8 +694,9 @@ public class CubeMeshConstruction : MonoBehaviour
 							
 	
 							#region Region Debug
-							Debug.Log("K: " + k + " Deep: " + deep + " Line: " + line);
-							Debug.Log("Triangle: " + newTriangles[j] + " ; " + newTriangles[(j + 1)] + " ; " + newTriangles[(j + 2)]);
+							
+							//Debug.Log("K: " + k + " Deep: " + deep + " Line: " + line);
+							//Debug.Log("Triangle: " + newTriangles[j] + " ; " + newTriangles[(j + 1)] + " ; " + newTriangles[(j + 2)]);
 							//Debug.Log("J: " + j + " Triangle j: " + newTriangles[j]);
 							//Debug.Log("J: " + (j + 1) + " Triangle j: " + newTriangles[(j + 1)]);
 							//Debug.Log("J: " + (j + 2) + " Triangle j: " + newTriangles[(j + 2)]);
@@ -672,48 +709,82 @@ public class CubeMeshConstruction : MonoBehaviour
 						if(deep == 0)
 						{
 							k = (SectionsAround - SectionDepth - deep) * (SectionWidth + 1) - (line * (SectionWidth + 1));								
-							newTriangles[j+1] = k + 2 *(SectionWidth + 1);	
+	
 							
-							if(deep + 1 < SectionDepth)
+							if(line - 1 == 0)
 							{
-								newTriangles[j+2] = SectionsAround  * (SectionWidth + 1) + deep + ((line - 1) * (SectionWidth + 1));
+								newTriangles[j+2] = k + 2 * (SectionWidth + 1);
+							}
+							else 
+							{
+								newTriangles[j+2] = (SectionsAround * (SectionWidth+1)) + (deep) + ((line - 2) * (SectionWidth + 1));
+							}
+							
+							if(line == SectionHeight)
+							{
+								newTriangles[j+1] = k - (SectionWidth + 1);
 							}
 							else
-						 	{
-								newTriangles[j+2] = ((line) * (SectionWidth + 1));
+							{								
+								if(deep + 1 < SectionDepth)
+								{
+									newTriangles[j+1] = SectionsAround  * (SectionWidth + 1) + deep + ((line - 1) * (SectionWidth + 1));
+									
+								}
+								else 
+							 	{
+									newTriangles[j+1] = ((line) * (SectionWidth + 1));
+								}
 							}
 							
 						}
 						else
 						{
-							k = SectionsAround  * (SectionWidth + 1) + deep -1 + ((line - 1) * (SectionWidth + 1));
+							if(line == SectionHeight)
+							{
+								k = (SectionsAround - SectionDepth - deep - line) * (SectionWidth + 1);
+							}
+							else
+							{							
+								k = SectionsAround  * (SectionWidth + 1) + deep - 1 + ((line - 1) * (SectionWidth + 1));
+							}
 							
 							if(line - 1 == 0) 
 							{
 								if(deep + 1 < SectionDepth)
 								{
-									newTriangles[j+1] = ((SectionsAround - SectionDepth) + (deep + 1)) * (SectionWidth + 1);
+									newTriangles[j+2] = ((SectionsAround - SectionDepth) + (deep + 1)) * (SectionWidth + 1);
 								}
 								else
 							 	{
-									newTriangles[j+1] = 0;
+									newTriangles[j+2] = 0;
 								}	
 							}
-							else
-							{
-								newTriangles[j+1] = (SectionsAround * (SectionWidth+1)) + (deep) + ((line - 1) * (SectionWidth + 1)) ;
-							}
-							
-							if(deep + 1 < SectionDepth)
-							{
-								//newTriangles[j+2] = k + 1;
-								
-								
+							else if(deep + 1 < SectionDepth)
+							{								
+								newTriangles[j+2] = (SectionsAround * (SectionWidth+1)) + (deep) + ((line - 2) * (SectionWidth + 1));
 							}
 							else
 						 	{
-								newTriangles[j+2] = ((line) * (SectionWidth + 1));
+								newTriangles[j+2] = ((line - 1) * (SectionWidth + 1));
 							}
+							
+							if(deep + 1 < SectionDepth)
+							{			
+								if(line == SectionHeight)
+								{
+									newTriangles[j+1] = k - (SectionWidth + 1);
+								}
+								else
+								{
+									newTriangles[j+1] = k + 1;
+								}
+							}
+							else
+						 	{
+								newTriangles[j+1] = ((line) * (SectionWidth + 1));
+							}
+
 							
 						}
 						
@@ -723,8 +794,9 @@ public class CubeMeshConstruction : MonoBehaviour
 
 				
 						#region Region Debug
-						Debug.Log("K: " + k + " Deep: " + deep + " Line: " + line);
-						Debug.Log("Triangle: " + newTriangles[j] + " ; " + newTriangles[(j + 1)] + " ; " + newTriangles[(j + 2)]);
+						
+						//Debug.Log("K: " + k + " Deep: " + deep + " Line: " + line);
+						//Debug.Log("Triangle: " + newTriangles[j] + " ; " + newTriangles[(j + 1)] + " ; " + newTriangles[(j + 2)]);
 						//Debug.Log("J: " + j + " Triangle j: " + newTriangles[j]);
 						//Debug.Log("J: " + (j + 1) + " Triangle j: " + newTriangles[(j + 1)]);
 						//Debug.Log("J: " + (j + 2) + " Triangle j: " + newTriangles[(j + 2)]);
@@ -763,13 +835,15 @@ public class CubeMeshConstruction : MonoBehaviour
 						}
 						else
 						{
-							newTriangles[j+2] = (SectionsAround * SectionWidth) + (deep - 1); //Fehler
+							//newTriangles[j+2] = (SectionsAround * SectionWidth) + (deep - 1); //Fehler
+							newTriangles[j+2] = SectionsAround  * (SectionWidth + 1) + deep - 1;
 						}
 						
 
 						#region Region Debug
-						Debug.Log("K: " + k + " Deep: " + deep + " Line: " + line);
-						Debug.Log("Triangle: " + newTriangles[j] + " ; " + newTriangles[(j + 1)] + " ; " + newTriangles[(j + 2)]);
+												
+						//Debug.Log("K: " + k + " Deep: " + deep + " Line: " + line);
+						//Debug.Log("Triangle: " + newTriangles[j] + " ; " + newTriangles[(j + 1)] + " ; " + newTriangles[(j + 2)]);
 						//Debug.Log("J: " + j + " Triangle j: " + newTriangles[j]);
 						//Debug.Log("J: " + (j + 1) + " Triangle j: " + newTriangles[(j + 1)]);
 						//Debug.Log("J: " + (j + 2) + " Triangle j: " + newTriangles[(j + 2)]);
@@ -804,8 +878,7 @@ public class CubeMeshConstruction : MonoBehaviour
 			}
 			
 			#region Region Debug
-			Debug.Log("I: " + i + " J: " + j + " Line: " + line + " Deep: " + deep);
-			
+			//Debug.Log("I: " + i + " J: " + j + " Line: " + line + " Deep: " + deep);			
 			#endregion
 		}
 		
