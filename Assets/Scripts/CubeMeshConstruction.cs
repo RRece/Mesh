@@ -40,7 +40,9 @@ public class CubeMeshConstruction : MonoBehaviour
 	
 	public Material ObjectMaterial;	//Material of the Object
 	
-	
+	public enum Parts{one, three, six}; //1 = all sides the same Texture / 3 = opposite sides are the same Texture / 6 = 1 Texture for every side 
+	public Parts TextureParts;
+	private int TexturePartNumber;
 	
 	// Use this for initialization
 	void Start () 
@@ -48,6 +50,7 @@ public class CubeMeshConstruction : MonoBehaviour
 		
 		if(ObjectWidth > 0.0f && ObjectHeight > 0.0f)
 		{
+			
 			CreateObject();	//Funktion
 			CreateMesh();	//Funktion
 			
@@ -115,6 +118,20 @@ public class CubeMeshConstruction : MonoBehaviour
 		
 		newRenderer.material = ObjectMaterial;
 		
+		switch(TextureParts)
+		{
+			case Parts.six:
+				TexturePartNumber = 6;
+				break;
+			case Parts.three:
+				TexturePartNumber = 3;
+				break;
+			case Parts.one:
+			default:
+				TexturePartNumber = 1;
+				break;
+		}
+		
 	}
 	
 	void CreateMesh()
@@ -178,7 +195,7 @@ public class CubeMeshConstruction : MonoBehaviour
 					newVertices[i] = new Vector3(((height * MeshHeight) - HalfMeshHeight),((width * MeshWidth) - HalfMeshWidth), HalfMeshDepth);
 					
 					//newUVs[i] = new Vector2(newVertices[i].x,newVertices[i].y);
-					newUVs[i] = new Vector2((MeshHeight * height)/SectionHeight, 1 - (MeshWidth * width)/SectionWidth);	
+					newUVs[i] = new Vector2((MeshHeight * height)/(SectionHeight * TexturePartNumber),(MeshWidth * width)/(SectionWidth));	
 									
 					if(width == SectionWidth)
 					{		
@@ -259,8 +276,9 @@ public class CubeMeshConstruction : MonoBehaviour
 				case 2:
 					newVertices[i] = new Vector3(((height * MeshHeight) - HalfMeshHeight),((width * MeshWidth) - HalfMeshWidth), -HalfMeshDepth);
 					
-					newUVs[i] = new Vector2(newVertices[i].x,newVertices[i].y);
-					//newUVs[i] = new Vector2((MeshHeight * height)/SectionHeight, (MeshWidth * width)/SectionWidth);	
+					//newUVs[i] = new Vector2(newVertices[i].x,newVertices[i].y);
+					newUVs[i] = new Vector2((MeshHeight * height)/(SectionHeight * TexturePartNumber),(MeshWidth * width)/(SectionWidth));	
+					
 					
 					if(width == SectionWidth)
 					{
