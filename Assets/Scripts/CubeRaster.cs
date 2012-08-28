@@ -10,9 +10,13 @@ public class CubeRaster : MonoBehaviour
 	public Vector3 ObjectRotation;		//Rotation of the new Object
 	private Quaternion RotationQuat;	//Rotation Quaternion of the new Object
 	
-	public float ObjectHeight = 10.0f;		//Height of the new Objec
-	public float ObjectWidth = 10.0f;		//Width of the new Object
-	public float ObjectDepth = 10.0f;		//Depth of the new Object
+	public float Height = 10.0f;	//Height of the new Objec
+	public float Width = 10.0f;		//Width of the new Object
+	public float Depth = 10.0f;		//Depth of the new Object	
+	
+	private float ObjectHeight;		//Height of the new Objec
+	private float ObjectWidth;		//Width of the new Object
+	private float ObjectDepth;		//Depth of the new Object
 	
 	public int SectionHeight = 2;	//min 1
 	public int SectionWidth = 2;	//min 1
@@ -40,15 +44,23 @@ public class CubeRaster : MonoBehaviour
 	
 	public Material ObjectMaterial;	//Material of the Object
 	
-	public enum Parts{one, three, six}; //1 = all sides the same Texture / 3 = opposite sides are the same Texture / 6 = 1 Texture for every side 
+	public enum Parts{one, two, three, six}; //1 = all sides the same Texture / 3 = opposite sides are the same Texture / 6 = 1 Texture for every side 
 	public Parts TextureParts;
 	private int TexturePartNumber;
 	
 	// Use this for initialization
 	void Start () 
 	{
+		ObjectHeight = Width;		//Height and Widht have to change positions
+		ObjectWidth = Height;		//because, i do not know
+		ObjectDepth = Depth;		
+		
 		if(ObjectWidth > 0.0f && ObjectHeight > 0.0f && ObjectDepth > 0.0f)
 		{
+			ObjectHeight = Width;		//Height and Widht have to change positions
+			ObjectWidth = Height;		//because, i do not know
+			ObjectDepth = Depth;	
+			
 			CreateObject();	//Funktion			
 			CreateStartMesh();//Funktion
 			
@@ -112,6 +124,9 @@ public class CubeRaster : MonoBehaviour
 				break;
 			case Parts.three:
 				TexturePartNumber = 3;
+				break;
+			case Parts.two:
+				TexturePartNumber = 2;
 				break;
 			case Parts.one:
 			default:
@@ -184,38 +199,55 @@ public class CubeRaster : MonoBehaviour
 		startVertices = new Vector3[24];
 		startUVs = new Vector2[24];
 		
+		int j = 0;
+		
+		
 		for(int i = 0; i < 8; i++)
 		{
-			if(i%4==0)
+			startVertices[j] = new Vector3(HalfMeshHeight -(height * ObjectHeight), (HalfMeshWidth - (width * ObjectWidth)), HalfMeshDepth - (depth * ObjectDepth));
+			
+			switch(i)
 			{
-				face++;
-				switch(TexturePartNumber)
-				{
-					case 6:
-						facemulti = face;
-						break;
-					case 3:
-						if(face < 3)
-						{
-							facemulti = face;
-						}
-						else
-						{
-							facemulti = (face - 3);
-						}
-						break;
-					case 1:
-						facemulti = 0;
-						break;
-				}
+				case 0:					
+					startVertices[14] = startVertices[j];
+					startVertices[17] = startVertices[j];
+					j++;
+					break;
+				case 1:					
+					startVertices[15] = startVertices[j];
+					startVertices[20] = startVertices[j];
+					j++;
+					break;					
+				case 2:
+					startVertices[j+2] = startVertices[j];
+					startVertices[19] = startVertices[j];
+					j++;
+					break;					
+				case 3:
+					startVertices[j+2] = startVertices[i];
+					startVertices[22] = startVertices[i];
+					j+=3;
+					break;
+				case 4:
+					startVertices[j+2] = startVertices[j];
+					startVertices[18] = startVertices[j];
+					j++;
+					break;
+				case 5:					
+					startVertices[j+2] = startVertices[j];
+					startVertices[23] = startVertices[j];
+					j+=3;
+					break;
+				case 6:
+					startVertices[j+2] = startVertices[j];
+					startVertices[16] = startVertices[j];
+					j++;
+					break;
+				case 7:
+					startVertices[j+2] = startVertices[j];
+					startVertices[21] = startVertices[j];
+					break;
 			}
-			
-			startVertices[i] = new Vector3((HalfMeshHeight -(height * ObjectHeight) ),(HalfMeshWidth - (width * ObjectWidth)), HalfMeshDepth - (depth * ObjectDepth));
-			startUVs[i] = new Vector2((height/TexturePartNumber) , width);
-			
-			
-			//startVertices[i] = new Vector3((HalfMeshHeight -(height * MeshHeight) ),(HalfMeshWidth - (width * MeshWidth)), HalfMeshDepth - (depth * MeshDepth));
-			//startUVs[i] = new Vector2((MeshHeight * height)/(SectionHeight * TexturePartNumber),(MeshWidth * width)/(SectionWidth));
 			
 
 			width++;
@@ -239,9 +271,107 @@ public class CubeRaster : MonoBehaviour
 			}
 			
 			
+			#region Region Debug
+			//Debug.Log ("i: " + i + " Vertice: " + startVertices[i]);
+			//Debug.Log ("width: " + width + " height: " + height + " depth: " + depth);
+			#endregion Region Debug
+		}
+		
+		switch(TexturePartNumber)
+		{
+			case 6:
+					facemulti = sixOfOne;
+				break;
+			case 3:
+					facemulti = treeOfOne;
+				break;
+			case 1:
+				facemulti = 0;
+				break;
+		}
+		
+		face=-1;
+		
+		
+		
+		for(int i = 0; i < 24; i+=4)		
+		{
+			face++;
 			
-			Debug.Log ("i: " + i + " Vertice: " + startVertices[i] + " UV: " + startUVs[i]);
-			Debug.Log ("width: " + width + " height: " + height + " depth: " + depth);
+			switch(TexturePartNumber)
+			{
+				case 6:					
+					startUVs[i  ] = new Vector2(face * facemulti, 0.0f);
+					startUVs[i+1] = new Vector2(face * facemulti, 1.0f);
+					startUVs[i+2] = new Vector2(facemulti * (face + 1), 0.0f);
+					startUVs[i+3] = new Vector2(facemulti * (face + 1), 1.0f);
+					break;
+				case 3:
+					
+					switch(face)
+					{
+						case 0:							
+						case 2:
+							j = 0;
+							break;							
+						case 1:
+						case 3:
+							j = 1;
+							break;
+						case 4:							
+						case 5:
+							j = 2;
+							break;
+					}
+										
+					startUVs[i  ] = new Vector2(j * facemulti, 0.0f);
+					startUVs[i+1] = new Vector2(j * facemulti, 1.0f);
+					startUVs[i+2] = new Vector2(facemulti * (j + 1), 0.0f);
+					startUVs[i+3] = new Vector2(facemulti * (j + 1), 1.0f);
+					break;
+				case 2:					
+					switch(face)
+					{
+						case 0:							
+						case 1:							
+						case 2:
+						case 3:
+							j = 0;
+							break;
+						case 4:							
+						case 5:
+							j = 1;
+							break;
+					}
+										
+					startUVs[i  ] = new Vector2(j * facemulti, 0.0f);
+					startUVs[i+1] = new Vector2(j * facemulti, 1.0f);
+					startUVs[i+2] = new Vector2(facemulti * (j + 1), 0.0f);
+					startUVs[i+3] = new Vector2(facemulti * (j + 1), 1.0f);
+					break;
+				case 1:
+					startUVs[i  ] = new Vector2(0.0f, 0.0f);
+					startUVs[i+1] = new Vector2(0.0f, 1.0f);
+					startUVs[i+2] = new Vector2(1.0f, 0.0f);
+					startUVs[i+3] = new Vector2(1.0f, 1.0f);
+					break;
+			}
+			
+			
+			
+			
+			
+			
+			
+			//((face * 2)+ (i % 4))
+			//startUVs[i] = new Vector2((height/TexturePartNumber) , width);
+			
+			
+			
+			
+			#region Region Debug
+			//Debug.Log ("i: " + i + " UV: " + startUVs[i] +  " UV2: " + startUVs[i+1] + " UV2: " + startUVs[i+2] +  " UV3: " + startUVs[i+3]);
+			#endregion Region Debug
 		}
 		
 		CalculateTriangles();	//Funktion
@@ -252,8 +382,24 @@ public class CubeRaster : MonoBehaviour
 	void CalculateTriangles()
 	{
 		
-		startTriangles = new int[36]{1,0,2,1,2,3,3,2,4,3,4,5,5,4,6,5,6,7,7,6,0,7,0,1,0,6,2,6,4,2,7,1,3,7,3,5};
-
+		//startTriangles = new int[36]{1,0,2,1,2,3,3,2,4,3,4,5,5,4,6,5,6,7,7,6,0,7,0,1,0,6,2,6,4,2,7,1,3,7,3,5};
+		startTriangles = new int[36];
+		int j = 0,k = 0;
+		
+		for(int i = 0; i < 6; i++)
+		{
+			j = 4 * i;
+			k = 6 * i;
+			
+			startTriangles[k] = j;
+			startTriangles[k+1] = j+2;
+			startTriangles[k+2] = j+1;
+			
+			startTriangles[k+3] = j+1;
+			startTriangles[k+4] = j+2;
+			startTriangles[k+5] = j+3;
+			
+		}
 		
 	}
 }
