@@ -627,11 +627,48 @@ public class CubeRaster : MonoBehaviour
 					break;
 				case 4:
 					
-					//-------------------------------------------------------------------------------------
-					//-------------------------------------------------------------------------------------
-					//-------------------------------------------------------------------------------------
-					//-------------------------------------------------------------------------------------
-					//-------------------------------------------------------------------------------------
+					if(i <= (face3 + SectionDepth))
+					{					
+						if(i == face3)
+						{
+							newVertices[i] = startVertices[16];
+						} 
+						else if(i == (face3 + SectionDepth))
+						{
+							newVertices[i] = startVertices[17];
+						}
+						else 
+						{
+							newVertices[i] = newVertices[(face2 + depth * (SectionWidth +1))];
+						}
+					}
+					else if(i <= ((face4) - (SectionDepth + 1)))
+					{
+						if(i == ((face4) - (SectionDepth + 1)))
+						{
+						newVertices[i] = startVertices[19];
+						}
+						else if(i == ((face4) - 1))
+						{
+							newVertices[i] = startVertices[19];
+						}
+						else
+						{
+							newVertices[i] = newVertices[(face0 + depth * (SectionWidth +1))];
+						}
+					}
+					else if(depth == SectionDepth)
+					{
+						newVertices[i] = newVertices[(face1 + width * (SectionWidth +1))];
+					}
+					else if(depth == 0)
+					{
+						newVertices[i] = newVertices[(width * (SectionWidth +1))];
+					}
+					else
+					{
+						newVertices[i] = new Vector3(((height * MeshHeight) - HalfMeshHeight),((width * MeshWidth) - HalfMeshWidth), HalfMeshDepth - (depth * MeshDepth));
+					}
 					
 					if(depth == 0)
 					{
@@ -642,14 +679,70 @@ public class CubeRaster : MonoBehaviour
 						{
 							width = 0;
 							depth = 1;
-							height = SectionHeight;						
+							face++;						
 						}						
 					}
 					depth--;
 					
 					break;
 				case 5:		
+					if(i <= (face4 + SectionDepth))
+					{					
+						if(i == face4)
+						{
+							newVertices[i] = startVertices[20];
+						} 
+						else if(i == (face4 + SectionDepth))
+						{
+							newVertices[i] = startVertices[21];
+						}
+						else 
+						{
+							newVertices[i] = newVertices[(face2 + SectionWidth + depth * (SectionWidth +1))];
+						}
+					}
+					else if(i <= ((face5) - (SectionDepth + 1)))
+					{
+						if(i == ((face5) - (SectionDepth + 1)))
+						{
+						newVertices[i] = startVertices[22];
+						}
+						else if(i == ((face5) - 1))
+						{
+							newVertices[i] = startVertices[23];
+						}
+						else
+						{
+							newVertices[i] = newVertices[(face0 + SectionWidth + depth * (SectionWidth +1))];
+						}
+					}
+					else if(depth == SectionDepth)
+					{
+						newVertices[i] = newVertices[(face1 + SectionWidth + width * (SectionWidth +1))];
+					}
+					else if(depth == 0)
+					{
+						newVertices[i] = newVertices[SectionWidth + (width * (SectionWidth +1))];
+					}
+					else
+					{
+						newVertices[i] = new Vector3(((height * MeshHeight) - HalfMeshHeight),((width * MeshWidth) - HalfMeshWidth), HalfMeshDepth - (depth * MeshDepth));
+					}
 					
+					if(depth == SectionDepth)
+					{
+						depth = 0;
+						width++;				
+						
+						if(width > SectionWidth)
+						{
+							width = 0;
+							depth = -1;
+							height = SectionHeight;
+							face++;					
+						}						
+					}
+					depth++;
 					break;
 			}
 			
@@ -743,10 +836,6 @@ public class CubeRaster : MonoBehaviour
 					startUVs[i+3] = new Vector2(1.0f, 1.0f);
 					break;
 			}
-			
-
-			//((face * 2)+ (i % 4))
-			//startUVs[i] = new Vector2((height/TexturePartNumber) , width);
 
 			#region Region Debug
 			//Debug.Log ("i: " + i + " UV: " + startUVs[i] +  " UV2: " + startUVs[i+1] + " UV2: " + startUVs[i+2] +  " UV3: " + startUVs[i+3]);
