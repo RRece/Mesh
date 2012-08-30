@@ -80,7 +80,7 @@ public class CubeRaster : MonoBehaviour
 			}
 			else
 			{
-				//CreateMesh();	//Funktion
+				CreateMesh();	//Funktion
 			}
 			
 			
@@ -186,6 +186,7 @@ public class CubeRaster : MonoBehaviour
 		float facemulti = 0.0f;
 		float sixOfOne = 1/6.0f;
 		float treeOfOne = 1/3.0f;
+		float twoOfOne = 1/2.0f;
 		
 		startVertices = new Vector3[24];
 		startUVs = new Vector2[24];
@@ -275,6 +276,9 @@ public class CubeRaster : MonoBehaviour
 				break;
 			case 3:
 					facemulti = treeOfOne;
+				break;
+			case 2:
+					facemulti = twoOfOne;
 				break;
 			case 1:
 				facemulti = 0;
@@ -427,6 +431,7 @@ public class CubeRaster : MonoBehaviour
 		float facemulti = 0.0f;
 		float sixOfOne = 1/6.0f;
 		float treeOfOne = 1/3.0f;
+		float twoOfOne = 1/2.0f;
 		
 		int face0 = (SectionHeight + 1) * (SectionWidth + 1);
 		int face1 = face0 + (SectionHeight + 1) * (SectionDepth + 1);
@@ -458,17 +463,17 @@ public class CubeRaster : MonoBehaviour
 					{
 						newVertices[i] = startVertices[1];
 					}
-					else if(i == (face0- SectionHeight))
+					else if(i == (face0 - SectionHeight))
 					{
 						newVertices[i] = startVertices[2];
 					}
-					else if(i == (face0- 1))
+					else if(i == (face0 - 1))
 					{
 						newVertices[i] = startVertices[3];
 					}
 					else
 					{
-						newVertices[i] = new Vector3(((height * MeshHeight) - HalfMeshHeight),((width * MeshWidth) - HalfMeshWidth), HalfMeshDepth - (depth * MeshDepth));
+						newVertices[i] = new Vector3((HalfMeshHeight-(height * MeshHeight)),((width * MeshWidth) - HalfMeshWidth), HalfMeshDepth - (depth * MeshDepth));
 					}
 					
 					if(width == SectionWidth)
@@ -512,7 +517,7 @@ public class CubeRaster : MonoBehaviour
 					}
 					else
 					{
-						newVertices[i] = new Vector3(((height * MeshHeight) - HalfMeshHeight),((width * MeshWidth) - HalfMeshWidth), HalfMeshDepth - (depth * MeshDepth));
+						newVertices[i] = new Vector3((height * MeshHeight) - HalfMeshHeight,((width * MeshWidth) - HalfMeshWidth), HalfMeshDepth - (depth * MeshDepth));
 					}
 					
 					if(width == SectionWidth)
@@ -749,11 +754,9 @@ public class CubeRaster : MonoBehaviour
 
 			
 			
-			
-			
 			#region Region Debug
-			//Debug.Log ("i: " + i + " Vertice: " + startVertices[i]);
-			//Debug.Log ("width: " + width + " height: " + height + " depth: " + depth);
+			Debug.Log ("i: " + i + " Vertice: " + newVertices[i]);
+			Debug.Log ("width: " + width + " height: " + height + " depth: " + depth);
 			#endregion Region Debug
 		}
 		
@@ -765,78 +768,205 @@ public class CubeRaster : MonoBehaviour
 			case 3:
 					facemulti = treeOfOne;
 				break;
+			case 2:
+					facemulti = twoOfOne;
+				break;
 			case 1:
 				facemulti = 0;
 				break;
 		}
 		
-		face=-1;
+		face = 0;
 		
+		width = 0;
+		depth = 0;
+		height = 0;
 		
-		
-		for(int i = 0; i < 24; i+=4)		
+		for(int i = 0; i < length; i++)		
 		{
-			face++;
-			
+						
 			switch(TexturePartNumber)
 			{
 				case 6:					
-					startUVs[i  ] = new Vector2(face * facemulti, 0.0f);
-					startUVs[i+1] = new Vector2(face * facemulti, 1.0f);
-					startUVs[i+2] = new Vector2(facemulti * (face + 1), 0.0f);
-					startUVs[i+3] = new Vector2(facemulti * (face + 1), 1.0f);
-					break;
-				case 3:
-					
 					switch(face)
 					{
-						case 0:							
+						case 0:	
 						case 2:
-							j = 0;
-							break;							
-						case 1:
-						case 3:
-							j = 1;
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, height/SectionHeight);
 							break;
-						case 4:							
+						case 1:	
+						case 3:
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, depth/SectionDepth);
+							break;
+						case 4:
 						case 5:
-							j = 2;
+							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + face * facemulti, width/SectionWidth);
 							break;
 					}
-										
-					startUVs[i  ] = new Vector2(j * facemulti, 0.0f);
-					startUVs[i+1] = new Vector2(j * facemulti, 1.0f);
-					startUVs[i+2] = new Vector2(facemulti * (j + 1), 0.0f);
-					startUVs[i+3] = new Vector2(facemulti * (j + 1), 1.0f);
+
+					break;
+				case 3:
+					switch(face)
+					{
+						case 0:	
+						case 2:
+							j = 0;
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + j * facemulti, height/SectionHeight);
+							break;
+						case 1:	
+						case 3:
+							j = 1;
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + j * facemulti, depth/SectionDepth);
+							break;
+						case 4:
+						case 5:
+							j = 2;
+							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + j * facemulti, width/SectionWidth);
+							break;
+					}
+
 					break;
 				case 2:					
 					switch(face)
 					{
-						case 0:							
-						case 1:							
+						case 0:	
 						case 2:
+							j = 0;
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + j * facemulti, height/SectionHeight);
+							break;
+						case 1:	
 						case 3:
 							j = 0;
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + j * facemulti, depth/SectionDepth);
 							break;
-						case 4:							
+						case 4:
 						case 5:
 							j = 1;
+							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + j * facemulti, width/SectionWidth);
 							break;
 					}
-										
-					startUVs[i  ] = new Vector2(j * facemulti, 0.0f);
-					startUVs[i+1] = new Vector2(j * facemulti, 1.0f);
-					startUVs[i+2] = new Vector2(facemulti * (j + 1), 0.0f);
-					startUVs[i+3] = new Vector2(facemulti * (j + 1), 1.0f);
+
 					break;
 				case 1:
-					startUVs[i  ] = new Vector2(0.0f, 0.0f);
-					startUVs[i+1] = new Vector2(0.0f, 1.0f);
-					startUVs[i+2] = new Vector2(1.0f, 0.0f);
-					startUVs[i+3] = new Vector2(1.0f, 1.0f);
+					switch(face)
+					{
+						case 0:	
+						case 2:
+							newUVs[i] = new Vector2(width/SectionWidth, height/SectionHeight);
+							break;
+						case 1:	
+						case 3:
+							newUVs[i] = new Vector2(width/SectionWidth, depth/SectionDepth);
+							break;
+						case 4:
+						case 5:
+							newUVs[i] = new Vector2(depth/SectionDepth, width/SectionWidth);
+							break;
+					}					
+					
 					break;
 			}
-
+			
+			switch(face)
+			{
+				case 0:	
+					width++;
+					if(width > SectionWidth)
+					{
+						width = 0;
+						height++;
+						
+						if(height > SectionHeight)
+						{
+							face++;
+							height = SectionHeight;
+						}
+						
+					}
+					break;
+				case 1:	
+					width++;
+					if(width > SectionWidth)
+					{
+						width = 0;
+						depth++;
+						
+						if(depth > SectionDepth)
+						{
+							face++;
+							depth = SectionDepth;
+						}
+						
+					}
+					break;
+				case 2:
+					width++;
+					if(width > SectionWidth)
+					{
+						width = SectionWidth;
+						height--;
+						
+						if(height < 0)
+						{
+							face++;
+							height = 0;
+						}
+						
+					}
+					break;
+				case 3:
+					width++;
+					if(width > SectionWidth)
+					{
+						width = 0;
+						depth--;
+						
+						if(depth < 0)
+						{
+							face++;
+							depth = SectionDepth;
+						}
+						
+					}
+					break;
+				case 4:	
+					depth--;
+					
+					if(depth < 0)
+					{
+						depth = SectionDepth;
+						width++;
+						
+						if(width > SectionWidth)
+						{
+							face++;
+							width = 0;
+							depth = 0;
+						}
+						
+					}
+					break;
+				case 5:
+					depth++;
+					
+					if(depth > SectionDepth)
+					{
+						depth = 0;
+						width++;
+						
+						if(width > SectionWidth)
+						{
+							face++;
+							width = 0;
+						}
+						
+					}
+					break;
+			}
+			
+			
+			
+			
 			#region Region Debug
 			//Debug.Log ("i: " + i + " UV: " + startUVs[i] +  " UV2: " + startUVs[i+1] + " UV2: " + startUVs[i+2] +  " UV3: " + startUVs[i+3]);
 			#endregion Region Debug
@@ -849,22 +979,156 @@ public class CubeRaster : MonoBehaviour
 	
 	void CalculateTriangles()
 	{
+		int length=((SectionHeight * SectionWidth)+(SectionWidth * SectionDepth)+(SectionDepth*SectionHeight))*12;
+		int vertexLength = ((SectionHeight+1)*(SectionWidth+1+SectionDepth+1)+(SectionWidth+1)*(SectionDepth+1))*2;
+		newTriangles = new int[length];
+		int j = 0, k = 0;
+		int face = 0;
 		
-		startTriangles = new int[36];
-		int j = 0,k = 0;
+		int[] faceAdd;
+		faceAdd = new int[6];
+		faceAdd[0] = (SectionHeight + 1) * (SectionWidth + 1);
+		faceAdd[1] = faceAdd[0] + (SectionWidth + 1) * (SectionDepth + 1);
+		faceAdd[2] = faceAdd[1] + faceAdd[0];
+		faceAdd[3] = faceAdd[2] + (SectionWidth + 1) * (SectionDepth + 1);
+		faceAdd[4] = faceAdd[3] + (SectionHeight + 1) * (SectionDepth + 1);
+		faceAdd[5] = faceAdd[4] + (SectionHeight + 1) * (SectionDepth + 1);
 		
-		for(int i = 0; i < 6; i++)
+		
+		for(int i = 0; i < vertexLength; i++)
 		{
-			j = 4 * i;
-			k = 6 * i;
+			switch(face)
+			{
+				case 0:		
+					if(i <= SectionWidth)
+					{
+						break;
+					}
+					
+					if(((i + 1) % (SectionWidth + 1)) != 0)
+					{
+						newTriangles[j  ] = i - (SectionWidth + 1);
+						newTriangles[j+1] = i;
+						newTriangles[j+2] = i - SectionWidth;
+						
+						newTriangles[j+3] = newTriangles[j+2];
+						newTriangles[j+4] = i;
+						newTriangles[j+5] = i + 1;
+						
+						
+						
+						#region Region Debug
+						Debug.Log ("J: " + j + " I: " + i + " Face: " + face);				
+						Debug.Log("Triangle: " + newTriangles[j] + " ; " + newTriangles[(j + 1)] + " ; " + newTriangles[(j + 2)]);
+						Debug.Log("Triangle: " + newTriangles[(j + 3)] + " ; " + newTriangles[(j + 4)] + " ; " + newTriangles[(j + 5)]);
+						
+						k++;
+						Debug.Log ("K: " + k);
+						#endregion
+						
+						j += 6;
+					}
+					else
+					{
+						if(i==(faceAdd[face]-1))
+						{
+							face++;								
+						}
+						 
+					}
+					
+					break;
+				case 1:
+				case 2:
+				case 3:				
+					if(i < (faceAdd[face-1] + SectionWidth))
+					{
+						break;
+					}
+					
+					if(((i + 1) % (SectionWidth + 1)) != 0)
+					{
+						newTriangles[j  ] = i - (SectionWidth + 1);
+						newTriangles[j+1] = i;
+						newTriangles[j+2] = i - SectionWidth;
+						
+						newTriangles[j+3] = newTriangles[j+2];
+						newTriangles[j+4] = i;
+						newTriangles[j+5] = i + 1;
+						
+						
+						
+						#region Region Debug
+						Debug.Log ("J: " + j + " I: " + i + " Face: " + face);						
+						Debug.Log("Triangle: " + newTriangles[j] + " ; " + newTriangles[(j + 1)] + " ; " + newTriangles[(j + 2)]);
+						Debug.Log("Triangle: " + newTriangles[(j + 3)] + " ; " + newTriangles[(j + 4)] + " ; " + newTriangles[(j + 5)]);
+						
+						//k++;
+						//Debug.Log ("K: " + k);
+						#endregion
+						
+						j += 6;
+					}
+					else
+					{
+						#region Region Debug
+						//Debug.Log ("Else i: " + i + " FaceAdd-1: " + (faceAdd[face]-1) + " FaceAdd: " + faceAdd[face]);
+						#endregion
+						
+						if(i==(faceAdd[face]-1))
+						{
+							face++;															
+						}
+						 
+					}
+					
+					break;
+				case 4:
+				case 5:
+					if(i < faceAdd[face-1] + SectionDepth)
+					{
+						break;
+					}
+					
+					if(((i + 1) % (SectionDepth + 1)) != 0)
+					{
+						newTriangles[j  ] = i - (SectionDepth + 1);
+						newTriangles[j+1] = i;
+						newTriangles[j+2] = i - SectionDepth;
+						
+						newTriangles[j+3] = newTriangles[j+2];
+						newTriangles[j+4] = i;
+						newTriangles[j+5] = i + 1;
+						
+						
+						
+						#region Region Debug
+						Debug.Log ("J: " + j + " I: " + i + " Face: " + face);						
+						Debug.Log("Triangle: " + newTriangles[j] + " ; " + newTriangles[(j + 1)] + " ; " + newTriangles[(j + 2)]);
+						Debug.Log("Triangle: " + newTriangles[(j + 3)] + " ; " + newTriangles[(j + 4)] + " ; " + newTriangles[(j + 5)]);
+						
+						//k++;
+						//Debug.Log ("K: " + k);
+						#endregion
+						
+						j += 6;
+					}
+					else
+					{
+						#region Region Debug
+						//Debug.Log ("Else i: " + i + " FaceAdd-1: " + (faceAdd[face]-1) + " FaceAdd: " + faceAdd[face]);
+						#endregion
 			
-			startTriangles[k] = j;
-			startTriangles[k+1] = j+2;
-			startTriangles[k+2] = j+1;
-			
-			startTriangles[k+3] = j+1;
-			startTriangles[k+4] = j+2;
-			startTriangles[k+5] = j+3;	
+						if(i==(faceAdd[face]-1))
+						{
+							face++;															
+						}
+						 
+					}
+					
+					break;
+			}
+	
 		}
 		
 	}
