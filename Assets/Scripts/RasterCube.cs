@@ -1,8 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
-public class CubeRaster : MonoBehaviour 
-{
+public class RasterCube : MonoBehaviour {
+
 	private GameObject NewObject;			//GameObject for the New Object
 	public string ObjectName = "New grid Cube";	//Name of the New GameObject
 	
@@ -10,14 +10,11 @@ public class CubeRaster : MonoBehaviour
 	public Vector3 ObjectRotation;		//Rotation of the new Object
 	private Quaternion RotationQuat;	//Rotation Quaternion of the new Object
 	
+
 	//Object size
-	public float Height = 10.0f;	//Height of the new Objec
-	public float Width = 10.0f;		//Width of the new Object
-	public float Depth = 10.0f;		//Depth of the new Object	
-	
-	private float ObjectHeight;		//Height of the new Objec
-	private float ObjectWidth;		//Width of the new Object
-	private float ObjectDepth;		//Depth of the new Object
+	public float ObjectHeight = 10.0f;		//Height of the new Objec
+	public float ObjectWidth = 10.0f;		//Width of the new Object
+	public float ObjectDepth = 10.0f;		//Depth of the new Object
 	
 	//Half Object size
 	private float HalfMeshHeight;	//half height
@@ -25,13 +22,9 @@ public class CubeRaster : MonoBehaviour
 	private	float HalfMeshDepth;	//half depth
 	
 	//Object sections
-	public int HeightSections = 2;
-	public int WidthSections = 2;
-	public int DepthSections = 2;
-	
-	private int SectionHeight = 2;	//min 1
-	private int SectionWidth = 2;	//min 1
-	private int SectionDepth = 2;	//min 1
+	public int SectionHeight = 2;	//min 1
+	public int SectionWidth = 2;	//min 1
+	public int SectionDepth = 2;	//min 1
 	
 	private float MeshHeight;	//Mesh section Height	
 	private float MeshWidth;	//Mesh section Width
@@ -55,22 +48,18 @@ public class CubeRaster : MonoBehaviour
 	
 	public Material ObjectMaterial;	//Material of the Object
 	
-	public enum Parts{one, two, three, six}; //1 = all sides the same Texture / 3 = opposite sides are the same Texture / 6 = 1 Texture for every side 
+	public enum Parts{one, two, three, five, six}; //1 = all sides the same Texture / 3 = opposite sides are the same Texture / 6 = 1 Texture for every side 
 	public Parts TextureParts;
 	private int TexturePartNumber;
 	
+	private int[] faceAdd;
+	
 	// Use this for initialization
 	void Start () 
-	{
-		ObjectHeight = Width;		//Height and Widht have to change positions
-		ObjectWidth = Height;		//because, i do not know
-		ObjectDepth = Depth;		
+	{	
 		
 		if(ObjectWidth > 0.0f && ObjectHeight > 0.0f && ObjectDepth > 0.0f)
 		{
-			SectionHeight = WidthSections;	//min 1
-			SectionWidth = HeightSections;	//min 1
-			SectionDepth = DepthSections;
 			
 			HalfMeshHeight = ObjectHeight / 2;
 			HalfMeshWidth = ObjectWidth / 2;
@@ -145,6 +134,9 @@ public class CubeRaster : MonoBehaviour
 			case Parts.six:
 				TexturePartNumber = 6;
 				break;
+			case Parts.five:
+				TexturePartNumber = 5;
+				break;
 			case Parts.three:
 				TexturePartNumber = 3;
 				break;
@@ -190,6 +182,7 @@ public class CubeRaster : MonoBehaviour
 		int face = -1;
 		float facemulti = 0.0f;
 		float sixOfOne = 1/6.0f;
+		float fiveOfOne = 1/5.0f;
 		float treeOfOne = 1/3.0f;
 		float twoOfOne = 1/2.0f;
 		
@@ -201,7 +194,7 @@ public class CubeRaster : MonoBehaviour
 		
 		for(int i = 0; i < 8; i++)
 		{
-			startVertices[j] = new Vector3(HalfMeshHeight -(height * ObjectHeight), HalfMeshWidth - (width * ObjectWidth), HalfMeshDepth - (depth * ObjectDepth));
+			startVertices[j] = new Vector3(HalfMeshWidth - (width * ObjectWidth), HalfMeshHeight -(height * ObjectHeight), HalfMeshDepth - (depth * ObjectDepth));
 			
 			switch(i)
 			{
@@ -216,32 +209,32 @@ public class CubeRaster : MonoBehaviour
 					j++;
 					break;					
 				case 2:
-					startVertices[j+2] = startVertices[j];
+					startVertices[4] = startVertices[j];
 					startVertices[19] = startVertices[j];
 					j++;
 					break;					
 				case 3:
-					startVertices[j+2] = startVertices[i];
+					startVertices[5] = startVertices[i];
 					startVertices[22] = startVertices[i];
 					j+=3;
 					break;
 				case 4:
-					startVertices[j+2] = startVertices[j];
+					startVertices[8] = startVertices[j];
 					startVertices[18] = startVertices[j];
 					j++;
 					break;
 				case 5:					
-					startVertices[j+2] = startVertices[j];
+					startVertices[9] = startVertices[j];
 					startVertices[23] = startVertices[j];
 					j+=3;
 					break;
 				case 6:
-					startVertices[j+2] = startVertices[j];
+					startVertices[12] = startVertices[j];
 					startVertices[16] = startVertices[j];
 					j++;
 					break;
 				case 7:
-					startVertices[j+2] = startVertices[j];
+					startVertices[13] = startVertices[j];
 					startVertices[21] = startVertices[j];
 					break;
 			}
@@ -277,13 +270,16 @@ public class CubeRaster : MonoBehaviour
 		switch(TexturePartNumber)
 		{
 			case 6:
-					facemulti = sixOfOne;
+				facemulti = sixOfOne;
+				break;
+			case 5:
+				facemulti = fiveOfOne;
 				break;
 			case 3:
-					facemulti = treeOfOne;
+				facemulti = treeOfOne;
 				break;
 			case 2:
-					facemulti = twoOfOne;
+				facemulti = twoOfOne;
 				break;
 			case 1:
 				facemulti = 0;
@@ -300,60 +296,182 @@ public class CubeRaster : MonoBehaviour
 			
 			switch(TexturePartNumber)
 			{
-				case 6:					
-					startUVs[i  ] = new Vector2(face * facemulti, 0.0f);
-					startUVs[i+1] = new Vector2(face * facemulti, 1.0f);
-					startUVs[i+2] = new Vector2(facemulti * (face + 1), 0.0f);
-					startUVs[i+3] = new Vector2(facemulti * (face + 1), 1.0f);
-					break;
-				case 3:
-					
+				case 6:						
 					switch(face)
 					{
 						case 0:							
-						case 2:
-							j = 0;
-							break;							
-						case 1:
-						case 3:
-							j = 1;
+						case 1:	
+							startUVs[i  ] = new Vector2(face * facemulti, 0.0f);
+							startUVs[i+1] = new Vector2(face * facemulti, 1.0f);
+							startUVs[i+2] = new Vector2(facemulti * (face + 1), 0.0f);
+							startUVs[i+3] = new Vector2(facemulti * (face + 1), 1.0f);
 							break;
-						case 4:							
+						case 2:							
+						case 3:
+							startUVs[i+2] = new Vector2(face * facemulti, 0.0f);
+							startUVs[i+3] = new Vector2(face * facemulti, 1.0f);
+							startUVs[i  ] = new Vector2(facemulti * (face + 1), 0.0f);
+							startUVs[i+1] = new Vector2(facemulti * (face + 1), 1.0f);
+							break;
+						case 4:
+							startUVs[i  ] = new Vector2(face * facemulti, 0.0f);
+							startUVs[i+1] = new Vector2(face * facemulti, 1.0f);
+							startUVs[i+2] = new Vector2(facemulti * (face + 1), 0.0f);
+							startUVs[i+3] = new Vector2(facemulti * (face + 1), 1.0f);
+							break;
 						case 5:
-							j = 2;
+							startUVs[i+1] = new Vector2(face * facemulti, 0.0f);
+							startUVs[i  ] = new Vector2(face * facemulti, 1.0f);
+							startUVs[i+3] = new Vector2(facemulti * (face + 1), 0.0f);
+							startUVs[i+2] = new Vector2(facemulti * (face + 1), 1.0f);
 							break;
 					}
-										
-					startUVs[i  ] = new Vector2(j * facemulti, 0.0f);
-					startUVs[i+1] = new Vector2(j * facemulti, 1.0f);
-					startUVs[i+2] = new Vector2(facemulti * (j + 1), 0.0f);
-					startUVs[i+3] = new Vector2(facemulti * (j + 1), 1.0f);
 					break;
-				case 2:					
+				case 5:						
+					switch(face)
+					{
+						case 0:							
+						case 1:	
+							startUVs[i  ] = new Vector2(face * facemulti, 0.0f);
+							startUVs[i+1] = new Vector2(face * facemulti, 1.0f);
+							startUVs[i+2] = new Vector2(facemulti * (face + 1), 0.0f);
+							startUVs[i+3] = new Vector2(facemulti * (face + 1), 1.0f);
+							break;
+						case 2:							
+						case 3:
+							startUVs[i+2] = new Vector2(face * facemulti, 0.0f);
+							startUVs[i+3] = new Vector2(face * facemulti, 1.0f);
+							startUVs[i  ] = new Vector2(facemulti * (face + 1), 0.0f);
+							startUVs[i+1] = new Vector2(facemulti * (face + 1), 1.0f);
+							break;
+						case 4:
+							startUVs[i  ] = new Vector2(face * facemulti, 0.0f);
+							startUVs[i+1] = new Vector2(face * facemulti, 1.0f);
+							startUVs[i+2] = new Vector2(facemulti * (face + 1), 0.0f);
+							startUVs[i+3] = new Vector2(facemulti * (face + 1), 1.0f);
+							break;
+						case 5:
+							startUVs[i+1] = new Vector2((face-1) * facemulti, 0.0f);
+							startUVs[i  ] = new Vector2((face-1) * facemulti, 1.0f);
+							startUVs[i+3] = new Vector2(facemulti * (face), 0.0f);
+							startUVs[i+2] = new Vector2(facemulti * (face), 1.0f);
+							break;
+					}
+					break;
+				case 3:
+					switch(face)
+					{
+						case 0:
+							j = 0;
+							startUVs[i  ] = new Vector2(j * facemulti, 0.0f);
+							startUVs[i+1] = new Vector2(j * facemulti, 1.0f);
+							startUVs[i+2] = new Vector2(facemulti * (j + 1), 0.0f);
+							startUVs[i+3] = new Vector2(facemulti * (j + 1), 1.0f);
+							break;
+						case 1:							
+							j = 1;
+							startUVs[i  ] = new Vector2(j * facemulti, 0.0f);
+							startUVs[i+1] = new Vector2(j * facemulti, 1.0f);
+							startUVs[i+2] = new Vector2(facemulti * (j + 1), 0.0f);
+							startUVs[i+3] = new Vector2(facemulti * (j + 1), 1.0f);
+							break;
+						case 2:	
+							j = 0;
+							startUVs[i+2] = new Vector2(j * facemulti, 0.0f);
+							startUVs[i+3] = new Vector2(j * facemulti, 1.0f);
+							startUVs[i  ] = new Vector2(facemulti * (j + 1), 0.0f);
+							startUVs[i+1] = new Vector2(facemulti * (j + 1), 1.0f);
+							break;
+						case 3:
+							j = 1;
+							startUVs[i+2] = new Vector2(j * facemulti, 0.0f);
+							startUVs[i+3] = new Vector2(j * facemulti, 1.0f);
+							startUVs[i  ] = new Vector2(facemulti * (j + 1), 0.0f);
+							startUVs[i+1] = new Vector2(facemulti * (j + 1), 1.0f);
+							break;
+						case 4:
+							j = 2;
+							startUVs[i  ] = new Vector2(j * facemulti, 0.0f);
+							startUVs[i+1] = new Vector2(j * facemulti, 1.0f);
+							startUVs[i+2] = new Vector2(facemulti * (j + 1), 0.0f);
+							startUVs[i+3] = new Vector2(facemulti * (j + 1), 1.0f);
+							break;
+						case 5:
+							j = 2;
+							startUVs[i+1] = new Vector2(j * facemulti, 0.0f);
+							startUVs[i  ] = new Vector2(j * facemulti, 1.0f);
+							startUVs[i+3] = new Vector2(facemulti * (j + 1), 0.0f);
+							startUVs[i+2] = new Vector2(facemulti * (j + 1), 1.0f);
+							break;
+					}
+					break;
+				case 2:									
 					switch(face)
 					{
 						case 0:							
 						case 1:							
-						case 2:
+							j = 0;
+							startUVs[i  ] = new Vector2(j * facemulti, 0.0f);
+							startUVs[i+1] = new Vector2(j * facemulti, 1.0f);
+							startUVs[i+2] = new Vector2(facemulti * (j + 1), 0.0f);
+							startUVs[i+3] = new Vector2(facemulti * (j + 1), 1.0f);
+							break;
+						case 2:							
 						case 3:
 							j = 0;
+							startUVs[i+2] = new Vector2(j * facemulti, 0.0f);
+							startUVs[i+3] = new Vector2(j * facemulti, 1.0f);
+							startUVs[i  ] = new Vector2(facemulti * (j + 1), 0.0f);
+							startUVs[i+1] = new Vector2(facemulti * (j + 1), 1.0f);
 							break;
-						case 4:							
+						case 4:
+							j = 1;
+							startUVs[i  ] = new Vector2(j * facemulti, 0.0f);
+							startUVs[i+1] = new Vector2(j * facemulti, 1.0f);
+							startUVs[i+2] = new Vector2(facemulti * (j + 1), 0.0f);
+							startUVs[i+3] = new Vector2(facemulti * (j + 1), 1.0f);
+							break;
 						case 5:
 							j = 1;
+							startUVs[i+1] = new Vector2(j * facemulti, 0.0f);
+							startUVs[i  ] = new Vector2(j * facemulti, 1.0f);
+							startUVs[i+3] = new Vector2(facemulti * (j + 1), 0.0f);
+							startUVs[i+2] = new Vector2(facemulti * (j + 1), 1.0f);
 							break;
 					}
-										
-					startUVs[i  ] = new Vector2(j * facemulti, 0.0f);
-					startUVs[i+1] = new Vector2(j * facemulti, 1.0f);
-					startUVs[i+2] = new Vector2(facemulti * (j + 1), 0.0f);
-					startUVs[i+3] = new Vector2(facemulti * (j + 1), 1.0f);
+					
 					break;
 				case 1:
-					startUVs[i  ] = new Vector2(0.0f, 0.0f);
-					startUVs[i+1] = new Vector2(0.0f, 1.0f);
-					startUVs[i+2] = new Vector2(1.0f, 0.0f);
-					startUVs[i+3] = new Vector2(1.0f, 1.0f);
+					switch(face)
+					{
+						case 0:							
+						case 1:	
+							startUVs[i  ] = new Vector2(0.0f, 0.0f);
+							startUVs[i+1] = new Vector2(0.0f, 1.0f);
+							startUVs[i+2] = new Vector2(1.0f, 0.0f);
+							startUVs[i+3] = new Vector2(1.0f, 1.0f);
+							break;
+						case 2:							
+						case 3:
+							startUVs[i+2] = new Vector2(0.0f, 0.0f);
+							startUVs[i+3] = new Vector2(0.0f, 1.0f);
+							startUVs[i  ] = new Vector2(1.0f, 0.0f);
+							startUVs[i+1] = new Vector2(1.0f, 1.0f);
+							break;
+						case 4:
+							startUVs[i  ] = new Vector2(0.0f, 0.0f);
+							startUVs[i+1] = new Vector2(0.0f, 1.0f);
+							startUVs[i+2] = new Vector2(1.0f, 0.0f);
+							startUVs[i+3] = new Vector2(1.0f, 1.0f);
+							break;
+						case 5:
+							startUVs[i+1] = new Vector2(0.0f, 0.0f);
+							startUVs[i  ] = new Vector2(0.0f, 1.0f);
+							startUVs[i+3] = new Vector2(1.0f, 0.0f);
+							startUVs[i+2] = new Vector2(1.0f, 1.0f);
+							break;
+					}
+					
 					break;
 			}
 			
@@ -383,11 +501,11 @@ public class CubeRaster : MonoBehaviour
 			k = 6 * i;
 			
 			startTriangles[k] = j;
-			startTriangles[k+1] = j+2;
-			startTriangles[k+2] = j+1;
+			startTriangles[k+1] = j+1;
+			startTriangles[k+2] = j+2;
 			
-			startTriangles[k+3] = j+1;
-			startTriangles[k+4] = j+2;
+			startTriangles[k+3] = j+2;
+			startTriangles[k+4] = j+1;
 			startTriangles[k+5] = j+3;	
 		}
 		
@@ -435,16 +553,17 @@ public class CubeRaster : MonoBehaviour
 		int face = 0;
 		float facemulti = 0.0f;
 		float sixOfOne = 1/6.0f;
+		float fiveOfOne = 1/5.0f;
 		float treeOfOne = 1/3.0f;
 		float twoOfOne = 1/2.0f;
 		
-		int face0 = (SectionHeight + 1) * (SectionWidth + 1);
-		int face1 = face0 + (SectionHeight + 1) * (SectionDepth + 1);
-		int face2 = face1 + face0;
-		int face3 = face2 + (SectionHeight + 1) * (SectionDepth + 1);
-		int face4 = face3 + (SectionWidth + 1) * (SectionDepth + 1);
-		int face5 = face4 + (SectionWidth + 1) * (SectionDepth + 1);
-		
+		faceAdd = new int[6];
+		faceAdd[0] = (SectionWidth + 1) * (SectionHeight + 1);
+		faceAdd[1] = faceAdd[0] + (SectionWidth + 1) * (SectionDepth + 1);
+		faceAdd[2] = faceAdd[1] + faceAdd[0];
+		faceAdd[3] = faceAdd[2] + (SectionWidth + 1) * (SectionDepth + 1);
+		faceAdd[4] = faceAdd[3] + (SectionHeight + 1) * (SectionDepth + 1);
+		faceAdd[5] = faceAdd[4] + (SectionHeight + 1) * (SectionDepth + 1);
 		
 		int length = ((SectionHeight + 1) * (SectionWidth + 1 + SectionDepth + 1) + (SectionWidth + 1) * (SectionDepth + 1)) *2;
 		
@@ -457,13 +576,11 @@ public class CubeRaster : MonoBehaviour
 		for(int i = 0; i < length; i++)
 		{
 			
+			newVertices[i] = new Vector3(HalfMeshWidth -  (width * MeshWidth), HalfMeshHeight-(height * MeshHeight),HalfMeshDepth - (depth * MeshDepth));
+						
 			switch(face)
 			{
 				case 0:	
-					
-					newVertices[i] = new Vector3(HalfMeshHeight-(height * MeshHeight),HalfMeshWidth -  (width * MeshWidth), HalfMeshDepth - (depth * MeshDepth));
-					
-					
 					if(width == SectionWidth)
 					{		
 						height++;
@@ -480,9 +597,6 @@ public class CubeRaster : MonoBehaviour
 					
 					break;
 				case 1:	
-					
-					newVertices[i] = new Vector3(HalfMeshHeight-(height * MeshHeight),HalfMeshWidth -  (width * MeshWidth), HalfMeshDepth - (depth * MeshDepth));
-					
 					if(width == SectionWidth)
 					{		
 						depth++;
@@ -499,9 +613,6 @@ public class CubeRaster : MonoBehaviour
 					
 					break;					
 				case 2:
-					
-					newVertices[i] = new Vector3(HalfMeshHeight-(height * MeshHeight),HalfMeshWidth -  (width * MeshWidth), HalfMeshDepth - (depth * MeshDepth));
-					
 					if(width == SectionWidth)
 					{		
 						height--;
@@ -518,10 +629,6 @@ public class CubeRaster : MonoBehaviour
 					
 					break;					
 				case 3:
-					
-					
-					newVertices[i] = new Vector3(HalfMeshHeight-(height * MeshHeight),HalfMeshWidth -  (width * MeshWidth), HalfMeshDepth - (depth * MeshDepth));
-					
 					if(width == SectionWidth)
 					{		
 						depth--;
@@ -537,9 +644,6 @@ public class CubeRaster : MonoBehaviour
 					width++;
 					break;
 				case 4:
-					
-					newVertices[i] = new Vector3(HalfMeshHeight-(height * MeshHeight),HalfMeshWidth -  (width * MeshWidth), HalfMeshDepth - (depth * MeshDepth));
-					
 					if(depth == 0)
 					{
 						depth = SectionDepth+1;
@@ -557,8 +661,6 @@ public class CubeRaster : MonoBehaviour
 					
 					break;
 				case 5:						
-					
-					newVertices[i] = new Vector3(HalfMeshHeight-(height * MeshHeight),HalfMeshWidth -  (width * MeshWidth), HalfMeshDepth - (depth * MeshDepth));
 					
 					if(depth == SectionDepth)
 					{
@@ -589,13 +691,16 @@ public class CubeRaster : MonoBehaviour
 		switch(TexturePartNumber)
 		{
 			case 6:
-					facemulti = sixOfOne;
+				facemulti = sixOfOne;
+				break;
+			case 5:
+				facemulti = fiveOfOne;
 				break;
 			case 3:
-					facemulti = treeOfOne;
+				facemulti = treeOfOne;
 				break;
 			case 2:
-					facemulti = twoOfOne;
+				facemulti = twoOfOne;
 				break;
 			case 1:
 				facemulti = 0;
@@ -608,7 +713,14 @@ public class CubeRaster : MonoBehaviour
 		depth = 0;
 		height = 0;
 		
-		for(int i = 0; i < length; i++)		
+		//-----------------------------------------------------------------------------------------------
+		//-----------------------------------------------------------------------------------------------
+		//-----------------------------------------------------------------------------------------------
+		//-----------------------------------------------------------------------------------------------
+		//-----------------------------------------------------------------------------------------------
+		//-----------------------------------------------------------------------------------------------
+		
+		for(int i = 0; i < length; i++)
 		{
 						
 			switch(TexturePartNumber)
@@ -619,13 +731,6 @@ public class CubeRaster : MonoBehaviour
 						case 0:	
 						case 2:
 							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, height/SectionHeight);
-							
-							#region Region Debug
-							//Debug.Log("i: " + i + " Vertex i: " + newVertices[i] + " UV: " + newUVs[i]); 
-							//Debug.Log("width: " + width + " height: " + height); 
-							//Debug.Log("SectionWidth: " + SectionWidth + " SectionHeight: " + SectionHeight); 
-							#endregion Region Debug
-							
 							break;
 						case 1:	
 						case 3:
@@ -634,6 +739,26 @@ public class CubeRaster : MonoBehaviour
 						case 4:
 						case 5:
 							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + face * facemulti, width/SectionWidth);							
+							break;
+					}
+
+					break;
+					case 5:					
+					switch(face)
+					{
+						case 0:	
+						case 2:
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, height/SectionHeight);
+							break;
+						case 1:	
+						case 3:
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, depth/SectionDepth);							
+							break;
+						case 4:
+							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + face * facemulti, width/SectionWidth);							
+							break;
+						case 5:
+							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + (face-1) * facemulti, width/SectionWidth);							
 							break;
 					}
 
@@ -797,11 +922,9 @@ public class CubeRaster : MonoBehaviour
 					break;
 			}
 			
-			
-			
-			
+
 			#region Region Debug
-			//Debug.Log ("i: " + i + " UV: " + startUVs[i] +  " UV2: " + startUVs[i+1] + " UV2: " + startUVs[i+2] +  " UV3: " + startUVs[i+3]);
+			Debug.Log ("i: " + i + " UV: " + newUVs[i]);
 			#endregion Region Debug
 		}
 		
@@ -812,21 +935,20 @@ public class CubeRaster : MonoBehaviour
 	
 	void CalculateTriangles()
 	{
-		int length=((SectionHeight * SectionWidth)+(SectionWidth * SectionDepth)+(SectionDepth*SectionHeight))*12;
+		int length = ((SectionHeight * SectionWidth)+(SectionWidth * SectionDepth)+(SectionDepth*SectionHeight))*12;
+		
 		int vertexLength = ((SectionHeight+1)*(SectionWidth+1+SectionDepth+1)+(SectionWidth+1)*(SectionDepth+1))*2;
+		
 		newTriangles = new int[length];
 		int j = 0;
 		//int k = 0;
 		int face = 0;
-		
-		int[] faceAdd;
-		faceAdd = new int[6];
-		faceAdd[0] = (SectionHeight + 1) * (SectionWidth + 1);
-		faceAdd[1] = faceAdd[0] + (SectionWidth + 1) * (SectionDepth + 1);
-		faceAdd[2] = faceAdd[1] + faceAdd[0];
-		faceAdd[3] = faceAdd[2] + (SectionWidth + 1) * (SectionDepth + 1);
-		faceAdd[4] = faceAdd[3] + (SectionHeight + 1) * (SectionDepth + 1);
-		faceAdd[5] = faceAdd[4] + (SectionHeight + 1) * (SectionDepth + 1);
+
+		#region Region Debug
+		//Debug.Log ("length: " + length + " vertexLength: " + vertexLength);				
+		//Debug.Log("Face0: " + faceAdd[0] + " Face1: " + faceAdd[1] + " Face2: " + faceAdd[2] + " Face2: " + faceAdd[3]);
+		//Debug.Log("Face4: " + faceAdd[4] + " Face5: " + faceAdd[5]);
+		#endregion
 		
 		
 		for(int i = 0; i < vertexLength; i++)
@@ -841,13 +963,13 @@ public class CubeRaster : MonoBehaviour
 					
 					if(((i + 1) % (SectionWidth + 1)) != 0)
 					{
-						newTriangles[j  ] = i - (SectionWidth + 1);
+						newTriangles[j] = i - SectionWidth;
+						newTriangles[j+2] = i - (SectionWidth + 1);
 						newTriangles[j+1] = i;
-						newTriangles[j+2] = i - SectionWidth;
 						
-						newTriangles[j+3] = newTriangles[j+2];
 						newTriangles[j+4] = i;
-						newTriangles[j+5] = i + 1;
+						newTriangles[j+3] = i + 1;
+						newTriangles[j+5] = newTriangles[j];
 						
 						
 						
@@ -865,8 +987,12 @@ public class CubeRaster : MonoBehaviour
 					else
 					{
 						if(i==(faceAdd[face]-1))
-						{
-							face++;								
+						{	
+							#region Region Debug
+							//Debug.Log ("J: " + j + " I: " + i + " Face: " + face);
+							#endregion
+							
+							face++;			
 						}
 						 
 					}
@@ -882,16 +1008,15 @@ public class CubeRaster : MonoBehaviour
 					
 					if(((i + 1) % (SectionWidth + 1)) != 0)
 					{
-						newTriangles[j  ] = i - (SectionWidth + 1);
+						newTriangles[j] = i - SectionWidth;
+						newTriangles[j+2] = i - (SectionWidth + 1);
 						newTriangles[j+1] = i;
-						newTriangles[j+2] = i - SectionWidth;
 						
-						newTriangles[j+3] = newTriangles[j+2];
 						newTriangles[j+4] = i;
-						newTriangles[j+5] = i + 1;
+						newTriangles[j+3] = i + 1;
+						newTriangles[j+5] = newTriangles[j];
 						
-						
-						
+		
 						#region Region Debug
 						//Debug.Log ("J: " + j + " I: " + i + " Face: " + face);						
 						//Debug.Log("Triangle: " + newTriangles[j] + " ; " + newTriangles[(j + 1)] + " ; " + newTriangles[(j + 2)]);
@@ -905,12 +1030,14 @@ public class CubeRaster : MonoBehaviour
 					}
 					else
 					{
-						#region Region Debug
-						//Debug.Log ("Else i: " + i + " FaceAdd-1: " + (faceAdd[face]-1) + " FaceAdd: " + faceAdd[face]);
-						#endregion
+						
 						
 						if(i==(faceAdd[face]-1))
 						{
+							#region Region Debug
+							//Debug.Log ("J: " + j + " I: " + i + " Face: " + face);
+							#endregion
+							
 							face++;															
 						}
 						 
@@ -924,17 +1051,15 @@ public class CubeRaster : MonoBehaviour
 						break;
 					}
 					
-					if(((i + 1) % (SectionDepth + 1)) != 0)
+					if((((i - faceAdd[face-1]) + 1) % (SectionDepth + 1)) != 0)
 					{
-						newTriangles[j  ] = i - (SectionDepth + 1);
+						newTriangles[j] = i - SectionDepth;
+						newTriangles[j+2] = i - (SectionDepth + 1);
 						newTriangles[j+1] = i;
-						newTriangles[j+2] = i - SectionDepth;
 						
-						newTriangles[j+3] = newTriangles[j+2];
 						newTriangles[j+4] = i;
-						newTriangles[j+5] = i + 1;
-						
-						
+						newTriangles[j+3] = i + 1;
+						newTriangles[j+5] = newTriangles[j];
 						
 						#region Region Debug
 						//Debug.Log ("J: " + j + " I: " + i + " Face: " + face);						
@@ -948,13 +1073,16 @@ public class CubeRaster : MonoBehaviour
 						j += 6;
 					}
 					else
-					{
+					{		
 						#region Region Debug
-						//Debug.Log ("Else i: " + i + " FaceAdd-1: " + (faceAdd[face]-1) + " FaceAdd: " + faceAdd[face]);
+						//Debug.Log ("I: " + i + " Face: " + face);
 						#endregion
-			
+						
 						if(i==(faceAdd[face]-1))
 						{
+							#region Region Debug
+							//Debug.Log ("J: " + j + " I: " + i + " Face: " + face);
+							#endregion
 							face++;															
 						}
 						 
@@ -968,7 +1096,4 @@ public class CubeRaster : MonoBehaviour
 	}
 	
 	#endregion Region Mesh
-	
-	
-	
 }
