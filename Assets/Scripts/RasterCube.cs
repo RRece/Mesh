@@ -660,7 +660,12 @@ public class RasterCube : MonoBehaviour {
 					depth--;
 					
 					break;
-				case 5:						
+				case 5:		
+					
+					#region Region Debug
+					//Debug.Log ("i: " + i + " Vertice: " + newVertices[i]);
+					//Debug.Log ("width: " + width + " height: " + height + " depth: " + depth);
+					#endregion Region Debug
 					
 					if(depth == SectionDepth)
 					{
@@ -713,12 +718,10 @@ public class RasterCube : MonoBehaviour {
 		depth = 0;
 		height = 0;
 		
-		//-----------------------------------------------------------------------------------------------
-		//-----------------------------------------------------------------------------------------------
-		//-----------------------------------------------------------------------------------------------
-		//-----------------------------------------------------------------------------------------------
-		//-----------------------------------------------------------------------------------------------
-		//-----------------------------------------------------------------------------------------------
+		#region Region Debug
+		//Debug.Log ("length: " + length);
+		//Debug.Log ("width: " + width + " height: " + height + " depth: " + depth);
+		#endregion Region Debug
 		
 		for(int i = 0; i < length; i++)
 		{
@@ -730,35 +733,35 @@ public class RasterCube : MonoBehaviour {
 					{
 						case 0:	
 						case 2:
-							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, height/SectionHeight);
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, (float)height/SectionHeight);
 							break;
 						case 1:	
 						case 3:
-							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, depth/SectionDepth);							
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, (float)depth/SectionDepth);							
 							break;
 						case 4:
 						case 5:
-							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + face * facemulti, width/SectionWidth);							
+							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + face * facemulti, (float)height/SectionHeight);								
 							break;
 					}
 
 					break;
-					case 5:					
+				case 5:					
 					switch(face)
 					{
 						case 0:	
 						case 2:
-							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, height/SectionHeight);
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, (float)height/SectionHeight);
 							break;
 						case 1:	
 						case 3:
-							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, depth/SectionDepth);							
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, (float)depth/SectionDepth);							
 							break;
 						case 4:
-							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + face * facemulti, width/SectionWidth);							
+							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + face * facemulti, (float)height/SectionHeight);	
 							break;
 						case 5:
-							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + (face-1) * facemulti, width/SectionWidth);							
+							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + (face-1) * facemulti, (float)height/SectionHeight);							
 							break;
 					}
 
@@ -769,17 +772,17 @@ public class RasterCube : MonoBehaviour {
 						case 0:	
 						case 2:
 							j = 0;
-							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + j * facemulti, height/SectionHeight);
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + j * facemulti, (float)height/SectionHeight);
 							break;
 						case 1:	
 						case 3:
 							j = 1;
-							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + j * facemulti, depth/SectionDepth);
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + j * facemulti, (float)depth/SectionDepth);
 							break;
 						case 4:
 						case 5:
 							j = 2;
-							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + j * facemulti, width/SectionWidth);
+							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + j * facemulti, (float)height/SectionHeight);
 							break;
 					}
 
@@ -790,17 +793,17 @@ public class RasterCube : MonoBehaviour {
 						case 0:	
 						case 2:
 							j = 0;
-							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + j * facemulti, height/SectionHeight);
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + j * facemulti, (float)height/SectionHeight);
 							break;
 						case 1:	
 						case 3:
 							j = 0;
-							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + j * facemulti, depth/SectionDepth);
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + j * facemulti, (float)depth/SectionDepth);
 							break;
 						case 4:
 						case 5:
 							j = 1;
-							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + j * facemulti, width/SectionWidth);
+							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + j * facemulti, (float)height/SectionHeight);
 							break;
 					}
 
@@ -810,15 +813,15 @@ public class RasterCube : MonoBehaviour {
 					{
 						case 0:	
 						case 2:
-							newUVs[i] = new Vector2(width/SectionWidth, height/SectionHeight);
+							newUVs[i] = new Vector2((float)width/SectionWidth, (float)height/SectionHeight);
 							break;
 						case 1:	
 						case 3:
-							newUVs[i] = new Vector2(width/SectionWidth, depth/SectionDepth);
+							newUVs[i] = new Vector2((float)width/SectionWidth, (float)depth/SectionDepth);
 							break;
 						case 4:
 						case 5:
-							newUVs[i] = new Vector2(depth/SectionDepth, width/SectionWidth);
+							newUVs[i] = new Vector2((float)depth/SectionDepth, (float)height/SectionHeight);
 							break;
 					}					
 					
@@ -861,7 +864,7 @@ public class RasterCube : MonoBehaviour {
 					width++;
 					if(width > SectionWidth)
 					{
-						width = SectionWidth;
+						width = 0;
 						height--;
 						
 						if(height < 0)
@@ -892,16 +895,15 @@ public class RasterCube : MonoBehaviour {
 					
 					if(depth < 0)
 					{
-						depth = SectionDepth;
-						width++;
+						depth = SectionDepth;						
+						height++;
 						
-						if(width > SectionWidth)
+						if(height > SectionHeight)
 						{
 							face++;
-							width = 0;
+							height = 0;
 							depth = 0;
 						}
-						
 					}
 					break;
 				case 5:
@@ -909,22 +911,23 @@ public class RasterCube : MonoBehaviour {
 					
 					if(depth > SectionDepth)
 					{
-						depth = 0;
-						width++;
+						depth = 0;						
+						height++;
 						
-						if(width > SectionWidth)
+						if(height > SectionHeight)
 						{
 							face++;
-							width = 0;
+							height = 0;
 						}
-						
+		
 					}
 					break;
 			}
 			
 
 			#region Region Debug
-			Debug.Log ("i: " + i + " UV: " + newUVs[i]);
+			//Debug.Log ("i: " + i + " UV: " + newUVs[i].x + " , " + newUVs[i].y *1.0f);
+			//Debug.Log ("i: " + i + " UV: " + newUVs[i]);
 			#endregion Region Debug
 		}
 		
