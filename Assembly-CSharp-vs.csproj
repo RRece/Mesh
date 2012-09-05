@@ -50,6 +50,7 @@
      <Compile Include="Assets\Scripts\PlaneMeshConstruction.cs" />
      <Compile Include="Assets\Scripts\RasterCube.cs" />
      <Compile Include="Assets\Scripts\SpawnBall.cs" />
+     <Compile Include="Assets\Scripts\SpawnRay.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
