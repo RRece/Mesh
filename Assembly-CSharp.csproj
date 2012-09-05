@@ -47,6 +47,7 @@
      <Compile Include="Assets\Scripts\CubeMeshConstruction.cs" />
      <Compile Include="Assets\Scripts\MeshConstruction.cs" />
      <Compile Include="Assets\Scripts\MeshDeformation.cs" />
+     <Compile Include="Assets\Scripts\NotQuadraticMeshConstruction.cs" />
      <Compile Include="Assets\Scripts\PlaneMeshConstruction.cs" />
      <Compile Include="Assets\Scripts\RasterCube.cs" />
      <Compile Include="Assets\Scripts\SpawnBall.cs" />

@@ -44,7 +44,7 @@ public class SpawnRay : MonoBehaviour {
 			PaticleClone.transform.LookAt(ray.GetPoint(20.0f));
 			
 			#region Region Debug			
-			Debug.DrawRay(ObjectPosition,ray.direction, Color.green, 4.0f);
+			//Debug.DrawRay(ObjectPosition,ray.direction, Color.green, 4.0f);
 			//Debug.Log(ray.direction +", "+ Quaternion.Euler(ray.direction));
 			//Debug.Log(ray.direction +", "+ RayQuaternion);
 			#endregion
