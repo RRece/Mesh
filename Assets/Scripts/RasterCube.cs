@@ -554,6 +554,10 @@ public class RasterCube : MonoBehaviour {
 		
 		int face = 0;
 		float facemulti = 0.0f;
+		float sixOfOne = 1/6.0f;
+		float fiveOfOne = 1/5.0f;
+		float treeOfOne = 1/3.0f;
+		float twoOfOne = 1/2.0f;
 		
 		faceAdd = new int[6];
 		faceAdd[0] = (SectionWidth + 1) * (SectionHeight + 1);
@@ -694,10 +698,16 @@ public class RasterCube : MonoBehaviour {
 		switch(TexturePartNumber)
 		{
 			case 6:
+				facemulti = sixOfOne;
+				break;
 			case 5:
+				facemulti = fiveOfOne;
+				break;
 			case 3:
+				facemulti = treeOfOne;
+				break;
 			case 2:
-				facemulti = 1 / TexturePartNumber;
+				facemulti = twoOfOne;
 				break;
 			case 1:
 				facemulti = 0;

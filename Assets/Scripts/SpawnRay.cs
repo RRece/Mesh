@@ -28,15 +28,15 @@ public class SpawnRay : MonoBehaviour {
 		
 		if (Input.GetButtonDown("Fire2"))
 		{
-			Load = true;
 			
-			if (Physics.Raycast(ray))
-			{				
+			//if (Physics.Raycast(ray))
+			//{				
                 PaticleClone = Instantiate(PaticleRay, ObjectPosition, Quaternion.LookRotation(ray.direction)) as GameObject;		
-				//PaticleClone.rigidbody.AddRelativeForce(0.0f,0.0f,StartImpulse,ForceMode.Impulse);			
+				Load = true;
 					
-			}
+			//}
 		}
+		
 		if(Load)
 		{
 			ray = Camera.main.ScreenPointToRay(Input.mousePosition);

@@ -59,7 +59,8 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () 
-	{
+	{		
+		
 		if(ObjectWidth > 0.0f && ObjectHeight > 0.0f && ObjectDepth > 0.0f)
 		{
 			CalculateMeshSize();			
@@ -184,6 +185,8 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 		{
 			facemulti = 1 / TexturePartNumber;
 		}
+		
+		
 		
 	}
 	
