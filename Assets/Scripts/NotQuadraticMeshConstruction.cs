@@ -5,14 +5,14 @@ using System.Collections;
 
 public class NotQuadraticMeshConstruction : MonoBehaviour {
 	
-	private GameObject NewObject;			//GameObject for the New Object
+	private GameObject NewObject;				//GameObject for the New Object
 	public string ObjectName = "New Object";	//Name of the New GameObject
 	
 	public Vector3 ObjectCenter;		//Center of the new Object
 	public Vector3 ObjectRotation;		//Rotation of the new Object
 	private Quaternion RotationQuat;	//Rotation Quaternion of the new Object
 	
-	public enum category {tetrahedron, pyramid}
+	public enum category {trapezium, pyramid}	//trapezium (U.K.) /  trapezoid (U.S.)
 	public category ObjectType;
 	
 	//Object size
@@ -48,7 +48,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 	
 	public Material ObjectMaterial;	//Material of the Object
 	
-	public enum Parts{one, all}; //1 = all sides the same Texture / 3 = opposite sides are the same Texture / 6 = 1 Texture for every side 
+	public enum Parts{one, all}; //1 = all sides the same Texture  / all = 1 Texture for every side 
 	public Parts TextureParts;
 	private int TexturePartNumber;
 	
@@ -57,15 +57,26 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 	private int face;
 	private int facemulti;
 	
+	public struct Triangle
+	{
+		public float alpha;
+		public float beta;
+		public float gamma;
+		
+	} 
+	private Triangle frontTriangle, sideTriangle, groundTriangle;
+	
 	// Use this for initialization
 	void Start () 
 	{		
-		
 		if(ObjectWidth > 0.0f && ObjectHeight > 0.0f && ObjectDepth > 0.0f)
 		{
 			CalculateMeshSize();			
 			
 			CreateObject();
+			
+			CalculateTriangles();
+			
 			CreateMesh();
 			
 			
@@ -137,7 +148,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 			case Parts.all:
 				switch(ObjectType)
 				{
-					case category.tetrahedron:
+					case category.trapezium:
 						TexturePartNumber = 4;
 						break;
 					case category.pyramid:
@@ -153,10 +164,42 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 	
 	}
 	
+	void CalculateTriangles()
+	{
+		float a = ObjectHeight;
+		float b = HalfMeshWidth;
+		float c = Mathf.Sqrt((a*a)+(b*b));
+				
+		frontTriangle.alpha = Mathf.Asin((a/c));
+		frontTriangle.beta = Mathf.Asin((b/c));
+		frontTriangle.gamma = 90/(180*Mathf.PI);
+		
+
+		
+		a = ObjectHeight;
+		b = HalfMeshDepth;
+		c = Mathf.Sqrt((a*a)+(b*b));
+				
+		sideTriangle.alpha = Mathf.Asin((a/c));
+		sideTriangle.beta = Mathf.Asin((b/c));	
+		sideTriangle.gamma = 90/(180*Mathf.PI);
+		
+		
+		a = ObjectDepth;
+		b = HalfMeshWidth;
+		c = Mathf.Sqrt((a*a)+(b*b));
+				
+		groundTriangle.alpha = Mathf.Asin((a/c));
+		groundTriangle.beta = Mathf.Asin((b/c));	
+		groundTriangle.gamma = 90/(180*Mathf.PI);
+		
+	}
+	
 	
 	void CreateMesh()
 	{
 		CreateMeshSections();
+		CreateUV();
 		
 		newMesh.vertices = newVertices;
 		newMesh.uv = newUVs;
@@ -177,6 +220,68 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 		
 		face = 0;
 		
+		int height = 0;
+		int width = 0;
+		int depth = 0;
+		
+		int length = 100;
+		
+		newVertices = new Vector3[length];
+		
+		
+		for(int i = 0; i < length; i++)
+		{
+			switch(ObjectType)
+			{
+				case category.trapezium:
+					
+					break;
+				case category.pyramid:
+					#region Region pyramid
+					switch(face)
+					{
+						case 0:
+							newVertices[i] = new Vector3(-HalfMeshWidth +  (width * MeshWidth), -HalfMeshHeight ,-HalfMeshDepth + (depth * MeshDepth));
+							
+							if(width == SectionWidth)
+							{		
+								depth++;
+								width = -1;
+								
+								if(depth > SectionDepth)
+								{
+									face++;
+									depth = 0;
+								}
+							
+							}
+							width++;
+							
+							break;
+						case 1:
+							break;
+						case 2:
+							break;	
+						case 3:
+							break;
+						case 4:
+							break;
+					}
+					#endregion pyramid
+					break;
+			}
+		}
+		
+		
+		
+	}
+	
+	
+	void CreateUV()
+	{
+		
+		face = 0;
+		
 		if(TexturePartNumber == 1)
 		{
 			facemulti = 0;
@@ -187,10 +292,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 		}
 		
 		
-		
 	}
-	
-	
 	
 	
 	
