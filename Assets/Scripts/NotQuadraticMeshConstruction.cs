@@ -55,7 +55,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 	private int[] faceAdd;
 	
 	private int face;
-	private int facemulti;
+	private float facemulti;
 	
 	public struct Triangle
 	{
@@ -226,11 +226,38 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 		int length = 400;	// !!no length calculation!!		
 		
 		newVertices = new Vector3[length];
+		newUVs = new Vector2[length];
 		
 		float vertexHeight, vertexWidth, vertexDepth;
 		float a, b, c;
 		bool left = false, right = false;
 		bool rightSide = false;
+		bool depthLine = false;
+		
+		#region UV
+		bool UVfrontHeight;
+		if( ObjectHeight >= ObjectWidth)
+		{
+			UVfrontHeight = true;
+		}
+		else
+		{
+			UVfrontHeight = false;
+		}
+		
+		bool UVsideHeight;
+		if( ObjectHeight >= ObjectDepth)
+		{
+			UVsideHeight = true;
+		}
+		else
+		{
+			UVsideHeight = false;
+		}
+		
+		facemulti = 1 / TexturePartNumber;
+		
+		#endregion
 		
 		for(int i = 0; i < length; i++)
 		{
@@ -247,6 +274,10 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 						case 0:
 							newVertices[i] = new Vector3(-HalfMeshWidth +  (width * MeshWidth), -HalfMeshHeight ,-HalfMeshDepth + (depth * MeshDepth));
 							
+							#region Region UV
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, (float)depth/SectionDepth);							
+							#endregion UV
+							
 							if(width == SectionWidth)
 							{		
 								depth++;
@@ -259,10 +290,10 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								}
 							
 							}
-							width++;							
+							width++;
 							break;
 							
-						//Front
+						#region Region Front
 						case 1:
 							
 							if (height != 0)
@@ -278,8 +309,24 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									}
 									
 									vertexHeight = height * MeshHeight;
-									//vertexDepth = 
-										
+									
+									vertexDepth = (depth + 1) * MeshDepth;
+									c = vertexHeight / Mathf.Tan(sideTriangle.alpha);
+									
+									if(c <= vertexDepth)
+									{
+										if(c == vertexDepth)
+										{
+											//Depth == Height
+											depth++;
+										}
+										else
+										{
+											depthLine = true;
+											vertexHeight = vertexDepth / Mathf.Tan(sideTriangle.beta);	//Calculate new vertexHeight
+											
+										}
+									}
 																		
 									a =	vertexWidth / Mathf.Tan(frontTriangle.beta);
 									
@@ -371,6 +418,10 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								newVertices[i] = new Vector3(-HalfMeshWidth +  (width * MeshWidth), -HalfMeshHeight ,-HalfMeshDepth);
 							}
 							
+							#region Region UV
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, (float)height/SectionHeight);
+							#endregion UV
+							
 							if(right == true)
 							{
 								width = SectionWidth;
@@ -378,7 +429,15 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							
 							if(width == SectionWidth)
 							{		
-								height++;
+								if(depthLine == true)
+								{
+									depthLine = false;
+								}
+								else
+								{
+									height++;
+								}	
+								
 								width = -1;
 								left = false;
 								right = false;
@@ -389,19 +448,183 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								{
 									face++;
 									height = 0;
+									depth = 0;
 								}
 							
 							}
 							width++;
 							
 							break;
-						//Left
+						#endregion Front
+							
+						#region Region Left
 						case 2:
+							
+							if (height != 0)
+							{
+								if(height != SectionHeight)
+								{
+									vertexDepth = depth * MeshDepth;
+									
+									if (vertexDepth < HalfMeshDepth)
+									{
+										vertexDepth = ObjectDepth - vertexDepth;
+										rightSide = true;
+									}
+									
+									vertexHeight = height * MeshHeight;
+									
+									vertexWidth = (width + 1) * MeshWidth;	
+									
+									b = vertexHeight / Mathf.Tan(frontTriangle.alpha);
+									
+									if(b <= vertexWidth)
+									{
+										if(b == vertexWidth)
+										{
+											//Width == Height
+											width++;
+										}
+										else
+										{
+											depthLine = true;
+											vertexHeight = vertexWidth / Mathf.Tan(frontTriangle.beta);	//Calculate new vertexHeight
+											
+										}
+									}
+																		
+									a =	vertexWidth / Mathf.Tan(sideTriangle.beta);
+									
+									
+																			
+									if(left == false)
+									{
+										if(vertexHeight <= a)
+										{
+										
+											if(vertexHeight == a)
+											{
+												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
+												left = true;
+											}
+											else if( width > 0)
+											{
+												c = vertexHeight / Mathf.Tan (sideTriangle.alpha);	
+												
+												if(vertexWidth - MeshWidth < c)
+												{
+													newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,c - HalfMeshDepth);
+													left = true;
+												}
+												
+											}
+										}
+										else //vertexHeight > a									
+										{
+											c = vertexHeight / Mathf.Tan (sideTriangle.alpha);
+											
+											if((c/MeshDepth) < (SectionDepth / 2))
+											{
+												depth = (int)(c / MeshDepth);
+						
+												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,c - HalfMeshDepth);
+												left = true;
+												
+											}
+											else
+											{
+												#region Region Debug Error
+												Debug.LogError ("Wrong Triangle Calculation");
+												Debug.LogError ("Face: " + face + " I: " + i);
+												#endregion Region Debug Error
+											}
+										}
+									} 
+									else if(right == false)
+									{
+										if(vertexHeight == a)
+										{
+											newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
+											right = true;
+										}
+										else if (rightSide == false)
+										{
+											newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
+										}
+										else if (rightSide == true)
+										{
+											c = vertexHeight / Mathf.Tan (sideTriangle.alpha);	
+											
+											if(vertexWidth - MeshWidth < b)
+											{
+												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,ObjectDepth - c);
+												right = true;
+												
+											}
+											else
+											{
+												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
+											}
+											
+										}
+									}
+	
+																	
+								}
+								else //heigt == SectionHeight
+								{
+									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
+									right = true;
+								}															
+								
+							}
+							else //heigt == 0
+							{
+								newVertices[i] = new Vector3(-HalfMeshWidth, -HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
+							}
+							
+							#region Region UV
+							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + face * facemulti, (float)height/SectionHeight);	
+							#endregion UV
+							
+							if(right == true)
+							{
+								depth = SectionDepth;
+							}
+							
+							if(depth == SectionWidth)
+							{		
+								if(depthLine == true)
+								{
+									depthLine = false;
+								}
+								else
+								{
+									height++;
+								}								
+								depth = -1;
+								left = false;
+								right = false;
+								
+								rightSide = false;
+								
+								if(height > SectionHeight)
+								{
+									face++;
+									height = 0;
+									depth = 0;
+									width = SectionWidth;
+								}
+							
+							}
+							depth++;
+							
+							
 							break;
+						#endregion Left
 							
-						//Back
+						#region Region Back
 						case 3:
-							
 							if (height != 0)
 							{
 								if(height != SectionHeight)
@@ -415,7 +638,24 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									}
 									
 									vertexHeight = height * MeshHeight;
-									//vertexDepth = 
+									
+									vertexDepth = (depth + 1) * MeshDepth;
+									c = vertexHeight / Mathf.Tan(sideTriangle.alpha);
+									
+									if(c <= vertexDepth)
+									{
+										if(c == vertexDepth)
+										{
+											//Depth == Height
+											depth++;
+										}
+										else
+										{
+											depthLine = true;
+											vertexHeight = vertexDepth / Mathf.Tan(sideTriangle.beta);	//Calculate new vertexHeight
+											
+										}
+									}
 										
 																		
 									a =	vertexWidth / Mathf.Tan(frontTriangle.beta);
@@ -508,6 +748,10 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								newVertices[i] = new Vector3(-HalfMeshWidth +  (width * MeshWidth), -HalfMeshHeight ,HalfMeshDepth);
 							}
 							
+							#region Region UV
+							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, (float)height/SectionHeight);
+							#endregion UV
+							
 							if(right == true)
 							{
 								width = 0;
@@ -515,7 +759,15 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							
 							if(width == 0)
 							{		
-								height++;
+								if(depthLine == true)
+								{
+									depthLine = false;
+								}
+								else
+								{
+									height++;
+								}				
+								
 								width = SectionWidth + 1;
 								left = false;
 								right = false;
@@ -526,16 +778,180 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								{
 									face++;
 									height = 0;
+									depth = SectionDepth;
+									width = 1;
 								}
 							
 							}
 							width--;
 							
 							break;
+						#endregion Back
 						
-						//Right
+						#region Region Right
 						case 4:
+							
+							if (height != 0)
+							{
+								if(height != SectionHeight)
+								{
+									vertexDepth = depth * MeshDepth;
+									
+									if (vertexDepth < HalfMeshDepth)
+									{
+										vertexDepth = ObjectDepth - vertexDepth;
+										rightSide = true;
+									}
+									
+									vertexHeight = height * MeshHeight;
+									
+									vertexWidth = (width + 1) * MeshWidth;	
+									
+									b = vertexHeight / Mathf.Tan(frontTriangle.alpha);
+									
+									if(b <= vertexWidth)
+									{
+										if(b == vertexWidth)
+										{
+											//Width == Height
+											width++;
+										}
+										else
+										{
+											depthLine = true;
+											vertexHeight = vertexWidth / Mathf.Tan(frontTriangle.beta);	//Calculate new vertexHeight
+											
+										}
+									}
+																		
+									a =	vertexWidth / Mathf.Tan(sideTriangle.beta);
+									
+									
+																			
+									if(left == false)
+									{
+										if(vertexHeight <= a)
+										{
+										
+											if(vertexHeight == a)
+											{
+												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
+												left = true;
+											}
+											else if( width > 0)
+											{
+												c = vertexHeight / Mathf.Tan (sideTriangle.alpha);	
+												
+												if(vertexWidth - MeshWidth < c)
+												{
+													newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,c - HalfMeshDepth);
+													left = true;
+												}
+												
+											}
+										}
+										else //vertexHeight > a									
+										{
+											c = vertexHeight / Mathf.Tan (sideTriangle.alpha);
+											
+											if((c/MeshDepth) < (SectionDepth / 2))
+											{
+												depth = (int)(c / MeshDepth);
+						
+												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,c - HalfMeshDepth);
+												left = true;
+												
+											}
+											else
+											{
+												#region Region Debug Error
+												Debug.LogError ("Wrong Triangle Calculation");
+												Debug.LogError ("Face: " + face + " I: " + i);
+												#endregion Region Debug Error
+											}
+										}
+									} 
+									else if(right == false)
+									{
+										if(vertexHeight == a)
+										{
+											newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
+											right = true;
+										}
+										else if (rightSide == false)
+										{
+											newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
+										}
+										else if (rightSide == true)
+										{
+											c = vertexHeight / Mathf.Tan (sideTriangle.alpha);	
+											
+											if(vertexWidth - MeshWidth < b)
+											{
+												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,ObjectDepth - c);
+												right = true;												
+											}
+											else
+											{
+												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
+											}
+											
+										}
+									}
+	
+																	
+								}
+								else //heigt == SectionHeight
+								{
+									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
+									right = true;
+								}															
+								
+							}
+							else //heigt == 0
+							{
+								newVertices[i] = new Vector3(-HalfMeshWidth, -HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
+							}
+							
+							#region Region UV
+							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + face * facemulti, (float)height/SectionHeight);	
+							#endregion UV
+							
+							if(right == true)
+							{
+								depth = 0;
+							}
+							
+							if(depth == 0)
+							{		
+								if(depthLine == true)
+								{
+									depthLine = false;
+								}
+								else
+								{
+									height++;
+								}								
+								depth = SectionWidth + 1;
+								left = false;
+								right = false;
+								
+								rightSide = false;
+								
+								if(height > SectionHeight)
+								{
+									face++;
+									height = 0;
+									depth = 0;
+									width = 0;
+								}
+							
+							}
+							depth--;
+							
 							break;
+							#endregion Right
+							
 						case 5:	//no pyramid face
 							break;
 					}
