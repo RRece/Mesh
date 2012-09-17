@@ -94,12 +94,12 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 		else
 		{
 			#region Region Debug
-			Debug.LogError ("No GameObejct created");
+			Debug.LogError ("No GameObejct with name " + ObjectName + " created");
 			#endregion
 		}
 	}
 	
-	void CalculateMeshSize()	
+	void CalculateMeshSize()
 	{
 		HalfMeshHeight = ObjectHeight / 2;
 		HalfMeshWidth = ObjectWidth / 2;
@@ -174,16 +174,6 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 		frontTriangle.beta = Mathf.Asin((b/c));
 		frontTriangle.gamma = 90/(180*Mathf.PI);
 		
-
-		
-		a = ObjectHeight;
-		b = HalfMeshDepth;
-		c = Mathf.Sqrt((a*a)+(b*b));
-				
-		sideTriangle.alpha = Mathf.Asin((a/c));
-		sideTriangle.beta = Mathf.Asin((b/c));	
-		sideTriangle.gamma = 90/(180*Mathf.PI);
-		
 		
 		a = ObjectDepth;
 		b = HalfMeshWidth;
@@ -192,6 +182,15 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 		groundTriangle.alpha = Mathf.Asin((a/c));
 		groundTriangle.beta = Mathf.Asin((b/c));	
 		groundTriangle.gamma = 90/(180*Mathf.PI);
+		
+
+		a = ObjectHeight;
+		b = HalfMeshDepth;
+		c = Mathf.Sqrt((a*a)+(b*b));
+		
+		sideTriangle.alpha = Mathf.Asin((a/c));
+		sideTriangle.beta = Mathf.Asin((b/c));	
+		sideTriangle.gamma = 90/(180*Mathf.PI);
 		
 	}
 	
@@ -224,10 +223,14 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 		int width = 0;
 		int depth = 0;
 		
-		int length = 100;
+		int length = 400;	// !!no length calculation!!		
 		
 		newVertices = new Vector3[length];
 		
+		float vertexHeight, vertexWidth, vertexDepth;
+		float a, b, c;
+		bool left = false, right = false;
+		bool rightSide = false;
 		
 		for(int i = 0; i < length; i++)
 		{
@@ -240,6 +243,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 					#region Region pyramid
 					switch(face)
 					{
+						//Ground
 						case 0:
 							newVertices[i] = new Vector3(-HalfMeshWidth +  (width * MeshWidth), -HalfMeshHeight ,-HalfMeshDepth + (depth * MeshDepth));
 							
@@ -255,25 +259,292 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								}
 							
 							}
+							width++;							
+							break;
+							
+						//Front
+						case 1:
+							
+							if (height != 0)
+							{
+								if(height != SectionHeight)
+								{
+									vertexWidth = width * MeshWidth;
+									
+									if (vertexWidth < HalfMeshWidth)
+									{
+										vertexWidth = ObjectWidth - vertexWidth;
+										rightSide = true;
+									}
+									
+									vertexHeight = height * MeshHeight;
+									//vertexDepth = 
+										
+																		
+									a =	vertexWidth / Mathf.Tan(frontTriangle.beta);
+									
+									
+																			
+									if(left == false)
+									{
+										if(vertexHeight <= a)
+										{
+										
+											if(vertexHeight == a)
+											{
+												newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);
+												left = true;
+											}
+											else if( width > 0)
+											{
+												b = vertexHeight / Mathf.Tan (frontTriangle.alpha);	
+												
+												if(vertexWidth - MeshWidth < b)
+												{
+													newVertices[i] = new Vector3(b - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);
+													left = true;
+												}
+												
+											}
+										}
+										else //vertexHeight > a									
+										{
+											b = vertexHeight / Mathf.Tan (frontTriangle.alpha);
+											
+											if((b/MeshWidth) < (SectionWidth / 2))
+											{
+												width = (int)(b / MeshWidth);
+						
+												newVertices[i] = new Vector3(b - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);
+												left = true;
+												
+											}
+											else
+											{
+												#region Region Debug Error
+												Debug.LogError ("Wrong Triangle Calculation");
+												Debug.LogError ("Face: " + face + " I: " + i);
+												#endregion Region Debug Error
+											}
+										}
+									} 
+									else if(right == false)
+									{
+										if(vertexHeight == a)
+										{
+											newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);
+											right = true;
+										}
+										else if (rightSide == false)
+										{
+											newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);	
+										}
+										else if (rightSide == true)
+										{
+											b = vertexHeight / Mathf.Tan (frontTriangle.alpha);	
+											
+											if(vertexWidth - MeshWidth < b)
+											{
+												newVertices[i] = new Vector3(ObjectWidth - b, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);
+												right = true;
+												
+											}
+											else
+											{
+												newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);	
+											}
+											
+										}
+									}
+	
+																	
+								}
+								else //heigt == SectionHeight
+								{
+									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
+									right = true;
+								}															
+								
+							}
+							else //heigt == 0
+							{
+								newVertices[i] = new Vector3(-HalfMeshWidth +  (width * MeshWidth), -HalfMeshHeight ,-HalfMeshDepth);
+							}
+							
+							if(right == true)
+							{
+								width = SectionWidth;
+							}
+							
+							if(width == SectionWidth)
+							{		
+								height++;
+								width = -1;
+								left = false;
+								right = false;
+								
+								rightSide = false;
+								
+								if(height > SectionHeight)
+								{
+									face++;
+									height = 0;
+								}
+							
+							}
 							width++;
 							
 							break;
-						case 1:
-							break;
+						//Left
 						case 2:
-							break;	
-						case 3:
 							break;
+							
+						//Back
+						case 3:
+							
+							if (height != 0)
+							{
+								if(height != SectionHeight)
+								{
+									vertexWidth = width * MeshWidth;
+									
+									if (vertexWidth < HalfMeshWidth)
+									{
+										vertexWidth = ObjectWidth - vertexWidth;
+										rightSide = true;
+									}
+									
+									vertexHeight = height * MeshHeight;
+									//vertexDepth = 
+										
+																		
+									a =	vertexWidth / Mathf.Tan(frontTriangle.beta);
+									
+									
+																			
+									if(left == false)
+									{
+										if(vertexHeight <= a)
+										{
+										
+											if(vertexHeight == a)
+											{
+												newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)));
+												left = true;
+											}
+											else if( width > 0)
+											{
+												b = vertexHeight / Mathf.Tan (frontTriangle.alpha);	
+												
+												if(vertexWidth - MeshWidth < b)
+												{
+													newVertices[i] = new Vector3(b - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)));
+													left = true;
+												}
+												
+											}
+										}
+										else //vertexHeight > a									
+										{
+											b = vertexHeight / Mathf.Tan (frontTriangle.alpha);
+											
+											if((b/MeshWidth) < (SectionWidth / 2))
+											{
+												width = (int)(b / MeshWidth);
+						
+												newVertices[i] = new Vector3(b - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)));
+												left = true;
+												
+											}
+											else
+											{
+												#region Region Debug Error
+												Debug.LogError ("Wrong Triangle Calculation");
+												Debug.LogError ("Face: " + face + " I: " + i);
+												#endregion Region Debug Error
+											}
+										}
+									} 
+									else if(right == false)
+									{
+										if(vertexHeight == a)
+										{
+											newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)));
+											right = true;
+										}
+										else if (rightSide == false)
+										{
+											newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)));	
+										}
+										else if (rightSide == true)
+										{
+											b = vertexHeight / Mathf.Tan (frontTriangle.alpha);	
+											
+											if(vertexWidth - MeshWidth < b)
+											{
+												newVertices[i] = new Vector3(ObjectWidth - b, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)));
+												right = true;
+												
+											}
+											else
+											{
+												newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)));	
+											}
+											
+										}
+									}
+	
+																	
+								}
+								else //heigt == SectionHeight
+								{
+									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
+									right = true;
+								}															
+								
+							}
+							else //heigt == 0
+							{
+								newVertices[i] = new Vector3(-HalfMeshWidth +  (width * MeshWidth), -HalfMeshHeight ,HalfMeshDepth);
+							}
+							
+							if(right == true)
+							{
+								width = 0;
+							}
+							
+							if(width == 0)
+							{		
+								height++;
+								width = SectionWidth + 1;
+								left = false;
+								right = false;
+								
+								rightSide = false;
+								
+								if(height > SectionHeight)
+								{
+									face++;
+									height = 0;
+								}
+							
+							}
+							width--;
+							
+							break;
+						
+						//Right
 						case 4:
+							break;
+						case 5:	//no pyramid face
 							break;
 					}
 					#endregion pyramid
 					break;
 			}
+
 		}
-		
-		
-		
+
 	}
 	
 	

@@ -80,7 +80,7 @@ public class PlaneMeshConstruction : MonoBehaviour
 		else
 		{
 			#region Region Debug
-			Debug.Log ("No GameObejct created");
+			Debug.LogError ("No GameObejct with name " + ObjectName + " created");
 			#endregion
 			
 		}
