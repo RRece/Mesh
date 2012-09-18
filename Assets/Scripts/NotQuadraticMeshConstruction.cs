@@ -66,6 +66,18 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 	} 
 	private Triangle frontTriangle, sideTriangle, groundTriangle;
 	
+	public struct TriangleVertecis
+	{
+		public int[] left;
+		public int[] right;
+		public int last;
+		public int lines;		
+	} 
+	
+	private TriangleVertecis VertecisFront, VerticesBack, VerticesLeft, VerticesRight, VerticesGround;
+	
+	
+	
 	// Use this for initialization
 	void Start () 
 	{		
@@ -76,6 +88,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 			CreateObject();
 			
 			CalculateTriangles();
+			TriangleVertecisInit();
 			
 			CreateMesh();
 			
@@ -143,24 +156,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 			SectionDepth = 1;
 		}
 		
-		switch(TextureParts)
-		{
-			case Parts.all:
-				switch(ObjectType)
-				{
-					case category.trapezium:
-						TexturePartNumber = 4;
-						break;
-					case category.pyramid:
-						TexturePartNumber = 5;
-						break;
-				}
-				break;			
-			case Parts.one:
-			default:
-				TexturePartNumber = 1;
-				break;
-		}
+		
 	
 	}
 	
@@ -194,11 +190,64 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 		
 	}
 	
+	void TriangleVertecisInit()
+	{
+		VertecisFront.left = new int[SectionHeight + SectionDepth];
+		VertecisFront.right = new int[SectionHeight + SectionDepth];
+		
+		VerticesBack.left = new int[SectionHeight + SectionDepth];
+		VerticesBack.right = new int[SectionHeight + SectionDepth];
+		
+		VerticesLeft.left = new int[SectionHeight + SectionWidth];
+		VerticesLeft.right = new int[SectionHeight + SectionWidth];
+		
+		VerticesRight.left = new int[SectionHeight + SectionWidth];
+		VerticesRight.right = new int[SectionHeight + SectionWidth];
+		
+		VerticesGround.left = new int[SectionDepth + SectionWidth];
+		VerticesGround.right = new int[SectionDepth + SectionWidth];
+	}
+	
+	void CreateUV()
+	{
+		
+		switch(TextureParts)
+		{
+			case Parts.all:
+				switch(ObjectType)
+				{
+					case category.trapezium:
+						TexturePartNumber = 4;
+						break;
+					case category.pyramid:
+						TexturePartNumber = 5;
+						break;
+				}
+				break;			
+			case Parts.one:
+			default:
+				TexturePartNumber = 1;
+				break;
+		}
+
+		
+		if(TexturePartNumber == 1)
+		{
+			facemulti = 0;
+		}
+		else
+		{
+			facemulti = 1 / TexturePartNumber;
+		}
+		
+		
+	}
 	
 	void CreateMesh()
 	{
-		CreateMeshSections();
 		CreateUV();
+		CreateMeshSections();
+		createTriangles();
 		
 		newMesh.vertices = newVertices;
 		newMesh.uv = newUVs;
@@ -228,43 +277,51 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 		newVertices = new Vector3[length];
 		newUVs = new Vector2[length];
 		
-		float vertexHeight, vertexWidth, vertexDepth;
-		float a, b, c;
+		float vertexHeight = 0.0f, vertexWidth = 0.0f, vertexDepth = 0.0f;
+		float a = 0.0f, b = 0.0f, c = 0.0f;
 		bool left = false, right = false;
 		bool rightSide = false;
 		bool depthLine = false;
 		
-		#region UV
-		bool UVfrontHeight;
-		if( ObjectHeight >= ObjectWidth)
-		{
-			UVfrontHeight = true;
-		}
-		else
-		{
-			UVfrontHeight = false;
-		}
-		
-		bool UVsideHeight;
-		if( ObjectHeight >= ObjectDepth)
-		{
-			UVsideHeight = true;
-		}
-		else
-		{
-			UVsideHeight = false;
-		}
-		
-		facemulti = 1 / TexturePartNumber;
-		
-		#endregion
+		int j = 0;
+			
 		
 		for(int i = 0; i < length; i++)
 		{
 			switch(ObjectType)
 			{
 				case category.trapezium:
-					
+					#region Region trapezium
+					switch(face)
+					{
+						case 0:
+							#region Region Ground
+													
+							#endregion Ground
+							break;
+
+						case 1:
+							#region Region Front
+							
+							#endregion Front
+							break;
+
+						case 2:				
+							#region Region Left
+							
+							#endregion Left
+							break;
+
+						case 3:
+							#region Region Right
+							
+							#endregion Right
+							break;
+							
+						case 4:	//no trapezium face
+							break;
+					}
+					#endregion trapezium
 					break;
 				case category.pyramid:
 					#region Region pyramid
@@ -310,21 +367,24 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									
 									vertexHeight = height * MeshHeight;
 									
-									vertexDepth = (depth + 1) * MeshDepth;
-									c = vertexHeight / Mathf.Tan(sideTriangle.alpha);
-									
-									if(c <= vertexDepth)
+									if(depthLine == false)
 									{
-										if(c == vertexDepth)
+										vertexDepth = (depth + 1) * MeshDepth;
+										c = vertexHeight / Mathf.Tan(sideTriangle.alpha);
+										
+										if(c <= vertexDepth)
 										{
-											//Depth == Height
-											depth++;
-										}
-										else
-										{
-											depthLine = true;
-											vertexHeight = vertexDepth / Mathf.Tan(sideTriangle.beta);	//Calculate new vertexHeight
-											
+											if(c == vertexDepth)
+											{
+												//Depth == Height
+												depth++;
+											}
+											else
+											{
+												depthLine = true;
+												vertexHeight = vertexDepth / Mathf.Tan(sideTriangle.beta);	//Calculate new vertexHeight
+												
+											}
 										}
 									}
 																		
@@ -341,6 +401,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 											{
 												newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);
 												left = true;
+												
 											}
 											else if( width > 0)
 											{
@@ -374,6 +435,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 												#endregion Region Debug Error
 											}
 										}
+										VertecisFront.left[j] = i;
 									} 
 									else if(right == false)
 									{
@@ -409,7 +471,10 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								else //heigt == SectionHeight
 								{
 									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
-									right = true;
+									width = SectionWidth;
+									
+									VertecisFront.last=i;
+									
 								}															
 								
 							}
@@ -424,7 +489,9 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							
 							if(right == true)
 							{
-								width = SectionWidth;
+								VertecisFront.right[j] = i;
+								width = SectionWidth;	
+								j++;
 							}
 							
 							if(width == SectionWidth)
@@ -438,6 +505,8 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									height++;
 								}	
 								
+								
+								
 								width = -1;
 								left = false;
 								right = false;
@@ -446,9 +515,11 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								
 								if(height > SectionHeight)
 								{
+									VertecisFront.lines=j;
 									face++;
 									height = 0;
 									depth = 0;
+									j = 0;
 								}
 							
 							}
@@ -474,22 +545,24 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									
 									vertexHeight = height * MeshHeight;
 									
-									vertexWidth = (width + 1) * MeshWidth;	
-									
-									b = vertexHeight / Mathf.Tan(frontTriangle.alpha);
-									
-									if(b <= vertexWidth)
+									if(depthLine == false)
 									{
-										if(b == vertexWidth)
+										vertexWidth = (width + 1) * MeshWidth;	
+										b = vertexHeight / Mathf.Tan(frontTriangle.alpha);
+									
+										if(b <= vertexWidth)
 										{
-											//Width == Height
-											width++;
-										}
-										else
-										{
-											depthLine = true;
-											vertexHeight = vertexWidth / Mathf.Tan(frontTriangle.beta);	//Calculate new vertexHeight
-											
+											if(b == vertexWidth)
+											{
+												//Width == Height
+												width++;
+											}
+											else
+											{
+												depthLine = true;
+												vertexHeight = vertexWidth / Mathf.Tan(frontTriangle.beta);	//Calculate new vertexHeight
+												
+											}
 										}
 									}
 																		
@@ -539,6 +612,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 												#endregion Region Debug Error
 											}
 										}
+										VerticesLeft.left[j] = i;
 									} 
 									else if(right == false)
 									{
@@ -574,7 +648,8 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								else //heigt == SectionHeight
 								{
 									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
-									right = true;
+									depth = SectionDepth;
+									VerticesLeft.last = i;
 								}															
 								
 							}
@@ -589,7 +664,9 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							
 							if(right == true)
 							{
+								VerticesLeft.right[j] = i;
 								depth = SectionDepth;
+								j++;
 							}
 							
 							if(depth == SectionWidth)
@@ -614,6 +691,9 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									height = 0;
 									depth = 0;
 									width = SectionWidth;
+									
+									VerticesLeft.lines = j;
+									j = 0;
 								}
 							
 							}
@@ -639,21 +719,24 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									
 									vertexHeight = height * MeshHeight;
 									
-									vertexDepth = (depth + 1) * MeshDepth;
-									c = vertexHeight / Mathf.Tan(sideTriangle.alpha);
-									
-									if(c <= vertexDepth)
+									if(depthLine == false)
 									{
-										if(c == vertexDepth)
+										vertexDepth = (depth + 1) * MeshDepth;
+										c = vertexHeight / Mathf.Tan(sideTriangle.alpha);
+										
+										if(c <= vertexDepth)
 										{
-											//Depth == Height
-											depth++;
-										}
-										else
-										{
-											depthLine = true;
-											vertexHeight = vertexDepth / Mathf.Tan(sideTriangle.beta);	//Calculate new vertexHeight
-											
+											if(c == vertexDepth)
+											{
+												//Depth == Height
+												depth++;
+											}
+											else
+											{
+												depthLine = true;
+												vertexHeight = vertexDepth / Mathf.Tan(sideTriangle.beta);	//Calculate new vertexHeight
+												
+											}
 										}
 									}
 										
@@ -704,6 +787,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 												#endregion Region Debug Error
 											}
 										}
+										VerticesBack.left[j] = i;
 									} 
 									else if(right == false)
 									{
@@ -739,7 +823,8 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								else //heigt == SectionHeight
 								{
 									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
-									right = true;
+									width = 0;
+									VerticesBack.last = i;
 								}															
 								
 							}
@@ -755,6 +840,8 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							if(right == true)
 							{
 								width = 0;
+								VerticesBack.right[j] = i;
+								j++;
 							}
 							
 							if(width == 0)
@@ -780,6 +867,9 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									height = 0;
 									depth = SectionDepth;
 									width = 1;
+									
+									VerticesBack.lines = j;
+									j = 0;
 								}
 							
 							}
@@ -805,22 +895,24 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									
 									vertexHeight = height * MeshHeight;
 									
-									vertexWidth = (width + 1) * MeshWidth;	
-									
-									b = vertexHeight / Mathf.Tan(frontTriangle.alpha);
-									
-									if(b <= vertexWidth)
+									if(depthLine == false)
 									{
-										if(b == vertexWidth)
+										vertexWidth = (width + 1) * MeshWidth;										
+										b = vertexHeight / Mathf.Tan(frontTriangle.alpha);
+										
+										if(b <= vertexWidth)
 										{
-											//Width == Height
-											width++;
-										}
-										else
-										{
-											depthLine = true;
-											vertexHeight = vertexWidth / Mathf.Tan(frontTriangle.beta);	//Calculate new vertexHeight
-											
+											if(b == vertexWidth)
+											{
+												//Width == Height
+												width++;
+											}
+											else
+											{
+												depthLine = true;
+												vertexHeight = vertexWidth / Mathf.Tan(frontTriangle.beta);	//Calculate new vertexHeight
+												
+											}
 										}
 									}
 																		
@@ -870,6 +962,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 												#endregion Region Debug Error
 											}
 										}
+										VerticesRight.left[j] = i;
 									} 
 									else if(right == false)
 									{
@@ -904,7 +997,8 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								else //heigt == SectionHeight
 								{
 									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
-									right = true;
+									depth = 0;
+									VerticesRight.last = i;
 								}															
 								
 							}
@@ -920,6 +1014,8 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							if(right == true)
 							{
 								depth = 0;
+								VerticesRight.right[j] = i;
+								j++;
 							}
 							
 							if(depth == 0)
@@ -944,6 +1040,9 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									height = 0;
 									depth = 0;
 									width = 0;
+									
+									VerticesRight.lines = j;
+									j = 0;
 								}
 							
 							}
@@ -964,21 +1063,84 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 	}
 	
 	
-	void CreateUV()
+	void createTriangles()
 	{
-		
-		face = 0;
-		
-		if(TexturePartNumber == 1)
-		{
-			facemulti = 0;
-		}
-		else
-		{
-			facemulti = 1 / TexturePartNumber;
-		}
-		
-		
+		switch(ObjectType)
+			{
+				case category.trapezium:
+					#region Region trapezium
+					switch(face)
+					{
+						case 0:
+							#region Region Ground
+													
+							#endregion Ground
+							break;
+
+						case 1:
+							#region Region Front
+							
+							#endregion Front
+							break;
+
+						case 2:				
+							#region Region Left
+							
+							#endregion Left
+							break;
+
+						case 3:
+							#region Region Right
+							
+							#endregion Right
+							break;
+							
+						case 4:	//no trapezium face
+							break;
+					}
+					#endregion trapezium
+					break;
+				case category.pyramid:
+					#region Region pyramid
+					switch(face)
+					{
+						case 0:
+							#region Region Ground
+													
+							#endregion Ground
+							break;
+
+						case 1:
+							#region Region Front
+							
+							#endregion Front
+							break;
+
+						case 2:				
+							#region Region Left
+							
+							#endregion Left
+							break;
+
+						case 3:
+							#region Region Back
+						
+							#endregion Back							
+							break;
+
+						case 4:
+							#region Region Right
+							
+							#endregion Right
+							break;
+							
+						case 5:	//no pyramid face
+							break;
+					}
+					#endregion pyramid
+					break;
+			}
+
 	}
 	
 	
