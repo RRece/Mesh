@@ -72,6 +72,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 		public int[] right;
 		public int last;
 		public int lines;		
+		public int first;	
 	} 
 	
 	private TriangleVertecis VertecisFront, VerticesBack, VerticesLeft, VerticesRight, VerticesGround;
@@ -327,7 +328,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 					#region Region pyramid
 					switch(face)
 					{
-						//Ground
+						#region Region Ground
 						case 0:
 							newVertices[i] = new Vector3(-HalfMeshWidth +  (width * MeshWidth), -HalfMeshHeight ,-HalfMeshDepth + (depth * MeshDepth));
 							
@@ -344,22 +345,25 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								{
 									face++;
 									depth = 0;
+									
+									VertecisFront.first = i + 1;
 								}
 							
 							}
 							width++;
 							break;
+						#endregion Ground
 							
 						#region Region Front
 						case 1:
 							
-							if (height != 0)
-							{
+							//if (height != 0)
+							//{
 								if(height != SectionHeight)
 								{
 									vertexWidth = width * MeshWidth;
 									
-									if (vertexWidth < HalfMeshWidth)
+									if (vertexWidth > HalfMeshWidth)
 									{
 										vertexWidth = ObjectWidth - vertexWidth;
 										rightSide = true;
@@ -383,6 +387,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 											{
 												depthLine = true;
 												vertexHeight = vertexDepth / Mathf.Tan(sideTriangle.beta);	//Calculate new vertexHeight
+												//depth++;
 												
 											}
 										}
@@ -435,7 +440,10 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 												#endregion Region Debug Error
 											}
 										}
-										VertecisFront.left[j] = i;
+										
+											VertecisFront.left[j] = i;
+											
+										
 									} 
 									else if(right == false)
 									{
@@ -448,7 +456,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 										{
 											newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);	
 										}
-										else if (rightSide == true)
+										else // (rightSide == true)
 										{
 											b = vertexHeight / Mathf.Tan (frontTriangle.alpha);	
 											
@@ -471,17 +479,14 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								else //heigt == SectionHeight
 								{
 									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
-									width = SectionWidth;
-									
-									VertecisFront.last=i;
-									
+									width = SectionWidth;	
 								}															
 								
-							}
-							else //heigt == 0
-							{
-								newVertices[i] = new Vector3(-HalfMeshWidth +  (width * MeshWidth), -HalfMeshHeight ,-HalfMeshDepth);
-							}
+							//}
+							//else //heigt == 0
+							//{
+							//	newVertices[i] = new Vector3(-HalfMeshWidth +  (width * MeshWidth), -HalfMeshHeight ,-HalfMeshDepth);
+							//}
 							
 							#region Region UV
 							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, (float)height/SectionHeight);
@@ -503,9 +508,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								else
 								{
 									height++;
-								}	
-								
-								
+								}
 								
 								width = -1;
 								left = false;
@@ -515,11 +518,15 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								
 								if(height > SectionHeight)
 								{
-									VertecisFront.lines=j;
+									VertecisFront.lines = j;
+									VertecisFront.last = i;
+									
 									face++;
 									height = 0;
 									depth = 0;
 									j = 0;
+									
+									VerticesLeft.first = i + 1;
 								}
 							
 							}
@@ -649,7 +656,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								{
 									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
 									depth = SectionDepth;
-									VerticesLeft.last = i;
+									
 								}															
 								
 							}
@@ -692,8 +699,11 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									depth = 0;
 									width = SectionWidth;
 									
+									VerticesLeft.last = i;
 									VerticesLeft.lines = j;
 									j = 0;
+									
+									VerticesBack.first = i + 1;
 								}
 							
 							}
@@ -824,7 +834,6 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								{
 									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
 									width = 0;
-									VerticesBack.last = i;
 								}															
 								
 							}
@@ -868,8 +877,12 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									depth = SectionDepth;
 									width = 1;
 									
+									VerticesBack.last = i;
 									VerticesBack.lines = j;
+									
 									j = 0;
+									
+									VerticesRight.first = i + 1;
 								}
 							
 							}
@@ -997,8 +1010,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								else //heigt == SectionHeight
 								{
 									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
-									depth = 0;
-									VerticesRight.last = i;
+									depth = 0;									
 								}															
 								
 							}
@@ -1041,6 +1053,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									depth = 0;
 									width = 0;
 									
+									VerticesRight.last = i;
 									VerticesRight.lines = j;
 									j = 0;
 								}
@@ -1065,6 +1078,13 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 	
 	void createTriangles()
 	{
+		int j = 0;		
+		int line = 0;
+		
+		face = 0;
+		int TrianglesLength = 1200;
+		newTriangles = new int[TrianglesLength];
+		
 		switch(ObjectType)
 			{
 				case category.trapezium:
@@ -1102,43 +1122,217 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 					break;
 				case category.pyramid:
 					#region Region pyramid
+					
+				Debug.Log("Face 1: fist: " + VertecisFront.first + " last: " + VertecisFront.last);
+				Debug.Log("Face 2: fist: " + VerticesLeft.first + " last: " + VerticesLeft.last);
+				Debug.Log("Face 3: fist: " + VerticesBack.first + " last: " + VerticesBack.last);
+				Debug.Log("Face 4: fist: " + VerticesRight.first + " last: " + VerticesRight.last);
+				
+				
+				
+				for(int k = 0; k < 5; k++)
+				{
+					Debug.Log("k: " + k + " Face: " + face);
+					
 					switch(face)
 					{
-						case 0:
-							#region Region Ground
-													
-							#endregion Ground
-							break;
-
-						case 1:
-							#region Region Front
-							
-							#endregion Front
-							break;
-
-						case 2:				
-							#region Region Left
-							
-							#endregion Left
-							break;
-
-						case 3:
-							#region Region Back
+					case 0:
+						#region Region Ground
+						int groundVertices = (SectionHeight+1) * (SectionWidth+1);
 						
-							#endregion Back							
-							break;
+						for(int i = 0; i < groundVertices; i++)
+						{
+							if(i >= SectionWidth)
+							{
+								if(((i + 1) % (SectionWidth + 1)) != 0)
+								{
+									newTriangles[j] = i - SectionWidth;
+									newTriangles[j+2] = i - (SectionWidth + 1);
+									newTriangles[j+1] = i;
+									
+									newTriangles[j+4] = i;
+									newTriangles[j+3] = i + 1;
+									newTriangles[j+5] = newTriangles[j];
+									
+					
+									#region Region Debug
+									//Debug.Log ("J: " + j + " I: " + i + " Face: " + face);						
+									//Debug.Log("Triangle: " + newTriangles[j] + " ; " + newTriangles[(j + 1)] + " ; " + newTriangles[(j + 2)]);
+									//Debug.Log("Triangle: " + newTriangles[(j + 3)] + " ; " + newTriangles[(j + 4)] + " ; " + newTriangles[(j + 5)]);
+									#endregion
+									
+									j += 6;							
+								}	
+							}
+						}
+						
+						face++;
+						
+						#endregion Ground
+						break;
 
-						case 4:
-							#region Region Right
+					case 1:
+						#region Region Front
+						for(int i = VertecisFront.first; i < VertecisFront.last; i++)
+						{
+							Debug.Log("i: " + i + " Line: " + line);
+								
+							int A = VertecisFront.left[line] - (VertecisFront.right[line] + 1);
+							int B = VertecisFront.left[line + 1]-(VertecisFront.right[line + 1] + 1);
+							int VerticesDifference = (A - B) /2	+ B;
 							
-							#endregion Right
-							break;
+							if(i == VertecisFront.left[line] && i + 1 == VertecisFront.right[line] && i + 2 == VertecisFront.last)
+							{
+								newTriangles[j] = i + 1;
+								newTriangles[j+2] = i + 2;
+								newTriangles[j+1] = i;
+								
+								j += 3;
+								
+								
+								face++;								
+								line = 0;
+								break;
+							}
+							else if((i >VertecisFront.left[line] && j > VertecisFront.right[line] - 1) 
+								|| ((i == VertecisFront.left[line] || i == VertecisFront.right[line] - 1) && A == B ))
+							{
+								newTriangles[j] = i + VerticesDifference;
+								newTriangles[j+2] = i + VerticesDifference + 1;
+								newTriangles[j+1] = i;
+								
+								newTriangles[j+4] = i;
+								newTriangles[j+3] = i + 1;
+								newTriangles[j+5] = i + VerticesDifference + 1;
+								
+								j += 6;
+							}
+	//							else if((i == VertecisFront.left[line] || i == VertecisFront.right[line]) && A == B )
+	//							{
+	//								newTriangles[j] = i + VerticesDifference;
+	//								newTriangles[j+2] = i + VerticesDifference + 1;
+	//								newTriangles[j+1] = i;
+	//								
+	//								newTriangles[j+4] = i;
+	//								newTriangles[j+3] = i + 1;
+	//								newTriangles[j+5] = i + VerticesDifference + 1;
+	//								
+	//								j += 6;
+	//							}
+							else if(i == VertecisFront.left[line])
+							{
+								newTriangles[j] = i + 1;
+								newTriangles[j+2] = VertecisFront.left[line + 1];
+								newTriangles[j+1] = i;
+							}
+							else if(i == VertecisFront.right[line] - 1)
+							{
+								newTriangles[j] = i + 1;
+								newTriangles[j+2] = VertecisFront.right[line + 1];
+								newTriangles[j+1] = i;
+							}
 							
-						case 5:	//no pyramid face
-							break;
+							if(i == VertecisFront.right[line])
+							{
+								line++;
+							}
+						}
+							
+						#endregion Front
+						break;
+
+					case 2:				
+						#region Region Left
+						
+						for(int i = 0; i < VerticesLeft.last; i++)
+						{
+							int A = VerticesLeft.left[line] - (VerticesLeft.right[line] + 1);
+							int B = VerticesLeft.left[line + 1]-(VerticesLeft.right[line + 1] + 1);
+							int VerticesDifference = (A - B) /2	+ B;
+							
+							if(i == VerticesLeft.left[line] && i + 1 == VerticesLeft.right[line] && i + 2 == VerticesLeft.last)
+							{
+								newTriangles[j] = i + 1;
+								newTriangles[j+2] = i + 2;
+								newTriangles[j+1] = i;
+								
+								j += 3;
+								
+								
+								face++;								
+								line = 0;
+								break;
+							}
+							else if((i >VerticesLeft.left[line] && j > VerticesLeft.right[line] - 1) 
+								|| ((i == VerticesLeft.left[line] || i == VerticesLeft.right[line] - 1) && A == B ))
+							{
+								newTriangles[j] = i + VerticesDifference;
+								newTriangles[j+2] = i + VerticesDifference + 1;
+								newTriangles[j+1] = i;
+								
+								newTriangles[j+4] = i;
+								newTriangles[j+3] = i + 1;
+								newTriangles[j+5] = i + VerticesDifference + 1;
+								
+								j += 6;
+							}
+	//							else if((i == VerticesLeft.left[line] || i == VerticesLeft.right[line]) && A == B )
+	//							{
+	//								newTriangles[j] = i + VerticesDifference;
+	//								newTriangles[j+2] = i + VerticesDifference + 1;
+	//								newTriangles[j+1] = i;
+	//								
+	//								newTriangles[j+4] = i;
+	//								newTriangles[j+3] = i + 1;
+	//								newTriangles[j+5] = i + VerticesDifference + 1;
+	//								
+	//								j += 6;
+	//							}
+							else if(i == VerticesLeft.left[line])
+							{
+								newTriangles[j] = i + 1;
+								newTriangles[j+2] = VerticesLeft.left[line + 1];
+								newTriangles[j+1] = i;
+							}
+							else if(i == VerticesLeft.right[line] - 1)
+							{
+								newTriangles[j] = i + 1;
+								newTriangles[j+2] = VerticesLeft.right[line + 1];
+								newTriangles[j+1] = i;
+							}
+							
+							if(i == VerticesLeft.right[line])
+							{
+								line++;
+							}
+						}
+						
+						#endregion Left
+						break;
+
+					case 3:
+						#region Region Back
+					
+						face++;	
+						
+						#endregion Back							
+						break;
+
+					case 4:
+						#region Region Right
+						face++;	
+						
+						#endregion Right
+						break;
+						
+					case 5:	//no pyramid face
+						
+						break;
 					}
-					#endregion pyramid
-					break;
+				}
+				
+				#endregion pyramid
+				break;
 			}
 
 	}
