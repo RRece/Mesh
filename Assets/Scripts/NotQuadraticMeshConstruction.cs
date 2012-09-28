@@ -356,8 +356,9 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							
 						#region Region Front
 						case 1:
-							
-							Debug.Log("i: " + i + " j: " + j + " Height: " + height + " Width: " + width + " Depth:" + depth);
+							#region Region Debug
+							//Debug.Log("i: " + i + " j: " + j + " Height: " + height + " Width: " + width + " Depth:" + depth);
+							#endregion  Debug
 							
 							if (height != 0)
 							{
@@ -366,7 +367,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 	
 									vertexWidth = width * MeshWidth;
 									
-									if (vertexWidth < HalfMeshWidth)
+									if (vertexWidth > HalfMeshWidth)
 									{
 										vertexWidth = ObjectWidth - vertexWidth;
 										rightSide = true;
@@ -374,156 +375,150 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									
 									if(depthLine == false)
 									{
-										vertexHeight = height * MeshHeight;									
+										vertexHeight = height * MeshHeight;	
 									
 										vertexDepth = (depth + 1) * MeshDepth;
-										c = vertexHeight / Mathf.Tan(sideTriangle.alpha);
 										
-										Debug.Log("VertexHeight: " + vertexHeight +" VertexDepth: " + vertexDepth + " C: " + c);
+										c = (Mathf.Sin(sideTriangle.beta) * vertexHeight) / Mathf.Sin(sideTriangle.alpha);
 										
-										if(c <= vertexDepth)
+										#region Region Debug
+										//Debug.Log("VertexHeight: " + vertexHeight +" VertexDepth: " + vertexDepth + " C: " + c);
+										#endregion  Debug
+										
+										if(c >= vertexDepth)
 										{
 											if(c == vertexDepth)
 											{
 												//Depth == Height
 												depth++;
 											}
-											else
+											else //c > vertexDepth
 											{
 												depthLine = true;
-												vertexHeight = vertexDepth / Mathf.Tan(sideTriangle.beta);	//Calculate new vertexHeight												
+												vertexHeight = (Mathf.Sin(sideTriangle.alpha) * vertexDepth) / Mathf.Sin(sideTriangle.beta);
 												
 											}
+										}
+										else //c < vertexDepth
+										{
+											vertexDepth = c;
 										}
 									}
 																		
-									a =	vertexWidth / Mathf.Tan(frontTriangle.beta);
+									a = (Mathf.Sin(frontTriangle.alpha)* vertexWidth) / Mathf.Sin(frontTriangle.beta);
 									
-									
-																			
 									if(left == false)
 									{
-										if(vertexHeight <= a)
+										if(a == vertexHeight)
 										{
-										
-											if(vertexHeight == a)
-											{
-												newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);
-												left = true;
-												
-											}
-											else 
-											{									
-												b = vertexHeight / Mathf.Tan (frontTriangle.alpha);	
-												
-												if(vertexWidth - MeshWidth < b && width > 0)
-												{
-													newVertices[i] = new Vector3(b - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);
-													left = true;
-												}
-												else
-												{
-													Debug.Log("i--");
-													//i--;
-												}
-												
-												
-											}
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+											left = true;
 										}
-										else //vertexHeight > a									
+										else if(a < vertexHeight)
 										{
-											b = vertexHeight / Mathf.Tan (frontTriangle.alpha);
+											b = (Mathf.Sin(frontTriangle.beta) * vertexHeight) / Mathf.Sin(frontTriangle.alpha);
 											
-											if((b/MeshWidth) < (SectionWidth / 2))
+											if(b / MeshWidth > width)
 											{
-												width = (int)(b / MeshWidth);
-						
-												newVertices[i] = new Vector3(b - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);
-												left = true;
-											}
-											else
-											{
-												Debug.Log("i-- 2");
-												//i--;
-											}
+												#region Region Debug
+												//Debug.Log("i: " + i + " Width: " + width + " B:" + b + " MeshWidth:" + MeshWidth);
+												#endregion  Debug
 												
-											
+												width = (int)(b / MeshWidth);
+
+											}
+											newVertices[i] = new Vector3(b -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+											left = true;
+										}
+										else //a > vertexHeight
+										{
+											b = (Mathf.Sin(frontTriangle.beta) * vertexHeight) / Mathf.Sin(frontTriangle.alpha);
+
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+																						
 										}
 										
 										VertecisFront.left[j] = i;
-											
 										
-									} 
-									else //if(right == false)
+										#region Region Debug
+										//Debug.Log("Front.Left " + j + ": " + VertecisFront.left[j]);
+										#endregion  Debug
+									}
+									else
 									{
-										if(vertexHeight == a)
+										if(a == vertexHeight)
 										{
-											newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
 											right = true;
 										}
-										else if (rightSide == false)
+										else if(a < vertexHeight)
 										{
-											newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);	
+											b = (Mathf.Sin(frontTriangle.beta) * vertexHeight) / Mathf.Sin(frontTriangle.alpha);
+											
+											newVertices[i] = new Vector3(b -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+											right = true;
 										}
-										else // (rightSide == true)
+										else //a > vertexHeight
 										{
-											b = vertexHeight / Mathf.Tan (frontTriangle.alpha);	
-											
-											if(vertexWidth - MeshWidth <= b)
-											{
-												newVertices[i] = new Vector3(ObjectWidth - b, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);
-												right = true;
-												
-											}
-											else
-											{
-												newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)) - HalfMeshDepth);	
-											}
-											
+											b = (Mathf.Sin(frontTriangle.beta) * vertexHeight) / Mathf.Sin(frontTriangle.alpha);
+
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+																						
 										}
 									}
-								}
-								else //heigt == SectionHeight
+
+									
+								} 
+								else //height == SectionHeight
 								{
 									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
 									width = SectionWidth;
 									VertecisFront.last = i;
+									
+									#region Region Debug
+									//Debug.Log("Front.Last: " + VertecisFront.last);
+									#endregion  Debug
 								}
+								
 							}
-							else //heigt == 0
+							else //height == 0
 							{
 								if(left == false)
 								{
 									VertecisFront.left[j] = i;
+									left = true;
+									
+									#region Region Debug
+									//Debug.Log("Front.Left " + j + ": " + VertecisFront.left[j]);
+									#endregion  Debug
 								}
-								else //left == ture
+								
+								if(width == SectionWidth)
 								{
-									if(width == SectionWidth)
-									{
-										right = true;
-									}
+									right = true;
 								}
+								
 								newVertices[i] = new Vector3((width * MeshWidth) -HalfMeshWidth, -HalfMeshHeight ,- HalfMeshDepth);
 							}
-							
-							#region Region UV
-							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, (float)height/SectionHeight);
-							#endregion UV
-							
+									
 							if(right == true)
 							{
-								VertecisFront.right[j] = i;								
+								VertecisFront.right[j] = i;
 								j++;
 								width = SectionWidth;
+								
+								#region Region Debug
+								//Debug.Log("Front.Right " + (j-1) + ": " + VertecisFront.right[j-1]);
+								#endregion  Debug
+								
 							}
 							
-							if(width == SectionWidth)	
-							{		
+							if(width == SectionWidth)
+							{								
 								if(depthLine == true)
 								{
 									depthLine = false;
 									depth++;
-									
 								}
 								else
 								{
@@ -531,21 +526,15 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								}
 								
 								width = -1;
+								
 								left = false;
 								right = false;
 								
-								rightSide = false;
-								
 								if(height > SectionHeight)
 								{
-									VertecisFront.lines = j;
+									VertecisFront.lines = j;									
 									
-									
-									//face++;
-									#region Region testing
-									face = 5;	//testing
-									#endregion testing
-									
+									face++;
 									height = 0;
 									depth = 0;
 									j = 0;
@@ -554,186 +543,203 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								}
 							
 							}
+							
 							width++;
+						
 							
 							break;
 						#endregion Front
 							
 						#region Region Left
 						case 2:
+							#region Region Debug
+							//Debug.Log("i: " + i + " j: " + j + " Height: " + height + " Width: " + width + " Depth:" + depth);
+							#endregion  Debug
 							
 							if (height != 0)
 							{
 								if(height != SectionHeight)
 								{
-									vertexDepth = depth * MeshDepth;
+									vertexDepth = depth * MeshDepth;									
 									
-									if (vertexDepth < HalfMeshDepth)
+									if (vertexDepth > HalfMeshDepth)
 									{
 										vertexDepth = ObjectDepth - vertexDepth;
 										rightSide = true;
 									}
 									
-									vertexHeight = height * MeshHeight;
-									
 									if(depthLine == false)
 									{
-										vertexWidth = (width + 1) * MeshWidth;	
-										b = vertexHeight / Mathf.Tan(frontTriangle.alpha);
-									
-										if(b <= vertexWidth)
+										vertexHeight = height * MeshHeight;										
+										
+										vertexWidth = (width + 1) * MeshWidth;
+										
+										b = (Mathf.Sin(frontTriangle.beta) * vertexHeight) / Mathf.Sin(frontTriangle.alpha);
+										
+										#region Region Debug
+										//Debug.Log("VertexHeight: " + vertexHeight +" VertexDepth: " + vertexDepth + " C: " + c);
+										#endregion  Debug
+										
+										if(b >= vertexWidth)
 										{
 											if(b == vertexWidth)
 											{
-												//Width == Height
-												width++;
+												//Depth == Height
+												depth++;
 											}
-											else
+											else //b > vertexDepth
 											{
 												depthLine = true;
-												vertexHeight = vertexWidth / Mathf.Tan(frontTriangle.beta);	//Calculate new vertexHeight
+												vertexHeight = (Mathf.Sin(frontTriangle.alpha) * vertexWidth) / Mathf.Sin(frontTriangle.beta);
 												
 											}
+										}
+										else //b < vertexDepth
+										{
+											vertexWidth = b;
 										}
 									}
 																		
-									a =	vertexWidth / Mathf.Tan(sideTriangle.beta);
+									a = (Mathf.Sin(sideTriangle.alpha)* vertexWidth) / Mathf.Sin(sideTriangle.beta);
 									
-									
-																			
 									if(left == false)
 									{
-										if(vertexHeight <= a)
+										if(a == vertexHeight)
 										{
-										
-											if(vertexHeight == a)
-											{
-												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
-												left = true;
-											}
-											else if( width > 0)
-											{
-												c = vertexHeight / Mathf.Tan (sideTriangle.alpha);	
-												
-												if(vertexWidth - MeshWidth < c)
-												{
-													newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,c - HalfMeshDepth);
-													left = true;
-												}
-												
-											}
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+											left = true;
 										}
-										else //vertexHeight > a									
+										else if(a < vertexHeight)
 										{
-											c = vertexHeight / Mathf.Tan (sideTriangle.alpha);
+											c = (Mathf.Sin(sideTriangle.beta) * vertexHeight) / Mathf.Sin(sideTriangle.alpha);
 											
-											if((c/MeshDepth) < (SectionDepth / 2))
+											if(c / MeshDepth > depth)
 											{
+												#region Region Debug
+												//Debug.Log("i: " + i + " Depth: " + depth + " C:" + c + " MeshDepth:" + MeshWidth);
+												#endregion  Debug
 												depth = (int)(c / MeshDepth);
-						
-												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,c - HalfMeshDepth);
-												left = true;
-												
+
 											}
-											else
-											{
-												#region Region Debug Error
-												Debug.LogError ("Wrong Triangle Calculation");
-												Debug.LogError ("Face: " + face + " I: " + i);
-												#endregion Region Debug Error
-											}
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , c - HalfMeshDepth);
+											left = true;
 										}
-										VerticesLeft.left[j] = i;
-									} 
-									else if(right == false)
-									{
-										if(vertexHeight == a)
+										else //a > vertexHeight
 										{
-											newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
+											//c = (Mathf.Sin(sideTriangle.beta) * vertexHeight) / Mathf.Sin(sideTriangle.alpha);
+
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+																						
+										}
+										
+										VerticesLeft.left[j] = i;
+										
+										#region Region Debug
+										//Debug.Log("Left.Left " + j + ": " + VerticesLeft.left[j]);
+										#endregion  Debug
+									}
+									else
+									{
+										if(a == vertexHeight)
+										{
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
 											right = true;
 										}
-										else if (rightSide == false)
+										else if(a < vertexHeight)
 										{
-											newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
+											c = (Mathf.Sin(sideTriangle.beta) * vertexHeight) / Mathf.Sin(sideTriangle.alpha);
+											
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , c - HalfMeshDepth);
+											right = true;
 										}
-										else if (rightSide == true)
+										else //a > vertexHeight
 										{
-											c = vertexHeight / Mathf.Tan (sideTriangle.alpha);	
-											
-											if(vertexWidth - MeshWidth < b)
-											{
-												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,ObjectDepth - c);
-												right = true;
-												
-											}
-											else
-											{
-												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
-											}
-											
+											//b = (Mathf.Sin(sideTriangle.beta) * vertexHeight) / Mathf.Sin(sideTriangle.alpha);
+
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+																						
 										}
 									}
-	
-																	
-								}
-								else //heigt == SectionHeight
+
+									
+								} 
+								else //height == SectionHeight
 								{
 									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
 									depth = SectionDepth;
+									VerticesLeft.last = i;
 									
-								}															
+									#region Region Debug
+									//Debug.Log("Left.Last: " + VerticesLeft.last);
+									#endregion  Debug
+								}
 								
 							}
-							else //heigt == 0
+							else //height == 0
 							{
-								newVertices[i] = new Vector3(-HalfMeshWidth, -HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
+								if(left == false)
+								{
+									VerticesLeft.left[j] = i;
+									left = true;
+									
+									#region Region Debug
+									//Debug.Log("Left.Left " + j + ": " + VerticesLeft.left[j]);
+									#endregion  Debug
+								}
+								
+								if(depth == SectionDepth)
+								{
+									right = true;
+								}
+								
+								newVertices[i] = new Vector3((width * MeshWidth) -HalfMeshWidth, -HalfMeshHeight ,- HalfMeshDepth);
 							}
-							
-							#region Region UV
-							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + face * facemulti, (float)height/SectionHeight);	
-							#endregion UV
-							
+									
 							if(right == true)
 							{
 								VerticesLeft.right[j] = i;
-								depth = SectionDepth;
 								j++;
+								depth = SectionDepth;
+								
+								#region Region Debug
+								//Debug.Log("Left.Right " + (j-1) + ": " + VerticesLeft.right[j-1]);
+								#endregion  Debug
+								
 							}
 							
-							if(depth == SectionWidth)
-							{		
+							if(depth == SectionDepth)
+							{								
 								if(depthLine == true)
 								{
 									depthLine = false;
+									width++;
 								}
 								else
 								{
 									height++;
-								}								
+								}
+								
 								depth = -1;
+								
 								left = false;
 								right = false;
 								
-								rightSide = false;
-								
+
 								if(height > SectionHeight)
 								{
+									VerticesLeft.lines = j;								
+									
 									face++;
 									height = 0;
-									depth = 0;
-									width = SectionWidth;
-									
-									VerticesLeft.last = i;
-									VerticesLeft.lines = j;
+									width = 0;
+									depth = SectionDepth - 1;
 									j = 0;
 									
 									VerticesBack.first = i + 1;
 								}
-							
 							}
 							depth++;
-							
-							
+
 							break;
 						#endregion Left
 							
@@ -743,347 +749,370 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							{
 								if(height != SectionHeight)
 								{
+	
 									vertexWidth = width * MeshWidth;
 									
-									if (vertexWidth < HalfMeshWidth)
+									if (vertexWidth > HalfMeshWidth)
 									{
 										vertexWidth = ObjectWidth - vertexWidth;
 										rightSide = true;
 									}
 									
-									vertexHeight = height * MeshHeight;
-									
 									if(depthLine == false)
 									{
+										vertexHeight = height * MeshHeight;	
+									
 										vertexDepth = (depth + 1) * MeshDepth;
-										c = vertexHeight / Mathf.Tan(sideTriangle.alpha);
 										
-										if(c <= vertexDepth)
+										c = (Mathf.Sin(sideTriangle.beta) * vertexHeight) / Mathf.Sin(sideTriangle.alpha);
+										
+										#region Region Debug
+										//Debug.Log("VertexHeight: " + vertexHeight +" VertexDepth: " + vertexDepth + " C: " + c);
+										#endregion  Debug
+										
+										if(c >= vertexDepth)
 										{
 											if(c == vertexDepth)
 											{
 												//Depth == Height
-												depth++;
+												depth--;
 											}
-											else
+											else //c > vertexDepth
 											{
 												depthLine = true;
-												vertexHeight = vertexDepth / Mathf.Tan(sideTriangle.beta);	//Calculate new vertexHeight
+												vertexHeight = (Mathf.Sin(sideTriangle.alpha) * vertexDepth) / Mathf.Sin(sideTriangle.beta);
 												
 											}
 										}
+										else //c < vertexDepth
+										{
+											vertexDepth = c;
+										}
 									}
-										
 																		
-									a =	vertexWidth / Mathf.Tan(frontTriangle.beta);
+									a = (Mathf.Sin(frontTriangle.alpha)* vertexWidth) / Mathf.Sin(frontTriangle.beta);
 									
-									
-																			
 									if(left == false)
 									{
-										if(vertexHeight <= a)
+										if(a == vertexHeight)
 										{
-										
-											if(vertexHeight == a)
-											{
-												newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)));
-												left = true;
-											}
-											else if( width > 0)
-											{
-												b = vertexHeight / Mathf.Tan (frontTriangle.alpha);	
-												
-												if(vertexWidth - MeshWidth < b)
-												{
-													newVertices[i] = new Vector3(b - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)));
-													left = true;
-												}
-												
-											}
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth + HalfMeshDepth);
+											left = true;
 										}
-										else //vertexHeight > a									
+										else //a < vertexHeight)
 										{
-											b = vertexHeight / Mathf.Tan (frontTriangle.alpha);
+											b = (Mathf.Sin(frontTriangle.beta) * vertexHeight) / Mathf.Sin(frontTriangle.alpha);
 											
-											if((b/MeshWidth) < (SectionWidth / 2))
+											if(b / MeshWidth > width)
 											{
+												#region Region Debug
+												//Debug.Log("i: " + i + " Width: " + width + " B:" + b + " MeshWidth:" + MeshWidth);
+												#endregion  Debug
 												width = (int)(b / MeshWidth);
-						
-												newVertices[i] = new Vector3(b - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)));
-												left = true;
-												
+
 											}
-											else
-											{
-												#region Region Debug Error
-												Debug.LogError ("Wrong Triangle Calculation");
-												Debug.LogError ("Face: " + face + " I: " + i);
-												#endregion Region Debug Error
-											}
+											newVertices[i] = new Vector3(b -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth + HalfMeshDepth);
+											left = true;
 										}
+//										else //a > vertexHeight
+//										{
+//											b = (Mathf.Sin(frontTriangle.beta) * vertexHeight) / Mathf.Sin(frontTriangle.alpha);
+//
+//											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth + HalfMeshDepth);
+//																						
+//										}
+										
 										VerticesBack.left[j] = i;
-									} 
-									else if(right == false)
+										
+										#region Region Debug
+										//Debug.Log("Back.Left " + j + ": " + VerticesBack.left[j]);
+										#endregion  Debug
+									}
+									else
 									{
-										if(vertexHeight == a)
+										if(a == vertexHeight)
 										{
-											newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)));
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth + HalfMeshDepth);
 											right = true;
 										}
-										else if (rightSide == false)
+										else if(a < vertexHeight)
 										{
-											newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)));	
+											b = (Mathf.Sin(frontTriangle.beta) * vertexHeight) / Mathf.Sin(frontTriangle.alpha);
+											
+											newVertices[i] = new Vector3(b -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth + HalfMeshDepth);
+											right = true;
 										}
-										else if (rightSide == true)
+										else //a > vertexHeight
 										{
-											b = vertexHeight / Mathf.Tan (frontTriangle.alpha);	
-											
-											if(vertexWidth - MeshWidth < b)
-											{
-												newVertices[i] = new Vector3(ObjectWidth - b, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)));
-												right = true;
-												
-											}
-											else
-											{
-												newVertices[i] = new Vector3((width * MeshWidth) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(vertexHeight / Mathf.Tan(sideTriangle.alpha)));	
-											}
-											
+											b = (Mathf.Sin(frontTriangle.beta) * vertexHeight) / Mathf.Sin(frontTriangle.alpha);
+
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth + HalfMeshDepth);
+																						
 										}
 									}
-	
-																	
-								}
-								else //heigt == SectionHeight
+
+									
+								} 
+								else //height == SectionHeight
 								{
 									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
-									width = 0;
-								}															
+									width = SectionWidth;
+									VerticesBack.last = i;
+									
+									#region Region Debug
+									//Debug.Log("Back.Last: " + VerticesBack.last);
+									#endregion  Debug
+								}
 								
 							}
-							else //heigt == 0
+							else //height == 0
 							{
-								newVertices[i] = new Vector3(-HalfMeshWidth +  (width * MeshWidth), -HalfMeshHeight ,HalfMeshDepth);
+								if(left == false)
+								{
+									VerticesBack.left[j] = i;
+									left = true;
+									
+									#region Region Debug
+									//Debug.Log("Back.Left " + j + ": " + VerticesBack.left[j]);
+									#endregion  Debug
+								}
+								
+								if(width == SectionWidth)
+								{
+									right = true;
+								}
+								
+								newVertices[i] = new Vector3((width * MeshWidth) -HalfMeshWidth, -HalfMeshHeight , HalfMeshDepth);
 							}
-							
-							#region Region UV
-							newUVs[i] = new Vector2((width * facemulti)/SectionWidth + face * facemulti, (float)height/SectionHeight);
-							#endregion UV
-							
+									
 							if(right == true)
 							{
-								width = 0;
 								VerticesBack.right[j] = i;
 								j++;
+								width = SectionWidth;
+								
+								#region Region Debug
+								//Debug.Log("Back.Right " + (j-1) + ": " + VerticesBack.right[j-1]);
+								#endregion  Debug
+								
+								
+								
 							}
 							
-							if(width == 0)
-							{		
+							if(width == SectionWidth)
+							{								
 								if(depthLine == true)
 								{
 									depthLine = false;
+									depth--;
 								}
 								else
 								{
 									height++;
-								}				
+								}
 								
-								width = SectionWidth + 1;
+								width = -1;
+								
 								left = false;
 								right = false;
 								
-								rightSide = false;
-								
 								if(height > SectionHeight)
 								{
+									VerticesBack.lines = j;									
+									
 									face++;
 									height = 0;
-									depth = SectionDepth;
-									width = 1;
-									
-									VerticesBack.last = i;
-									VerticesBack.lines = j;
-									
+									depth = 0;
 									j = 0;
 									
 									VerticesRight.first = i + 1;
 								}
 							
 							}
-							width--;
+							
+							width++;
 							
 							break;
 						#endregion Back
 						
 						#region Region Right
 						case 4:
+							#region Region Debug
+							//Debug.Log("i: " + i + " j: " + j + " Height: " + height + " Width: " + width + " Depth:" + depth);
+							#endregion  Debug
 							
 							if (height != 0)
 							{
 								if(height != SectionHeight)
 								{
-									vertexDepth = depth * MeshDepth;
+									vertexDepth = depth * MeshDepth;									
 									
-									if (vertexDepth < HalfMeshDepth)
+									if (vertexDepth > HalfMeshDepth)
 									{
 										vertexDepth = ObjectDepth - vertexDepth;
 										rightSide = true;
 									}
 									
-									vertexHeight = height * MeshHeight;
-									
 									if(depthLine == false)
 									{
-										vertexWidth = (width + 1) * MeshWidth;										
-										b = vertexHeight / Mathf.Tan(frontTriangle.alpha);
+										vertexHeight = height * MeshHeight;										
 										
-										if(b <= vertexWidth)
+										vertexWidth = (width + 1) * MeshWidth;
+										
+										b = (Mathf.Sin(frontTriangle.beta) * vertexHeight) / Mathf.Sin(frontTriangle.alpha);
+										
+										#region Region Debug
+										//Debug.Log("VertexHeight: " + vertexHeight +" VertexDepth: " + vertexDepth + " C: " + c);
+										#endregion  Debug
+										
+										if(b >= vertexWidth)
 										{
 											if(b == vertexWidth)
 											{
-												//Width == Height
-												width++;
+												//Depth == Height
+												depth++;
 											}
-											else
+											else //b > vertexDepth
 											{
 												depthLine = true;
-												vertexHeight = vertexWidth / Mathf.Tan(frontTriangle.beta);	//Calculate new vertexHeight
+												vertexHeight = (Mathf.Sin(frontTriangle.alpha) * vertexWidth) / Mathf.Sin(frontTriangle.beta);
 												
 											}
+										}
+										else //b < vertexDepth
+										{
+											vertexWidth = b;
 										}
 									}
 																		
-									a =	vertexWidth / Mathf.Tan(sideTriangle.beta);
+									a = (Mathf.Sin(sideTriangle.alpha)* vertexWidth) / Mathf.Sin(sideTriangle.beta);
 									
-									
-																			
 									if(left == false)
 									{
-										if(vertexHeight <= a)
-										{
-										
-											if(vertexHeight == a)
-											{
-												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
-												left = true;
-											}
-											else if( width > 0)
-											{
-												c = vertexHeight / Mathf.Tan (sideTriangle.alpha);	
-												
-												if(vertexWidth - MeshWidth < c)
-												{
-													newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,c - HalfMeshDepth);
-													left = true;
-												}
-												
-											}
+										if(a == vertexHeight)
+										{											
+											left = true;
 										}
-										else //vertexHeight > a									
+										else if(a < vertexHeight)
 										{
-											c = vertexHeight / Mathf.Tan (sideTriangle.alpha);
+											c = (Mathf.Sin(sideTriangle.beta) * vertexHeight) / Mathf.Sin(sideTriangle.alpha);
+											c = vertexDepth;
 											
-											if((c/MeshDepth) < (SectionDepth / 2))
+											if(c / MeshDepth > depth)
 											{
+												#region Region Debug
+												//Debug.Log("i: " + i + " Depth: " + depth + " C:" + c + " MeshDepth:" + MeshWidth);
+												#endregion  Debug
 												depth = (int)(c / MeshDepth);
-						
-												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,c - HalfMeshDepth);
-												left = true;
-												
+
 											}
-											else
-											{
-												#region Region Debug Error
-												Debug.LogError ("Wrong Triangle Calculation");
-												Debug.LogError ("Face: " + face + " I: " + i);
-												#endregion Region Debug Error
-											}
+											
+											left = true;
 										}
-										VerticesRight.left[j] = i;
-									} 
-									else if(right == false)
+										
+										newVertices[i] = new Vector3(vertexWidth + HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+										
+										VerticesLeft.left[j] = i;
+										
+										#region Region Debug
+										//Debug.Log("Left.Left " + j + ": " + VerticesLeft.left[j]);
+										#endregion  Debug
+									}
+									else
 									{
-										if(vertexHeight == a)
+										if(a == vertexHeight)
 										{
-											newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
 											right = true;
 										}
-										else if (rightSide == false)
+										else if(a < vertexHeight)
 										{
-											newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
-										}
-										else if (rightSide == true)
-										{
-											c = vertexHeight / Mathf.Tan (sideTriangle.alpha);	
+											c = (Mathf.Sin(sideTriangle.beta) * vertexHeight) / Mathf.Sin(sideTriangle.alpha);
 											
-											if(vertexWidth - MeshWidth < b)
-											{
-												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,ObjectDepth - c);
-												right = true;												
-											}
-											else
-											{
-												newVertices[i] = new Vector3((vertexHeight / Mathf.Tan(frontTriangle.alpha)) - HalfMeshWidth, vertexHeight - HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
-											}
-											
+											vertexDepth = c;
+											right = true;
 										}
+										
+										newVertices[i] = new Vector3(vertexWidth + HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
 									}
-	
-																	
-								}
-								else //heigt == SectionHeight
+
+									
+								} 
+								else //height == SectionHeight
 								{
 									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
-									depth = 0;									
-								}															
+									depth = SectionDepth;
+									VerticesLeft.last = i;
+									
+									#region Region Debug
+									//Debug.Log("Left.Last: " + VerticesLeft.last);
+									#endregion  Debug
+								}
 								
 							}
-							else //heigt == 0
+							else //height == 0
 							{
-								newVertices[i] = new Vector3(-HalfMeshWidth, -HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
+								if(left == false)
+								{
+									VerticesLeft.left[j] = i;
+									left = true;
+									
+									#region Region Debug
+									//Debug.Log("Left.Left " + j + ": " + VerticesLeft.left[j]);
+									#endregion  Debug
+								}
+								
+								if(depth == SectionDepth)
+								{
+									right = true;
+								}
+								
+								newVertices[i] = new Vector3((width * MeshWidth) + HalfMeshWidth, -HalfMeshHeight ,- HalfMeshDepth);
 							}
-							
-							#region Region UV
-							newUVs[i] = new Vector2((depth * facemulti)/SectionDepth + face * facemulti, (float)height/SectionHeight);	
-							#endregion UV
-							
+									
 							if(right == true)
 							{
-								depth = 0;
-								VerticesRight.right[j] = i;
+								VerticesLeft.right[j] = i;
 								j++;
+								depth = SectionDepth;
+								
+								#region Region Debug
+								//Debug.Log("Left.Right " + (j-1) + ": " + VerticesLeft.right[j-1]);
+								#endregion  Debug
+								
 							}
 							
-							if(depth == 0)
-							{		
+							if(depth == SectionDepth)
+							{								
 								if(depthLine == true)
 								{
 									depthLine = false;
+									width++;
 								}
 								else
 								{
 									height++;
-								}								
-								depth = SectionWidth + 1;
+								}
+								
+								depth = -1;
+								
 								left = false;
 								right = false;
 								
-								rightSide = false;
-								
+
 								if(height > SectionHeight)
 								{
+									VerticesLeft.lines = j;								
+									
 									face++;
 									height = 0;
-									depth = 0;
 									width = 0;
-									
-									VerticesRight.last = i;
-									VerticesRight.lines = j;
+									depth = SectionDepth - 1;
 									j = 0;
+									
+									VerticesBack.first = i + 1;
 								}
-							
 							}
-							depth--;
+							depth++;
 							
 							break;
 							#endregion Right
@@ -1148,10 +1177,10 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 					#region Region pyramid
 					
 				#region Region Debug
-				Debug.Log("Face 1: fist: " + VertecisFront.first + " last: " + VertecisFront.last);
-				Debug.Log("Face 2: fist: " + VerticesLeft.first + " last: " + VerticesLeft.last);
-				Debug.Log("Face 3: fist: " + VerticesBack.first + " last: " + VerticesBack.last);
-				Debug.Log("Face 4: fist: " + VerticesRight.first + " last: " + VerticesRight.last);
+				Debug.Log("Front: fist: " + VertecisFront.first + " last: " + VertecisFront.last);
+				Debug.Log("Left: fist: " + VerticesLeft.first + " last: " + VerticesLeft.last);
+				Debug.Log("Back: fist: " + VerticesBack.first + " last: " + VerticesBack.last);
+				Debug.Log("Right: fist: " + VerticesRight.first + " last: " + VerticesRight.last);
 				#endregion Debug
 				
 				
@@ -1269,7 +1298,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 					case 2:				
 						#region Region Left
 						
-						for(int i = 0; i < VerticesLeft.last; i++)
+						for(int i = VerticesLeft.first; i < VerticesLeft.last; i++)
 						{
 							int A = VerticesLeft.left[line] - (VerticesLeft.right[line] + 1);
 							int B = VerticesLeft.left[line + 1]-(VerticesLeft.right[line + 1] + 1);
@@ -1301,18 +1330,6 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								
 								j += 6;
 							}
-	//							else if((i == VerticesLeft.left[line] || i == VerticesLeft.right[line]) && A == B )
-	//							{
-	//								newTriangles[j] = i + VerticesDifference;
-	//								newTriangles[j+2] = i + VerticesDifference + 1;
-	//								newTriangles[j+1] = i;
-	//								
-	//								newTriangles[j+4] = i;
-	//								newTriangles[j+3] = i + 1;
-	//								newTriangles[j+5] = i + VerticesDifference + 1;
-	//								
-	//								j += 6;
-	//							}
 							else if(i == VerticesLeft.left[line])
 							{
 								newTriangles[j] = i + 1;
@@ -1337,15 +1354,114 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 
 					case 3:
 						#region Region Back
-					
-						face++;	
+						for(int i = VerticesBack.first; i < VerticesBack.last; i++)
+						{
+							Debug.Log("i: " + i + " Line: " + line);
+								
+							int A = VerticesBack.left[line] - (VerticesBack.right[line] + 1);
+							int B = VerticesBack.left[line + 1]-(VerticesBack.right[line + 1] + 1);
+							int VerticesDifference = (A - B) /2	+ B;
+							
+							if(i == VerticesBack.left[line] && i + 1 == VerticesBack.right[line] && i + 2 == VerticesBack.last)
+							{
+								newTriangles[j] = i + 1;
+								newTriangles[j+2] = i + 2;
+								newTriangles[j+1] = i;
+								
+								j += 3;
+								
+								
+								face++;								
+								line = 0;
+								break;
+							}
+							else if((i >VerticesBack.left[line] && j > VerticesBack.right[line] - 1) 
+								|| ((i == VerticesBack.left[line] || i == VerticesBack.right[line] - 1) && A == B ))
+							{
+								newTriangles[j] = i + VerticesDifference;
+								newTriangles[j+2] = i + VerticesDifference + 1;
+								newTriangles[j+1] = i;
+								
+								newTriangles[j+4] = i;
+								newTriangles[j+3] = i + 1;
+								newTriangles[j+5] = i + VerticesDifference + 1;
+								
+								j += 6;
+								}
+							else if(i == VerticesBack.left[line])
+							{
+								newTriangles[j] = i + 1;
+								newTriangles[j+2] = VertecisFront.left[line + 1];
+								newTriangles[j+1] = i;
+							}
+							else if(i == VerticesBack.right[line] - 1)
+							{
+								newTriangles[j] = i + 1;
+								newTriangles[j+2] = VertecisFront.right[line + 1];
+								newTriangles[j+1] = i;
+							}
+							
+							if(i == VerticesBack.right[line])
+							{
+								line++;
+							}
+						}					
 						
 						#endregion Back							
 						break;
 
 					case 4:
 						#region Region Right
-						face++;	
+						for(int i = VerticesRight.first; i < VerticesRight.last; i++)
+						{
+							int A = VerticesRight.left[line] - (VerticesRight.right[line] + 1);
+							int B = VerticesRight.left[line + 1]-(VerticesRight.right[line + 1] + 1);
+							int VerticesDifference = (A - B) /2	+ B;
+							
+							if(i == VerticesRight.left[line] && i + 1 == VerticesRight.right[line] && i + 2 == VerticesRight.last)
+							{
+								newTriangles[j] = i + 1;
+								newTriangles[j+2] = i + 2;
+								newTriangles[j+1] = i;
+								
+								j += 3;
+								
+								
+								face++;								
+								line = 0;
+								break;
+							}
+							else if((i >VerticesRight.left[line] && j > VerticesRight.right[line] - 1) 
+								|| ((i == VerticesRight.left[line] || i == VerticesRight.right[line] - 1) && A == B ))
+							{
+								newTriangles[j] = i + VerticesDifference;
+								newTriangles[j+2] = i + VerticesDifference + 1;
+								newTriangles[j+1] = i;
+								
+								newTriangles[j+4] = i;
+								newTriangles[j+3] = i + 1;
+								newTriangles[j+5] = i + VerticesDifference + 1;
+								
+								j += 6;
+							}
+							else if(i == VerticesRight.left[line])
+							{
+								newTriangles[j] = i + 1;
+								newTriangles[j+2] = VerticesLeft.left[line + 1];
+								newTriangles[j+1] = i;
+							}
+							else if(i == VerticesRight.right[line] - 1)
+							{
+								newTriangles[j] = i + 1;
+								newTriangles[j+2] = VerticesLeft.right[line + 1];
+								newTriangles[j+1] = i;
+							}
+							
+							if(i == VerticesRight.right[line])
+							{
+								line++;
+							}
+						}
 						
 						#endregion Right
 						break;
