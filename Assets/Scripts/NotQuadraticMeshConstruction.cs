@@ -485,7 +485,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 										}
 										else //a > vertexHeight
 										{
-											b = (Mathf.Sin(frontTriangle.beta) * vertexHeight) / Mathf.Sin(frontTriangle.alpha);
+											//b = (Mathf.Sin(frontTriangle.beta) * vertexHeight) / Mathf.Sin(frontTriangle.alpha);
 											
 											if(rightSide == true)
 											{
@@ -579,7 +579,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							width++;
 						
 							#region Region Debug
-							Debug.Log("i: " + i + " Vertex: " + newVertices[i]);
+							//Debug.Log("i: " + i + " Vertex: " + newVertices[i]);
 							#endregion  Debug
 							
 							break;
@@ -621,7 +621,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 											if(b == vertexWidth)
 											{
 												//Depth == Height
-												depth++;
+												width++;
 											}
 											else //b > vertexDepth
 											{
@@ -636,7 +636,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 										}
 									}
 																		
-									a = (Mathf.Sin(sideTriangle.alpha)* vertexWidth) / Mathf.Sin(sideTriangle.beta);
+									a = (Mathf.Sin(sideTriangle.alpha)* vertexDepth) / Mathf.Sin(sideTriangle.beta);
 									
 									if(left == false)
 									{
@@ -674,7 +674,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 										//Debug.Log("Left.Left " + j + ": " + VerticesLeft.left[j]);
 										#endregion  Debug
 									}
-									else
+									else //left == true
 									{
 										if(a == vertexHeight)
 										{
@@ -702,11 +702,14 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 										{
 											if(rightSide == true)
 											{
-												vertexDepth = -1 * (vertexDepth - ObjectDepth);	
+												vertexDepth = -1 * (vertexDepth - ObjectDepth);													
 											}
 											
 											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
-																						
+												
+											#region Region Debug
+											//Debug.Log("vertexDepth: " + vertexDepth);
+											#endregion  Debug
 										}
 									}
 
@@ -741,7 +744,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									right = true;
 								}
 								
-								newVertices[i] = new Vector3((width * MeshWidth) -HalfMeshWidth, -HalfMeshHeight ,- HalfMeshDepth);
+								newVertices[i] = new Vector3(-HalfMeshWidth, -HalfMeshHeight ,(depth * MeshDepth) - HalfMeshDepth);
 							}
 									
 							if(right == true)
@@ -815,7 +818,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									{
 										vertexHeight = height * MeshHeight;	
 									
-										vertexDepth = (depth + 1) * MeshDepth;
+										vertexDepth = (depth - 1) * MeshDepth;
 										
 										c = (Mathf.Sin(sideTriangle.beta) * vertexHeight) / Mathf.Sin(sideTriangle.alpha);
 										
@@ -849,7 +852,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									{
 										if(a == vertexHeight)
 										{
-											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth + HalfMeshDepth);
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , -1 * (vertexDepth - HalfMeshDepth));
 											left = true;
 										}
 										else //a < vertexHeight)
@@ -864,7 +867,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 												width = (int)(b / MeshWidth);
 
 											}
-											newVertices[i] = new Vector3(b -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth + HalfMeshDepth);
+											newVertices[i] = new Vector3(b -HalfMeshWidth, vertexHeight -HalfMeshHeight , -1 * (vertexDepth - HalfMeshDepth));
 											left = true;
 										}
 //										else //a > vertexHeight
@@ -890,7 +893,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 												vertexWidth = -1 * (vertexWidth - ObjectWidth);
 											}
 											
-											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth + HalfMeshDepth);
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , -1 * (vertexDepth - HalfMeshDepth));
 											right = true;
 										}
 										else if(a < vertexHeight)
@@ -902,7 +905,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 												b = -1 * (b - ObjectWidth);	
 											}
 											
-											newVertices[i] = new Vector3(b -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth + HalfMeshDepth);
+											newVertices[i] = new Vector3(b -HalfMeshWidth, vertexHeight -HalfMeshHeight , -1 * (vertexDepth - HalfMeshDepth));
 											right = true;
 										}
 										else //a > vertexHeight
@@ -914,7 +917,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 												vertexWidth = -1 * (vertexWidth - ObjectWidth);
 											}
 											
-											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth + HalfMeshDepth);
+											newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , -1 * (vertexDepth - HalfMeshDepth));
 																						
 										}
 									}
@@ -1001,7 +1004,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							width++;
 							
 							#region Region Debug
-							Debug.Log("i: " + i + " Vertex: " + newVertices[i]);
+							//Debug.Log("i: " + i + " Vertex: " + newVertices[i]);
 							#endregion  Debug
 							
 							break;
@@ -1083,7 +1086,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 											left = true;
 										}
 										
-										newVertices[i] = new Vector3(vertexWidth + HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+										newVertices[i] = new Vector3(-1 * (vertexWidth - HalfMeshWidth), vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
 										
 										VerticesLeft.left[j] = i;
 										
@@ -1110,7 +1113,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 											vertexDepth = -1 * (vertexDepth - ObjectDepth);	
 										}
 										
-										newVertices[i] = new Vector3(vertexWidth + HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+										newVertices[i] = new Vector3(-1 * (vertexWidth - HalfMeshWidth), vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
 									}
 
 									
@@ -1193,7 +1196,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							depth++;
 							
 							#region Region Debug
-							Debug.Log("i: " + i + " Vertex: " + newVertices[i]);
+							//Debug.Log("i: " + i + " Vertex: " + newVertices[i]);
 							#endregion  Debug
 							
 							break;
@@ -1317,15 +1320,24 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							//Debug.Log("i: " + i + " Line: " + line);
 							#endregion Debug
 							
-							int A = VertecisFront.left[line] - (VertecisFront.right[line] + 1);
-							int B = VertecisFront.left[line + 1]-(VertecisFront.right[line + 1] + 1);
+							int A = (VertecisFront.right[line] + 1)- VertecisFront.left[line];
+							int B = (VertecisFront.right[line + 1] + 1) - VertecisFront.left[line + 1];
 							int VerticesDifference = (A - B) /2	+ B;
+								
+							#region Region Debug
+							//Debug.Log("A: " + A + " B: " + B + " VerticesDifference:" + VerticesDifference);
+							#endregion Debug
 							
 							if(i + 1 == VertecisFront.right[line] && i + 2 == VertecisFront.last)
 							{
 								newTriangles[j] = i + 1;
 								newTriangles[j+2] = i + 2;
 								newTriangles[j+1] = i;
+									
+								#region Region Debug
+								//Debug.Log("j: " + j + " newTriangles[j]: " + newTriangles[j] + " newTriangles[j+1]: " + newTriangles[j+1] + " newTriangles[j+2]: " + newTriangles[j+2]);
+								
+								#endregion Debug
 								
 								j += 3;
 								
@@ -1334,48 +1346,64 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								line = 0;
 								break;
 							}
-							else if((i > VertecisFront.left[line] && j < VertecisFront.right[line] - 1) 
+							else if((i > VertecisFront.left[line] && i < VertecisFront.right[line] - 1)
 								|| ((i == VertecisFront.left[line] || i == VertecisFront.right[line] - 1) && A == B ))
 							{
 								newTriangles[j] = i + VerticesDifference;
-								newTriangles[j+2] = i + VerticesDifference + 1;
-								newTriangles[j+1] = i;
+								newTriangles[j+1] = i + VerticesDifference + 1;
+								newTriangles[j+2] = i;
 								
 								newTriangles[j+4] = i;
 								newTriangles[j+3] = i + 1;
 								newTriangles[j+5] = i + VerticesDifference + 1;
+							
+								#region Region Debug
+								//Debug.Log("j: " + j + " newTriangles[j]: " + newTriangles[j] + " newTriangles[j+1]: " + newTriangles[j+1] + " newTriangles[j+2]: " + newTriangles[j+2]);
+								//Debug.Log("newTriangles[j+3]: " + newTriangles[j+3] + " newTriangles[j+4]: " + newTriangles[j+4] + " newTriangles[j+5]: " + newTriangles[j+5]);	
+								#endregion Debug
 								
 								j += 6;
 							}
-	//							else if((i == VertecisFront.left[line] || i == VertecisFront.right[line]) && A == B )
-	//							{
-	//								newTriangles[j] = i + VerticesDifference;
-	//								newTriangles[j+2] = i + VerticesDifference + 1;
-	//								newTriangles[j+1] = i;
-	//								
-	//								newTriangles[j+4] = i;
-	//								newTriangles[j+3] = i + 1;
-	//								newTriangles[j+5] = i + VerticesDifference + 1;
-	//								
-	//								j += 6;
-	//							}
 							else if(i == VertecisFront.left[line])
 							{
 								newTriangles[j] = i + 1;
-								newTriangles[j+2] = VertecisFront.left[line + 1];
+								if(line + 1 < VertecisFront.lines)
+								{
+									newTriangles[j+2] = VertecisFront.left[line + 1];
+								}
+								else
+								{
+									newTriangles[j+2] = VertecisFront.last;
+								}	
 								newTriangles[j+1] = i;
+									
+								#region Region Debug
+								//Debug.Log("j: " + j + " newTriangles[j]: " + newTriangles[j] + " newTriangles[j+1]: " + newTriangles[j+1] + " newTriangles[j+2]: " + newTriangles[j+2]);
+								
+								#endregion Debug
+									
+								j += 3;
 							}
 							else if(i == VertecisFront.right[line] - 1)
 							{
 								newTriangles[j] = i + 1;
 								newTriangles[j+2] = VertecisFront.right[line + 1];
 								newTriangles[j+1] = i;
+									
+								#region Region Debug
+								//Debug.Log("j: " + j + " newTriangles[j]: " + newTriangles[j] + " newTriangles[j+1]: " + newTriangles[j+1] + " newTriangles[j+2]: " + newTriangles[j+2]);
+								
+								#endregion Debug
+									
+								j += 3;
 							}
 							
 							if(i == VertecisFront.right[line])
 							{
 								line++;
 							}
+								
+							
 						}
 							
 						#endregion Front
@@ -1386,11 +1414,12 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 						
 						for(int i = VerticesLeft.first; i < VerticesLeft.last; i++)
 						{
-							int A = VerticesLeft.left[line] - (VerticesLeft.right[line] + 1);
-							int B = VerticesLeft.left[line + 1]-(VerticesLeft.right[line + 1] + 1);
+							int A = (VerticesLeft.right[line] + 1)- VerticesLeft.left[line];
+							int B = (VerticesLeft.right[line + 1] + 1) - VerticesLeft.left[line + 1];
 							int VerticesDifference = (A - B) /2	+ B;
+
 							
-							if(i == VerticesLeft.left[line] && i + 1 == VerticesLeft.right[line] && i + 2 == VerticesLeft.last)
+							if(i + 1 == VerticesLeft.right[line] && i + 2 == VerticesLeft.last)
 							{
 								newTriangles[j] = i + 1;
 								newTriangles[j+2] = i + 2;
@@ -1403,12 +1432,12 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								line = 0;
 								break;
 							}
-							else if((i > VerticesLeft.left[line] && j < VerticesLeft.right[line] - 1) 
+							else if((i > VerticesLeft.left[line] && i < VerticesLeft.right[line] - 1) 
 								|| ((i == VerticesLeft.left[line] || i == VerticesLeft.right[line] - 1) && A == B ))
 							{
 								newTriangles[j] = i + VerticesDifference;
-								newTriangles[j+2] = i + VerticesDifference + 1;
-								newTriangles[j+1] = i;
+								newTriangles[j+1] = i + VerticesDifference + 1;
+								newTriangles[j+2] = i;
 								
 								newTriangles[j+4] = i;
 								newTriangles[j+3] = i + 1;
@@ -1419,14 +1448,27 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							else if(i == VerticesLeft.left[line])
 							{
 								newTriangles[j] = i + 1;
-								newTriangles[j+2] = VerticesLeft.left[line + 1];
+								
+								if(line + 1 < VerticesLeft.lines)
+								{
+									newTriangles[j+2] = VerticesLeft.left[line + 1];
+								}
+								else
+								{
+									newTriangles[j+2] = VerticesLeft.last;
+								}	
+									
 								newTriangles[j+1] = i;
+									
+								j += 3;
 							}
 							else if(i == VerticesLeft.right[line] - 1)
 							{
 								newTriangles[j] = i + 1;
 								newTriangles[j+2] = VerticesLeft.right[line + 1];
 								newTriangles[j+1] = i;
+								
+								j += 3;
 							}
 							
 							if(i == VerticesLeft.right[line])
@@ -1440,15 +1482,15 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 
 					case 3:
 						#region Region Back
+						
 						for(int i = VerticesBack.first; i < VerticesBack.last; i++)
 						{
-							Debug.Log("i: " + i + " Line: " + line);
-								
-							int A = VerticesBack.left[line] - (VerticesBack.right[line] + 1);
-							int B = VerticesBack.left[line + 1]-(VerticesBack.right[line + 1] + 1);
+							
+							int A = (VerticesBack.right[line] + 1)- VerticesBack.left[line];
+							int B = (VerticesBack.right[line + 1] + 1) - VerticesBack.left[line + 1];
 							int VerticesDifference = (A - B) /2	+ B;
 							
-							if(i == VerticesBack.left[line] && i + 1 == VerticesBack.right[line] && i + 2 == VerticesBack.last)
+							if(i + 1 == VerticesBack.right[line] && i + 2 == VerticesBack.last)
 							{
 								newTriangles[j] = i + 1;
 								newTriangles[j+2] = i + 2;
@@ -1461,12 +1503,12 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								line = 0;
 								break;
 							}
-							else if((i > VerticesBack.left[line] && j < VerticesBack.right[line] - 1) 
+							else if((i > VerticesBack.left[line] && i < VerticesBack.right[line] - 1) 
 								|| ((i == VerticesBack.left[line] || i == VerticesBack.right[line] - 1) && A == B ))
 							{
 								newTriangles[j] = i + VerticesDifference;
-								newTriangles[j+2] = i + VerticesDifference + 1;
-								newTriangles[j+1] = i;
+								newTriangles[j+1] = i + VerticesDifference + 1;
+								newTriangles[j+2] = i;
 								
 								newTriangles[j+4] = i;
 								newTriangles[j+3] = i + 1;
@@ -1476,15 +1518,28 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								}
 							else if(i == VerticesBack.left[line])
 							{
-								newTriangles[j] = i + 1;
-								newTriangles[j+2] = VertecisFront.left[line + 1];
+								newTriangles[j] = i + 1;									
+								
+								if(line + 1 < VerticesBack.lines)
+								{
+									newTriangles[j+2] = VerticesBack.left[line + 1];
+								}
+								else
+								{
+									newTriangles[j+2] = VerticesBack.last;
+								}	
+									
 								newTriangles[j+1] = i;
+								
+								j += 3;
 							}
 							else if(i == VerticesBack.right[line] - 1)
 							{
 								newTriangles[j] = i + 1;
 								newTriangles[j+2] = VertecisFront.right[line + 1];
 								newTriangles[j+1] = i;
+								
+								j += 3;
 							}
 							
 							if(i == VerticesBack.right[line])
@@ -1498,13 +1553,14 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 
 					case 4:
 						#region Region Right
+						
 						for(int i = VerticesRight.first; i < VerticesRight.last; i++)
 						{
-							int A = VerticesRight.left[line] - (VerticesRight.right[line] + 1);
-							int B = VerticesRight.left[line + 1]-(VerticesRight.right[line + 1] + 1);
+							int A = (VerticesRight.right[line] + 1)- VerticesRight.left[line];
+							int B = (VerticesRight.right[line + 1] + 1) - VerticesRight.left[line + 1];
 							int VerticesDifference = (A - B) /2	+ B;
 							
-							if(i == VerticesRight.left[line] && i + 1 == VerticesRight.right[line] && i + 2 == VerticesRight.last)
+							if(i + 1 == VerticesRight.right[line] && i + 2 == VerticesRight.last)
 							{
 								newTriangles[j] = i + 1;
 								newTriangles[j+2] = i + 2;
@@ -1517,12 +1573,12 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 								line = 0;
 								break;
 							}
-							else if((i > VerticesRight.left[line] && j < VerticesRight.right[line] - 1) 
+							else if((i > VerticesRight.left[line] && i < VerticesRight.right[line] - 1) 
 								|| ((i == VerticesRight.left[line] || i == VerticesRight.right[line] - 1) && A == B ))
 							{
 								newTriangles[j] = i + VerticesDifference;
-								newTriangles[j+2] = i + VerticesDifference + 1;
-								newTriangles[j+1] = i;
+								newTriangles[j+1] = i + VerticesDifference + 1;
+								newTriangles[j+2] = i;
 								
 								newTriangles[j+4] = i;
 								newTriangles[j+3] = i + 1;
@@ -1533,14 +1589,27 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							else if(i == VerticesRight.left[line])
 							{
 								newTriangles[j] = i + 1;
-								newTriangles[j+2] = VerticesLeft.left[line + 1];
+									
+								if(line + 1 < VerticesRight.lines)
+								{
+									newTriangles[j+2] = VerticesRight.left[line + 1];
+								}
+								else
+								{
+									newTriangles[j+2] = VerticesRight.last;
+								}	
+									
 								newTriangles[j+1] = i;
+								
+								j += 3;
 							}
 							else if(i == VerticesRight.right[line] - 1)
 							{
 								newTriangles[j] = i + 1;
-								newTriangles[j+2] = VerticesLeft.right[line + 1];
+								newTriangles[j+2] = VerticesRight.right[line + 1];
 								newTriangles[j+1] = i;
+								
+								j += 3;
 							}
 							
 							if(i == VerticesRight.right[line])
