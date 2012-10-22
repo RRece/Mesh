@@ -34,6 +34,8 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 	private float MeshWidth;	//Mesh section Width
 	private float MeshDepth;	//Mesh section Width
 	
+	private int length;		//max Vertice length
+	
 	private Vector3[] newVertices;		//Vertices for Mesh raster
 	private Vector2[] newUVs;			//UVs for Mesh raster
 	private int[] newTriangles;			//Triangles for Mesh raster
@@ -273,7 +275,22 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 		int width = 0;
 		int depth = 0;
 		
-		int length = 400;	// !!no length calculation!!		
+		length = 400;	// !!no length calculation!!	
+		
+		int length2;
+		
+		if(SectionWidth >= SectionDepth)
+		{
+			length = (((SectionWidth + 1) * (SectionDepth + 1)) + 4 * ((SectionWidth + 1) * ((SectionHeight + 1) + (SectionDepth + 1))));
+		}
+		else //SectionWidth < SectionDepth
+		{
+			length = (((SectionWidth + 1) * (SectionDepth + 1)) + 4 * ((SectionDepth + 1) * ((SectionHeight + 1) + (SectionWidth + 1))));
+			
+		}
+		#region Region Debug
+		//Debug.Log("Length: " + length);
+		#endregion debug
 		
 		newVertices = new Vector3[length];
 		newUVs = new Vector2[length];
@@ -441,7 +458,6 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 											left = true;
 										}
 										
-										newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
 										VertecisFront.left[j] = i;
 										
 										#region Region Debug
@@ -450,6 +466,10 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									}
 									else  //left == true
 									{
+										#region Region Debug
+										//Debug.Log("a:" + a + " vertexHeight: " + vertexHeight);
+										#endregion  Debug
+										
 										if(a == vertexHeight)
 										{
 											right = true;
@@ -458,7 +478,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 										{
 											b = (Mathf.Sin(frontTriangle.beta) * vertexHeight) / Mathf.Sin(frontTriangle.alpha);
 											
-											vertexWidth = b;											
+											vertexWidth = b;	
 											right = true;
 										}
 										
@@ -466,9 +486,10 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 										{
 											vertexWidth = -1 * (vertexWidth - ObjectWidth);													
 										}
-											
-										newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+										
 									}
+									
+									newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
 									
 								} 
 								else //height == SectionHeight
@@ -505,6 +526,10 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									
 							if(right == true)
 							{
+								if(newVertices[i] == newVertices[i-1])
+								{
+									i--;
+								}
 								VertecisFront.right[j] = i;
 								j++;
 								width = SectionWidth;
@@ -631,8 +656,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 											
 											left = true;
 										}
-										
-										newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+																				
 										VerticesLeft.left[j] = i;
 										
 										#region Region Debug
@@ -657,10 +681,9 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 										{
 											vertexDepth = -1 * (vertexDepth - ObjectDepth);	
 										}
-										
-										newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
 									}
-
+									
+									newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);	
 									
 								} 
 								else //height == SectionHeight
@@ -697,6 +720,10 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									
 							if(right == true)
 							{
+								if(newVertices[i] == newVertices[i-1])
+								{
+									i--;
+								}
 								VerticesLeft.right[j] = i;
 								j++;
 								depth = SectionDepth;
@@ -761,6 +788,9 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 										vertexWidth = -1 * (vertexWidth - ObjectWidth);
 										rightSide = true;
 									}
+									#region Region Debug
+									//Debug.Log("VertexDepth: " + vertexDepth + " i: " + (i - 1));
+									#endregion  Debug
 									
 									if(depthLine == false)
 									{
@@ -774,9 +804,9 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 										//Debug.Log("VertexHeight: " + vertexHeight +" VertexDepth: " + vertexDepth + " C: " + c);
 										#endregion  Debug
 										
-										if(c >= vertexDepth)
+										if(c >= (ObjectDepth - vertexDepth))
 										{
-											if(c == vertexDepth)
+											if(c == (ObjectDepth - vertexDepth))
 											{
 												//Depth == Height
 												depth--;
@@ -784,8 +814,11 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 											else //c > vertexDepth
 											{
 												depthLine = true;
-												vertexHeight = (Mathf.Sin(sideTriangle.alpha) * vertexDepth) / Mathf.Sin(sideTriangle.beta);
+												vertexHeight = (Mathf.Sin(sideTriangle.alpha) * (ObjectDepth - vertexDepth)) / Mathf.Sin(sideTriangle.beta);
 												
+												#region Region Debug
+												//Debug.Log("VertexDepth: " + vertexDepth + " Depth:" + (ObjectDepth - vertexDepth) + " C: " + c);
+												#endregion  Debug
 											}
 										}
 										else //c < vertexDepth
@@ -818,7 +851,6 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 											
 											left = true;
 										}
-										newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , -1 * (vertexDepth - HalfMeshDepth));
 										
 										VerticesBack.left[j] = i;
 										
@@ -844,8 +876,16 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 										{
 											vertexWidth = -1 * (vertexWidth - ObjectWidth);
 										}
-										
+
+									}
+									
+									if(depthLine == false)
+									{
 										newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , -1 * (vertexDepth - HalfMeshDepth));
+									}
+									else
+									{
+										newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , (vertexDepth - HalfMeshDepth));
 									}
 
 									
@@ -884,6 +924,11 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									
 							if(right == true)
 							{
+								if(newVertices[i] == newVertices[i-1])
+								{
+									i--;
+								}
+								
 								VerticesBack.right[j] = i;
 								j++;
 								width = SectionWidth;								
@@ -942,7 +987,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 						#region Region Right
 						case 4:
 							#region Region Debug
-							//Debug.Log("i: " + i + " j: " + j + " Height: " + height + " Width: " + width + " Depth:" + depth);
+							Debug.Log("i: " + i + " j: " + j + " Height: " + height + " Width: " + width + " Depth:" + depth);
 							#endregion  Debug
 							
 							if (height != 0)
@@ -970,9 +1015,9 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 										//Debug.Log("VertexHeight: " + vertexHeight +" VertexDepth: " + vertexDepth + " C: " + c);
 										#endregion  Debug
 										
-										if(b >= vertexWidth)
+										if(b >= (ObjectWidth - vertexWidth))
 										{
-											if(b == vertexWidth)
+											if(b == (ObjectWidth - vertexWidth))
 											{
 												//Width == Height
 												width--;
@@ -980,7 +1025,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 											else //b > vertexDepth
 											{
 												depthLine = true;
-												vertexHeight = (Mathf.Sin(frontTriangle.alpha) * vertexWidth) / Mathf.Sin(frontTriangle.beta);
+												vertexHeight = (Mathf.Sin(frontTriangle.alpha) * (ObjectWidth - vertexWidth)) / Mathf.Sin(frontTriangle.beta);
 												
 											}
 										}
@@ -1003,11 +1048,12 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 											c = (Mathf.Sin(sideTriangle.beta) * vertexHeight) / Mathf.Sin(sideTriangle.alpha);
 											vertexDepth = c;
 											
-											if(c / MeshDepth > depth)
+											if(c / MeshDepth > depth)	//Wo ist der Fehler???
 											{
 												#region Region Debug
-												//Debug.Log("i: " + i + " Depth: " + depth + " C:" + c + " MeshDepth:" + MeshWidth);
+												Debug.Log("i: " + i + " Depth: " + depth + " C:" + c + " MeshDepth:" + MeshWidth);
 												#endregion  Debug
+												
 												depth = (int)(c / MeshDepth);
 
 											}
@@ -1015,12 +1061,10 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 											left = true;
 										}
 										
-										newVertices[i] = new Vector3(-1 * (vertexWidth - HalfMeshWidth), vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
-										
 										VerticesRight.left[j] = i;
 										
 										#region Region Debug
-										//Debug.Log("Right.Left " + j + ": " + VerticesRight.left[j]);
+										Debug.Log("Right.Left " + j + ": " + VerticesRight.left[j]);
 										#endregion  Debug
 									}
 									else //left == true
@@ -1043,7 +1087,15 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 											vertexDepth = -1 * (vertexDepth - ObjectDepth);	
 										}
 										
+									}
+									
+									if(depthLine == false)
+									{
 										newVertices[i] = new Vector3(-1 * (vertexWidth - HalfMeshWidth), vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+									}
+									else
+									{
+										newVertices[i] = new Vector3((vertexWidth - HalfMeshWidth), vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
 									}
 
 									
@@ -1082,6 +1134,10 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									
 							if(right == true)
 							{
+								if(newVertices[i] == newVertices[i-1])
+								{
+									i--;
+								}
 								VerticesRight.right[j] = i;
 								j++;
 								depth = SectionDepth;
@@ -1125,13 +1181,14 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							depth++;
 							
 							#region Region Debug
-							//Debug.Log("i: " + i + " Vertex: " + newVertices[i]);
+							Debug.Log("i: " + i + " Vertex: " + newVertices[i]);
 							#endregion  Debug
 							
 							break;
 							#endregion Right
 							
 						case 5:	//no pyramid face
+							i = length;
 							break;
 					}
 					#endregion pyramid
@@ -1149,7 +1206,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 		int line = 0;
 		
 		face = 0;
-		int TrianglesLength = 1200;
+		int TrianglesLength = length * 3;
 		newTriangles = new int[TrianglesLength];
 		
 		switch(ObjectType)
@@ -1191,6 +1248,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 					#region Region pyramid
 					
 				#region Region Debug
+				//Debug.Log("Ground: fist: " + (0) + " last: " + (VertecisFront.first - 1));
 				//Debug.Log("Front: fist: " + VertecisFront.first + " last: " + VertecisFront.last);
 				//Debug.Log("Left: fist: " + VerticesLeft.first + " last: " + VerticesLeft.last);
 				//Debug.Log("Back: fist: " + VerticesBack.first + " last: " + VerticesBack.last);
@@ -1266,7 +1324,6 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									
 								#region Region Debug
 								//Debug.Log("j: " + j + " newTriangles[j]: " + newTriangles[j] + " newTriangles[j+1]: " + newTriangles[j+1] + " newTriangles[j+2]: " + newTriangles[j+2]);
-								
 								#endregion Debug
 								
 								j += 3;
@@ -1309,7 +1366,6 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									
 								#region Region Debug
 								//Debug.Log("j: " + j + " newTriangles[j]: " + newTriangles[j] + " newTriangles[j+1]: " + newTriangles[j+1] + " newTriangles[j+2]: " + newTriangles[j+2]);
-								
 								#endregion Debug
 									
 								j += 3;
@@ -1322,7 +1378,6 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 									
 								#region Region Debug
 								//Debug.Log("j: " + j + " newTriangles[j]: " + newTriangles[j] + " newTriangles[j+1]: " + newTriangles[j+1] + " newTriangles[j+2]: " + newTriangles[j+2]);
-								
 								#endregion Debug
 									
 								j += 3;
@@ -1440,7 +1495,7 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 						for(int i = VerticesBack.first; i < VerticesBack.last; i++)
 						{
 							#region Region Debug
-							Debug.Log ("i: " + i + " j: " + j + " Line: " + line);
+							//Debug.Log ("i: " + i + " j: " + j + " Line: " + line);
 							#endregion Debug
 							
 							int A = (VerticesBack.right[line] + 1)- VerticesBack.left[line];
