@@ -280,6 +280,18 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 		switch(ObjectType)
 		{
 			case category.trapezium:
+				
+				//to large
+				if(SectionWidth >= SectionDepth)
+				{
+					length = (((SectionWidth + 1) * (SectionDepth + 1)) + 4 * ((SectionWidth + 1) * ((SectionHeight + 1) + (SectionDepth + 1))));
+				}
+				else //SectionWidth < SectionDepth
+				{
+					length = (((SectionWidth + 1) * (SectionDepth + 1)) + 4 * ((SectionDepth + 1) * ((SectionHeight + 1) + (SectionWidth + 1))));
+					
+				}
+				
 				break;
 			case category.pyramid:
 			
@@ -322,25 +334,437 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 					{
 						case 0:
 							#region Region Ground
-													
+							
+							#region Region Debug
+							//Debug.Log("i: " + i + " j: " + j + " Height: " + height + " Width: " + width + " Depth:" + depth);
+							#endregion  Debug
+							
+							if (depth != 0)
+							{
+								if(depth != SectionDepth)
+								{
+									vertexWidth = width * MeshWidth;
+									
+									if (vertexWidth > HalfMeshWidth)
+									{
+										vertexWidth = -1 * (vertexWidth - ObjectWidth);
+										
+										rightSide = true;
+									}
+									
+									vertexHeight = 0.0f;	
+									
+									vertexDepth = depth * MeshDepth;
+									
+									
+									a = (Mathf.Sin(groundTriangle.alpha)* vertexWidth) / Mathf.Sin(groundTriangle.beta);
+								
+									#region Region Debug
+									//Debug.Log("a:" + a);
+									#endregion  Debug
+									
+									if(left == false)
+									{
+										if(a == vertexDepth)
+										{
+											left = true;
+										}
+										else //if(a < vertexDepth)
+										{
+											b = (Mathf.Sin(groundTriangle.beta) * vertexDepth) / Mathf.Sin(groundTriangle.alpha);
+											vertexWidth = b;
+											
+											if(b / MeshWidth > width)
+											{
+												#region Region Debug
+												//Debug.Log("i: " + i + " Width: " + width + " B:" + b + " MeshWidth:" + MeshWidth);
+												#endregion  Debug
+												
+												width = (int)(b / MeshWidth);
+												
+												#region Region Debug
+												//Debug.Log("i: " + i + " Width: " + width + " B:" + b + " MeshWidth:" + MeshWidth);
+												#endregion  Debug
+
+											}
+											
+											left = true;
+										}
+										
+										VerticesGround.left[j] = i;
+										
+										#region Region Debug
+										//Debug.Log("Ground.Left " + j + ": " + VerticesGround.left[j]);
+										#endregion  Debug
+									}
+									else  //left == true
+									{
+										#region Region Debug
+										//Debug.Log("a:" + a + " vertexDepth: " + vertexDepth);
+										#endregion  Debug
+										
+										if(rightSide == true)
+										{
+											if(a == vertexDepth)
+											{
+												right = true;
+											}
+											else if(a < vertexDepth)
+											{
+												b = (Mathf.Sin(groundTriangle.beta) * vertexDepth) / Mathf.Sin(groundTriangle.alpha);
+												
+												vertexWidth = b;	
+												right = true;
+											}
+										
+											vertexWidth = -1 * (vertexWidth - ObjectWidth);													
+										}
+										
+									}
+									
+									newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+									
+								} 
+								else //height == SectionHeight
+								{
+									newVertices[i] = new Vector3(0.0f, -HalfMeshHeight, HalfMeshDepth);	
+									width = SectionWidth;
+									vertexDepth = ObjectDepth;
+									VerticesGround.last = i;
+									
+									#region Region Debug
+									//Debug.Log("Ground.Last: " + VerticesGround.last);
+									#endregion  Debug
+								}
+								
+							}
+							else //depth == 0
+							{
+								vertexWidth = width * MeshWidth;
+								
+								if(left == false)
+								{
+									VertecisFront.left[j] = i;
+									left = true;
+									
+									#region Region Debug
+									//Debug.Log("Ground.Left " + j + ": " + VerticesGround.left[j]);
+									#endregion  Debug
+								}
+								
+								if(width == SectionWidth)
+								{
+									right = true;
+								}
+								
+								newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, -HalfMeshHeight , -HalfMeshDepth);
+							}
+									
+							if(i > 0 && newVertices[i] == newVertices[i-1])
+							{
+								i--;
+							}
+						
+							if(right == true)
+							{								
+								VerticesGround.right[j] = i;
+								j++;
+								width = SectionWidth;
+								
+								#region Region Debug
+								//Debug.Log("Ground.Right " + (j-1) + ": " + VerticesGround.right[j-1]);
+								#endregion  Debug
+								
+							}
+							
+							#region Region UV	
+							if(facemulti != 0)
+							{
+								newUVs[i] = new Vector2((vertexWidth * facemulti)/ObjectWidth + face * facemulti, vertexDepth/ObjectDepth);
+							}
+							else //facemulti == 0
+							{
+								newUVs[i] = new Vector2((vertexWidth)/ObjectWidth, vertexDepth/ObjectDepth);								
+							}
+								#region Region Debug							
+								//Debug.Log("X: " + ((vertexWidth * facemulti)/ObjectWidth + face * facemulti) + " Y: " + (vertexDepth/ObjectDepth));
+								//Debug.Log("vertexDepth: " + vertexDepth);
+								//Debug.Log("vertexWidth: " + vertexWidth + " facemulti: " + facemulti + " face: " + face);
+								#endregion  Debug							
+							#endregion UV
+							
+							if(width == SectionWidth)
+							{								
+								depth++;								
+								
+								width = -1;
+								
+								left = false;
+								right = false;
+								rightSide = false;
+								
+								if(depth > SectionDepth)
+								{
+									VerticesGround.lines = j;									
+									
+									face++;
+									height = 0;
+									depth = 0;
+									j = 0;
+									
+									VertecisFront.first = i + 1;
+								}
+							
+							}
+							
+							width++;
+						
+							#region Region Debug
+							//Debug.Log("i: " + i + " Vertex: " + newVertices[i]);
+							#endregion  Debug
+							
 							#endregion Ground
 							break;
 
 						case 1:
 							#region Region Front
 							
+							#region Region Debug
+							//Debug.Log("i: " + i + " j: " + j + " Height: " + height + " Width: " + width + " Depth:" + depth);
+							#endregion  Debug
+							
+							if (height != 0)
+							{
+								if(height != SectionHeight)
+								{
+	
+									vertexWidth = width * MeshWidth;
+									
+									if (vertexWidth > HalfMeshWidth)
+									{
+										vertexWidth = -1 * (vertexWidth - ObjectWidth);
+										
+										rightSide = true;
+									}
+									
+									if(depthLine == false)
+									{
+										vertexHeight = height * MeshHeight;	
+									
+										vertexDepth = (depth + 1) * MeshDepth;
+										
+										c = (Mathf.Sin(sideTriangle.beta) * vertexHeight) / Mathf.Sin(sideTriangle.alpha);
+										
+										#region Region Debug
+										//Debug.Log("VertexHeight: " + vertexHeight +" VertexDepth: " + vertexDepth + " C: " + c);
+										#endregion  Debug
+										
+										if(c >= vertexDepth)
+										{
+											if(c == vertexDepth)
+											{
+												//Depth == Height
+												depth++;
+											}
+											else //c > vertexDepth
+											{
+												depthLine = true;
+												vertexHeight = (Mathf.Sin(sideTriangle.alpha) * vertexDepth) / Mathf.Sin(sideTriangle.beta);
+												
+											}
+										}
+										else //c < vertexDepth
+										{
+											vertexDepth = c;
+										}
+									}
+									
+									a = (Mathf.Sin(frontTriangle.alpha)* vertexWidth) / Mathf.Sin(frontTriangle.beta);
+								
+									#region Region Debug
+									//Debug.Log("a:" + a);
+									#endregion  Debug
+									
+									if(left == false)
+									{
+										if(a == vertexHeight)
+										{
+											left = true;
+										}
+										else //if(a < vertexHeight)
+										{
+											b = (Mathf.Sin(frontTriangle.beta) * vertexHeight) / Mathf.Sin(frontTriangle.alpha);
+											vertexWidth = b;
+											
+											if(b / MeshWidth > width)
+											{
+												#region Region Debug
+												//Debug.Log("i: " + i + " Width: " + width + " B:" + b + " MeshWidth:" + MeshWidth);
+												#endregion  Debug
+												
+												width = (int)(b / MeshWidth);
+												
+												#region Region Debug
+												//Debug.Log("i: " + i + " Width: " + width + " B:" + b + " MeshWidth:" + MeshWidth);
+												#endregion  Debug
+
+											}
+											
+											left = true;
+										}
+										
+										VertecisFront.left[j] = i;
+										
+										#region Region Debug
+										//Debug.Log("Front.Left " + j + ": " + VertecisFront.left[j]);
+										#endregion  Debug
+									}
+									else  //left == true
+									{
+										#region Region Debug
+										//Debug.Log("a:" + a + " vertexHeight: " + vertexHeight);
+										#endregion  Debug
+										
+										if(rightSide == true)
+										{
+											if(a == vertexHeight)
+											{
+												right = true;
+											}
+											else if(a < vertexHeight)
+											{
+												b = (Mathf.Sin(frontTriangle.beta) * vertexHeight) / Mathf.Sin(frontTriangle.alpha);
+												
+												vertexWidth = b;	
+												right = true;
+											}
+										
+											vertexWidth = -1 * (vertexWidth - ObjectWidth);													
+										}
+										
+									}
+									
+									newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, vertexHeight -HalfMeshHeight , vertexDepth - HalfMeshDepth);
+									
+								} 
+								else //height == SectionHeight
+								{
+									newVertices[i] = new Vector3(0.0f, HalfMeshHeight, 0.0f);	
+									width = SectionWidth;
+									vertexHeight = ObjectHeight;
+									VertecisFront.last = i;
+									
+									#region Region Debug
+									//Debug.Log("Front.Last: " + VertecisFront.last);
+									#endregion  Debug
+								}
+								
+							}
+							else //height == 0
+							{
+								vertexWidth = width * MeshWidth;
+								
+								if(left == false)
+								{
+									VertecisFront.left[j] = i;
+									left = true;
+									
+									#region Region Debug
+									//Debug.Log("Front.Left " + j + ": " + VertecisFront.left[j]);
+									#endregion  Debug
+								}
+								
+								if(width == SectionWidth)
+								{
+									right = true;
+								}
+								
+								newVertices[i] = new Vector3(vertexWidth -HalfMeshWidth, -HalfMeshHeight ,- HalfMeshDepth);
+							}
+									
+							if(newVertices[i] == newVertices[i-1])
+							{
+								i--;
+							}
+						
+							if(right == true)
+							{								
+								VertecisFront.right[j] = i;
+								j++;
+								width = SectionWidth;
+								
+								#region Region Debug
+								//Debug.Log("Front.Right " + (j-1) + ": " + VertecisFront.right[j-1]);
+								#endregion  Debug
+								
+							}
+							
+							#region Region UV	
+							if(facemulti != 0)
+							{
+								newUVs[i] = new Vector2((vertexWidth * facemulti)/ObjectWidth + face * facemulti, vertexHeight/ObjectHeight);
+							}
+							else //facemulti == 0
+							{
+								newUVs[i] = new Vector2((vertexWidth)/ObjectWidth, vertexHeight/ObjectHeight);								
+							}
+								#region Region Debug							
+								//Debug.Log("X: " + ((vertexWidth * facemulti)/ObjectWidth + face * facemulti) + " Y: " + (vertexHeight/ObjectHeight));
+								//Debug.Log("vertexHeight: " + vertexHeight);
+								//Debug.Log("vertexWidth: " + vertexWidth + " facemulti: " + facemulti + " face: " + face);
+								#endregion  Debug		
+							
+							#endregion UV
+							
+							if(width == SectionWidth)
+							{								
+								if(depthLine == true)
+								{
+									depthLine = false;
+									depth++;
+								}
+								else
+								{
+									height++;
+								}
+								
+								width = -1;
+								
+								left = false;
+								right = false;
+								rightSide = false;
+								
+								if(height > SectionHeight)
+								{
+									VertecisFront.lines = j;									
+									
+									face++;
+									height = 0;
+									depth = 0;
+									j = 0;
+									
+									VerticesLeft.first = i + 1;
+								}
+							
+							}
+							
+							width++;
+						
+							#region Region Debug
+							//Debug.Log("i: " + i + " Vertex: " + newVertices[i]);
+							#endregion  Debug
 							#endregion Front
 							break;
 
 						case 2:				
 							#region Region Left
-							
+							face++;
 							#endregion Left
 							break;
 
 						case 3:
 							#region Region Right
-							
+							face++;
 							#endregion Right
 							break;
 							
@@ -573,11 +997,13 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 							{
 								newUVs[i] = new Vector2((vertexWidth)/ObjectWidth, vertexHeight/ObjectHeight);								
 							}
-								#region Region Debug							
-								Debug.Log("X: " + ((vertexWidth * facemulti)/ObjectWidth + face * facemulti) + " Y: " + (vertexHeight/ObjectHeight));
-								//Debug.Log("vertexHeight: " + vertexHeight);
-								Debug.Log("vertexWidth: " + vertexWidth + " facemulti: " + facemulti + " face: " + face);
-								#endregion  Debug							
+							
+							#region Region Debug							
+							//Debug.Log("X: " + ((vertexWidth * facemulti)/ObjectWidth + face * facemulti) + " Y: " + (vertexHeight/ObjectHeight));
+							//Debug.Log("vertexHeight: " + vertexHeight);
+							//Debug.Log("vertexWidth: " + vertexWidth + " facemulti: " + facemulti + " face: " + face);
+							#endregion  Debug
+							
 							#endregion UV
 							
 							if(width == SectionWidth)
@@ -1323,37 +1749,222 @@ public class NotQuadraticMeshConstruction : MonoBehaviour {
 			{
 				case category.trapezium:
 					#region Region trapezium
-					switch(face)
+				
+					for(int k = 0; k < 4; k++)
 					{
-						case 0:
-							#region Region Ground
-													
-							#endregion Ground
-							break;
-
-						case 1:
-							#region Region Front
+						switch(face)
+						{
+							case 0:
+								#region Region Ground
 							
-							#endregion Front
-							break;
-
-						case 2:				
-							#region Region Left
+								for(int i = VerticesGround.first; i < VerticesGround.last; i++)
+								{
+									#region Region Debug
+									//Debug.Log("i: " + i + " Line: " + line);
+									#endregion Debug
+									
+									int A = (VerticesGround.right[line] + 1)- VerticesGround.left[line];
+									int B = (VerticesGround.right[line + 1] + 1) - VerticesGround.left[line + 1];
+									int VerticesDifference = (A - B) /2	+ B;
+										
+									#region Region Debug
+									//Debug.Log("A: " + A + " B: " + B + " VerticesDifference:" + VerticesDifference);
+									#endregion Debug
+									
+									if(i + 1 == VerticesGround.right[line] && i + 2 == VerticesGround.last)
+									{
+										newTriangles[j] = i + 2;
+										newTriangles[j+2] = i + 1;
+										newTriangles[j+1] = i;
+											
+										#region Region Debug
+										//Debug.Log("j: " + j + " newTriangles[j+1]: " + newTriangles[j+1] + " newTriangles[j]: " + newTriangles[j] + " newTriangles[j+2]: " + newTriangles[j+2]);
+										#endregion Debug
+										
+										j += 3;
+										
+										
+										face++;								
+										line = 0;
+										break;
+									}
+									else if((i > VerticesGround.left[line] && i < VerticesGround.right[line] - 1)
+										|| ((i == VerticesGround.left[line] || i == VerticesGround.right[line] - 1) && A == B ))
+									{
+										newTriangles[j] = i + VerticesDifference + 1;
+										newTriangles[j+1] = i + VerticesDifference ;
+										newTriangles[j+2] = i;
+										
+										newTriangles[j+3] = i;
+										newTriangles[j+4] = i + 1;
+										newTriangles[j+5] = i + VerticesDifference + 1;
+									
+										#region Region Debug
+										//Debug.Log("j: " + j + " newTriangles[j+2]: " + newTriangles[j+2] + " newTriangles[j]: " + newTriangles[j] + " newTriangles[j+1]: " + newTriangles[j+1]);
+										//Debug.Log("newTriangles[j+4]: " + newTriangles[j+4] + " newTriangles[j+3]: " + newTriangles[j+3] + " newTriangles[j+5]: " + newTriangles[j+5]);	
+										#endregion Debug
+										
+										j += 6;
+									}
+									else if(i == VerticesGround.left[line])
+									{
+										newTriangles[j] = i + 1;
+									
+										if(line + 1 < VerticesGround.lines)
+										{
+											newTriangles[j+1] = VerticesGround.left[line + 1];
+										}
+										else
+										{
+											newTriangles[j+1] = VerticesGround.last;
+										}	
+										newTriangles[j+2] = i;
+											
+										#region Region Debug
+										//Debug.Log("j: " + j + " newTriangles[j+1]: " + newTriangles[j+1] + " newTriangles[j]: " + newTriangles[j] + " newTriangles[j+2]: " + newTriangles[j+2]);
+										#endregion Debug
+											
+										j += 3;
+									}
+									else if(i == VerticesGround.right[line] - 1)
+									{
+										newTriangles[j] = i + 1;
+										newTriangles[j+1] = VerticesGround.right[line + 1];
+										newTriangles[j+2] = i;
+											
+										#region Region Debug
+										//Debug.Log("j: " + j + " newTriangles[j+1]: " + newTriangles[j+1] + " newTriangles[j]: " + newTriangles[j]  + " newTriangles[j+2]: " + newTriangles[j+2]);
+										#endregion Debug
+											
+										j += 3;
+									}
+									
+									if(i == VerticesGround.right[line])
+									{
+										line++;
+									}
+										
+									
+								}
 							
-							#endregion Left
-							break;
-
-						case 3:
-							#region Region Right
+														
+								#endregion Ground
+								break;
+	
+							case 1:
+								#region Region Front
+								
+								for(int i = VertecisFront.first; i < VertecisFront.last; i++)
+								{
+									#region Region Debug
+									//Debug.Log("i: " + i + " Line: " + line);
+									#endregion Debug
+									
+									int A = (VertecisFront.right[line] + 1)- VertecisFront.left[line];
+									int B = (VertecisFront.right[line + 1] + 1) - VertecisFront.left[line + 1];
+									int VerticesDifference = (A - B) /2	+ B;
+										
+									#region Region Debug
+									//Debug.Log("A: " + A + " B: " + B + " VerticesDifference:" + VerticesDifference);
+									#endregion Debug
+									
+									if(i + 1 == VertecisFront.right[line] && i + 2 == VertecisFront.last)
+									{
+										newTriangles[j] = i + 1;
+										newTriangles[j+2] = i + 2;
+										newTriangles[j+1] = i;
+											
+										#region Region Debug
+										//Debug.Log("j: " + j + " newTriangles[j+1]: " + newTriangles[j+1] + " newTriangles[j]: " + newTriangles[j] + " newTriangles[j+2]: " + newTriangles[j+2]);
+										#endregion Debug
+										
+										j += 3;
+										
+										
+										face++;								
+										line = 0;
+										break;
+									}
+									else if((i > VertecisFront.left[line] && i < VertecisFront.right[line] - 1)
+										|| ((i == VertecisFront.left[line] || i == VertecisFront.right[line] - 1) && A == B ))
+									{
+										newTriangles[j] = i + VerticesDifference;
+										newTriangles[j+1] = i + VerticesDifference + 1;
+										newTriangles[j+2] = i;
+										
+										newTriangles[j+4] = i;
+										newTriangles[j+3] = i + 1;
+										newTriangles[j+5] = i + VerticesDifference + 1;
+									
+										#region Region Debug
+										//Debug.Log("j: " + j + " newTriangles[j+2]: " + newTriangles[j+2] + " newTriangles[j]: " + newTriangles[j] + " newTriangles[j+1]: " + newTriangles[j+1]);
+										//Debug.Log("newTriangles[j+4]: " + newTriangles[j+4] + " newTriangles[j+3]: " + newTriangles[j+3] + " newTriangles[j+5]: " + newTriangles[j+5]);	
+										#endregion Debug
+										
+										j += 6;
+									}
+									else if(i == VertecisFront.left[line])
+									{
+										newTriangles[j] = i + 1;
+										if(line + 1 < VertecisFront.lines)
+										{
+											newTriangles[j+2] = VertecisFront.left[line + 1];
+										}
+										else
+										{
+											newTriangles[j+2] = VertecisFront.last;
+										}	
+										newTriangles[j+1] = i;
+											
+										#region Region Debug
+										//Debug.Log("j: " + j + " newTriangles[j+1]: " + newTriangles[j+1] + " newTriangles[j]: " + newTriangles[j] + " newTriangles[j+2]: " + newTriangles[j+2]);
+										#endregion Debug
+											
+										j += 3;
+									}
+									else if(i == VertecisFront.right[line] - 1)
+									{
+										newTriangles[j] = i + 1;
+										newTriangles[j+2] = VertecisFront.right[line + 1];
+										newTriangles[j+1] = i;
+											
+										#region Region Debug
+										//Debug.Log("j: " + j + " newTriangles[j+1]: " + newTriangles[j+1] + " newTriangles[j]: " + newTriangles[j]  + " newTriangles[j+2]: " + newTriangles[j+2]);
+										#endregion Debug
+											
+										j += 3;
+									}
+									
+									if(i == VertecisFront.right[line])
+									{
+										line++;
+									}
+										
+									
+								}
 							
-							#endregion Right
-							break;
-							
-						case 4:	//no trapezium face
-							break;
+								#endregion Front
+								break;
+	
+							case 2:				
+								#region Region Left
+								
+								#endregion Left
+								break;
+	
+							case 3:
+								#region Region Right
+								
+								#endregion Right
+								break;
+								
+							case 4:	//no trapezium face
+								break;
+						}
 					}
 					#endregion trapezium
 					break;
+				
 				case category.pyramid:
 					#region Region pyramid
 					
